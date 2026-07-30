@@ -10,8 +10,9 @@ node_modules/
 site/dist/
 .observablehq/
 
-# generated extracts (rebuilt from the lake; regenerate with `podlake-web extract`)
-site/src/data/*.json
+# NOTE: site/src/data/*.json (the published aggregate snapshot) IS committed, so
+# the GitHub Pages build can run without access to the private lake. Refresh it
+# with `make extract` and commit the result whenever the lake is updated.
 
 # local lake / env
 *.ducklake

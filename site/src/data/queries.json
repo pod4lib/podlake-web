@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-07-30T17:09:57.186891+00:00",
+  "queries": [
+    {
+      "id": "overlap",
+      "title": "Works held by N institutions",
+      "note": "The rarity curve: group each work (by its Gold Rush key) by how many distinct institutions hold it. The left of the curve is rare material; the right is the widely-duplicated core.",
+      "sql": "SELECT institutions, count(*) AS works\nFROM (\n  SELECT goldrush_key, count(DISTINCT org) AS institutions\n  FROM record_meta\n  GROUP BY goldrush_key\n)\nGROUP BY institutions\nORDER BY institutions"
+    },
+    {
+      "id": "pairwise",
+      "title": "Shared holdings between institutions",
+      "note": "A self-join on the work key counts, for every pair of institutions, how many works both hold \u2014 the basis of comparative collection analysis.",
+      "sql": "WITH holdings AS (SELECT DISTINCT org, goldrush_key FROM record_meta)\nSELECT a.org AS a, b.org AS b, count(*) AS shared\nFROM holdings a\nJOIN holdings b USING (goldrush_key)\nWHERE a.org < b.org\nGROUP BY a.org, b.org\nORDER BY shared DESC"
+    },
+    {
+      "id": "uniqueness",
+      "title": "Works held by a single institution",
+      "note": "Works whose Gold Rush key appears at exactly one institution \u2014 the \"last copies\" that preservation and shared-print decisions turn on.",
+      "sql": "SELECT org, count(*) AS unique_works\nFROM (\n  SELECT any_value(org) AS org\n  FROM record_meta\n  GROUP BY goldrush_key\n  HAVING count(DISTINCT org) = 1\n)\nGROUP BY org\nORDER BY unique_works DESC"
+    },
+    {
+      "id": "per_org",
+      "title": "Records and works per institution",
+      "note": "Records are individual bibliographic records; works collapse them by Gold Rush key, so the gap shows within-library duplication.",
+      "sql": "SELECT org, count(*) AS records, count(DISTINCT goldrush_key) AS works\nFROM record_meta\nGROUP BY org\nORDER BY org"
+    },
+    {
+      "id": "decade",
+      "title": "Publication era from the MARC 008 field",
+      "note": "Characters 8\u201311 of the 008 fixed field hold the publication year \u2014 pull them straight out of the record with substr and bucket into decades.",
+      "sql": "SELECT org,\n       (CAST(substr(value, 8, 4) AS INTEGER) // 10) * 10 AS decade,\n       count(*) AS records\nFROM records\nWHERE field_tag = '008'\n  AND regexp_matches(substr(value, 8, 4), '^[0-9]{4}$')\n  AND CAST(substr(value, 8, 4) AS INTEGER) BETWEEN 1450 AND 2030\nGROUP BY org, decade\nORDER BY org, decade"
+    },
+    {
+      "id": "subjects",
+      "title": "Top subject headings (MARC 650 $a)",
+      "note": "The 25 most common subject headings per institution (the tall/EAV layout makes any subfield a plain WHERE clause).",
+      "sql": "WITH subjects AS (\n  SELECT org, rtrim(value, ' .,;:/') AS subject, count(*) AS records\n  FROM records\n  WHERE field_tag = '650' AND subfield_code = 'a'\n    AND value IS NOT NULL AND trim(value) <> ''\n  GROUP BY org, subject\n),\nranked AS (\n  SELECT *, row_number() OVER (PARTITION BY org ORDER BY records DESC) AS rn\n  FROM subjects\n)\nSELECT org, subject, records\nFROM ranked\nWHERE rn <= 25 AND records >= 10\nORDER BY org, records DESC"
+    },
+    {
+      "id": "coverage",
+      "title": "Metadata coverage",
+      "note": "For each record, does it carry a given field? A boolean pivot per record, then averaged \u2014 a quick metadata-completeness scorecard.",
+      "sql": "WITH present AS (\n  SELECT org, pod_record_id,\n         max(field_tag = '020')                AS isbn,\n         max(field_tag LIKE '6%')              AS subjects,\n         max(field_tag IN ('100','110','111')) AS author,\n         max(field_tag = '856')                AS online,\n         max(field_tag = '300')                AS phys_desc,\n         max(field_tag IN ('050','082','090')) AS classification\n  FROM records\n  GROUP BY org, pod_record_id\n)\nSELECT org, count(*) AS records,\n       sum(isbn) AS isbn, sum(subjects) AS subjects, sum(author) AS author,\n       sum(online) AS online, sum(phys_desc) AS phys_desc,\n       sum(classification) AS classification\nFROM present\nGROUP BY org\nORDER BY org"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "fields": [
+    "isbn",
+    "subjects",
+    "author",
+    "online",
+    "phys_desc",
+    "classification"
+  ],
+  "generated_at": "2026-07-30T17:09:57.186891+00:00",
+  "per_org": [
+    {
+      "coverage": {
+        "author": 0.8191,
+        "classification": 0.6764,
+        "isbn": 0.4525,
+        "online": 0.0547,
+        "phys_desc": 0.9935,
+        "subjects": 0.8565
+      },
+      "org": "brown",
+      "records": 2581822
+    },
+    {
+      "coverage": {
+        "author": 0.7615,
+        "classification": 0.6384,
+        "isbn": 0.4795,
+        "online": 0.3142,
+        "phys_desc": 0.979,
+        "subjects": 0.9064
+      },
+      "org": "stanford",
+      "records": 8959493
+    }
+  ]
+}

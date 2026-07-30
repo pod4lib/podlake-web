@@ -53,30 +53,12 @@ consortial work key, `goldrush_key`); `records` is a tall table with one row per
 MARC subfield (`org, pod_record_id, field_tag, field_seq, ind1, ind2,
 subfield_code, subfield_seq, value`), so any field or subfield is a plain `WHERE`
 clause. If they spark an idea for a view we're missing, that's exactly the point
-— **coming soon**, you'll be able to run queries like these against the lake
-right in your browser with DuckDB-WASM.
+— see [Query it yourself](./query) to run queries like these against the lake
+directly with DuckDB.
 
 ```js
-import hljs from "npm:highlight.js/lib/core";
-import sqlGrammar from "npm:highlight.js/lib/languages/sql";
-hljs.registerLanguage("sql", sqlGrammar);
-```
-
-```js
+import {sqlCard} from "./components/sql.js";
 const queries = FileAttachment("./data/queries.json").json();
-```
-
-```js
-function sqlCard(q) {
-  const code = document.createElement("code");
-  code.className = "hljs language-sql";
-  code.innerHTML = hljs.highlight(q.sql, {language: "sql"}).value;
-  return html`<div class="card" style="margin: 1rem 0;">
-    <h3 style="margin-top: 0;">${q.title}</h3>
-    <p style="max-width: 640px;">${q.note}</p>
-    <pre style="overflow-x: auto; font-size: 13px; line-height: 1.4;">${code}</pre>
-  </div>`;
-}
 ```
 
 ```js

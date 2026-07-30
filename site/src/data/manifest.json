@@ -1,0 +1,37 @@
+{
+  "artifacts": [
+    {
+      "description": "Corpus totals and per-institution record/work counts.",
+      "file": "overview.json"
+    },
+    {
+      "description": "Works held by exactly N institutions (rarity curve).",
+      "file": "overlap_histogram.json"
+    },
+    {
+      "description": "Shared works between each pair of institutions.",
+      "file": "overlap_pairwise.json"
+    },
+    {
+      "description": "Works held by a single institution alone.",
+      "file": "uniqueness.json"
+    },
+    {
+      "description": "Per-institution decade / language / country / subject / type distributions.",
+      "file": "characterization.json"
+    },
+    {
+      "description": "Per-institution share of records carrying selected MARC fields.",
+      "file": "coverage.json"
+    },
+    {
+      "description": "The DuckDB SQL behind each view.",
+      "file": "queries.json"
+    }
+  ],
+  "generated_at": "2026-07-30T17:09:57.186891+00:00",
+  "suppression": {
+    "threshold": 10,
+    "top_n": 25
+  }
+}
