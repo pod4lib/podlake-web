@@ -1,0 +1,18 @@
+# python
+__pycache__/
+*.pyc
+.venv/
+.ruff_cache/
+.pytest_cache/
+
+# node / observable framework
+node_modules/
+site/dist/
+.observablehq/
+
+# generated extracts (rebuilt from the lake; regenerate with `podlake-web extract`)
+site/src/data/*.json
+
+# local lake / env
+*.ducklake
+.env

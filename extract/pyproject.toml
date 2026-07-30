@@ -1,0 +1,45 @@
+[project]
+name = "podlake-web"
+version = "0.1.0"
+description = "Build public Tier-1 analytics extracts from a podlake DuckLake"
+requires-python = ">=3.13"
+dependencies = [
+  "typer>=0.16.0",
+  "duckdb>=1.5.2",
+  "podlake",
+  # podlake.storage imports mypy_boto3_s3 at runtime (not under TYPE_CHECKING),
+  # so importing podlake requires the boto3 stubs to be installed.
+  "boto3-stubs[s3,sts]>=1.38.24",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3.4",
+  "ruff>=0.9.6",
+  "ty>=0.0.31",
+]
+
+[project.scripts]
+podlake-web = "podlake_web:app"
+
+[tool.uv.sources]
+# podlake is a sibling checkout; on a deploy target this can point at the git
+# repo instead (podlake = { git = "https://github.com/sul-dlss/podlake" }).
+podlake = { path = "../../podlake", editable = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/podlake_web"]
+
+[tool.ruff.lint.flake8-bugbear]
+# typer's idiom is to call Option/Argument in parameter defaults
+extend-immutable-calls = ["typer.Option", "typer.Argument"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
+[tool.ty.environment]
+root = ["src"]
