@@ -67,7 +67,7 @@ USE podlake;
 Two tables:
 
 - **`record_meta`** — one row per record: `org`, `pod_record_id`, and
-  `goldrush_key` (the consortial work-matching key that powers overlap and
+  `goldrush_key` (the Gold Rush match key that powers overlap and
   uniqueness).
 - **`records`** — tall/EAV, one row per MARC subfield: `org, pod_record_id,
   field_tag, field_seq, ind1, ind2, subfield_code, subfield_seq, value`. The
@@ -120,7 +120,7 @@ WHERE org = 'stanford' AND field_tag = '856' AND subfield_code = 'u';
 
 - **Filter by `org`** when you can — the lake is partitioned by organization, so
   it prunes whole partitions.
-- **Use `record_meta`** for anything work-level (counts, overlap, uniqueness);
+- **Use `record_meta`** for anything title-level (counts, overlap, uniqueness);
   it's far smaller than `records`.
 - Pin a snapshot for reproducibility with `FROM records AT (VERSION => N)`.
 - Reach for `LIMIT` while exploring — `records` has hundreds of millions of rows.

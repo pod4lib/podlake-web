@@ -128,16 +128,16 @@ def con(tmp_path: Path) -> Iterator[duckdb.DuckDBPyConnection]:
 
 def test_overview(con):
     out = queries.overview(con)
-    assert out["totals"] == {"records": 3, "works": 2, "institutions": 2}
+    assert out["totals"] == {"records": 3, "titles": 2, "institutions": 2}
     per_org = {r["org"]: r for r in out["per_org"]}
     assert per_org["stanford"]["records"] == 2
-    assert per_org["stanford"]["works"] == 2
+    assert per_org["stanford"]["titles"] == 2
     assert per_org["harvard"]["records"] == 1
 
 
 def test_overlap_histogram(con):
     out = queries.overlap_histogram(con)
-    held = {r["institutions"]: r["works"] for r in out["held_by"]}
+    held = {r["institutions"]: r["titles"] for r in out["held_by"]}
     assert held == {1: 1, 2: 1}  # stanford_only held by 1, shared by 2
 
 
@@ -145,13 +145,13 @@ def test_overlap_pairwise(con):
     out = queries.overlap_pairwise(con)
     assert out["institutions"] == ["harvard", "stanford"]
     assert out["pairs"] == [{"a": "harvard", "b": "stanford", "shared": 1}]
-    assert out["works"] == {"harvard": 1, "stanford": 2}
+    assert out["titles"] == {"harvard": 1, "stanford": 2}
 
 
 def test_uniqueness(con):
     out = queries.uniqueness(con)
-    per_org = {r["org"]: r["unique_works"] for r in out["per_org"]}
-    # only stanford has a work nobody else holds
+    per_org = {r["org"]: r["unique_titles"] for r in out["per_org"]}
+    # only stanford has a title nobody else holds
     assert per_org == {"stanford": 1}
 
 

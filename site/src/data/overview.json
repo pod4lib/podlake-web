@@ -1,22 +1,40 @@
 {
-  "generated_at": "2026-07-30T17:09:57.186891+00:00",
+  "generated_at": "2026-07-31T12:19:30.264441+00:00",
   "per_org": [
     {
       "last_sync": null,
       "org": "brown",
       "records": 2581822,
-      "works": 2548616
+      "titles": 2548616
+    },
+    {
+      "last_sync": null,
+      "org": "harvard",
+      "records": 13969681,
+      "titles": 13814006
+    },
+    {
+      "last_sync": null,
+      "org": "penn",
+      "records": 7636878,
+      "titles": 7168954
+    },
+    {
+      "last_sync": null,
+      "org": "princeton",
+      "records": 6256668,
+      "titles": 6223274
     },
     {
       "last_sync": "2026-07-27T03:40:46",
       "org": "stanford",
       "records": 8959493,
-      "works": 8609418
+      "titles": 8609418
     }
   ],
   "totals": {
-    "institutions": 2,
-    "records": 11541315,
-    "works": 10211117
+    "institutions": 5,
+    "records": 39404542,
+    "titles": 27398457
   }
 }

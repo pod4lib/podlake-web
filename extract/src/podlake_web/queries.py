@@ -13,7 +13,7 @@ page — so what visitors see is exactly what runs.
 MARC notes (DuckDB ``substr`` is 1-indexed):
 
 - ``record_meta`` has one row per record: ``org``, ``pod_record_id``,
-  ``goldrush_key`` (the consortial work-matching key).
+  ``goldrush_key`` (the consortial Gold Rush match key).
 - ``records`` is tall/EAV: ``org, pod_record_id, field_tag, field_seq, ind1,
   ind2, subfield_code, subfield_seq, value``. The leader is ``field_tag='LDR'``;
   control fields (00X) carry their data in ``value`` with a NULL subfield_code.
@@ -33,13 +33,13 @@ Connection = duckdb.DuckDBPyConnection
 # --- SQL (also surfaced verbatim on the "About the data" page) ---------------
 
 Q_PER_ORG = """\
-SELECT org, count(*) AS records, count(DISTINCT goldrush_key) AS works
+SELECT org, count(*) AS records, count(DISTINCT goldrush_key) AS titles
 FROM record_meta
 GROUP BY org
 ORDER BY org"""
 
 Q_OVERLAP_HISTOGRAM = """\
-SELECT institutions, count(*) AS works
+SELECT institutions, count(*) AS titles
 FROM (
   SELECT goldrush_key, count(DISTINCT org) AS institutions
   FROM record_meta
@@ -58,7 +58,7 @@ GROUP BY a.org, b.org
 ORDER BY shared DESC"""
 
 Q_UNIQUENESS = """\
-SELECT org, count(*) AS unique_works
+SELECT org, count(*) AS unique_titles
 FROM (
   SELECT any_value(org) AS org
   FROM record_meta
@@ -66,7 +66,7 @@ FROM (
   HAVING count(DISTINCT org) = 1
 )
 GROUP BY org
-ORDER BY unique_works DESC"""
+ORDER BY unique_titles DESC"""
 
 # {4} is a regexp quantifier, not a format field — this string is executed as-is
 # (never .format()-ed), so the brace stays literal.
@@ -129,31 +129,31 @@ def showcase(*, top_n: int = 25, threshold: int = 10) -> list[dict]:
     return [
         {
             "id": "overlap",
-            "title": "Works held by N institutions",
-            "note": "The rarity curve: group each work (by its Gold Rush key) by "
+            "title": "Titles held by N institutions",
+            "note": "The rarity curve: group each title (by its Gold Rush key) by "
             "how many distinct institutions hold it. The left of the curve is rare "
             "material; the right is the widely-duplicated core.",
             "sql": Q_OVERLAP_HISTOGRAM,
         },
         {
             "id": "pairwise",
-            "title": "Shared holdings between institutions",
-            "note": "A self-join on the work key counts, for every pair of "
-            "institutions, how many works both hold — the basis of comparative "
+            "title": "Shared titles between institutions",
+            "note": "A self-join on the Gold Rush key counts, for every pair of "
+            "institutions, how many titles both hold — the basis of comparative "
             "collection analysis.",
             "sql": Q_PAIRWISE,
         },
         {
             "id": "uniqueness",
-            "title": "Works held by a single institution",
-            "note": "Works whose Gold Rush key appears at exactly one institution — "
+            "title": "Titles held by a single institution",
+            "note": "Titles whose Gold Rush key appears at exactly one institution — "
             'the "last copies" that preservation and shared-print decisions turn on.',
             "sql": Q_UNIQUENESS,
         },
         {
             "id": "per_org",
-            "title": "Records and works per institution",
-            "note": "Records are individual bibliographic records; works collapse "
+            "title": "Records and titles per institution",
+            "note": "Records are individual bibliographic records; titles collapse "
             "them by Gold Rush key, so the gap shows within-library duplication.",
             "sql": Q_PER_ORG,
         },
@@ -186,13 +186,13 @@ def showcase(*, top_n: int = 25, threshold: int = 10) -> list[dict]:
 
 
 def overview(con: Connection, **_: object) -> dict:
-    """Corpus totals and per-institution record/work counts (+ last sync)."""
+    """Corpus totals and per-institution record/title counts (+ last sync)."""
     totals_row = con.execute(
         "SELECT count(*), count(DISTINCT goldrush_key), count(DISTINCT org) "
         "FROM record_meta"
     ).fetchone()
     assert totals_row is not None
-    records, works, institutions = totals_row
+    records, titles, institutions = totals_row
 
     per_org_rows = con.execute(Q_PER_ORG).fetchall()
 
@@ -201,16 +201,16 @@ def overview(con: Connection, **_: object) -> dict:
         {
             "org": org,
             "records": recs,
-            "works": wks,
+            "titles": tts,
             "last_sync": last_sync.get(org),
         }
-        for org, recs, wks in per_org_rows
+        for org, recs, tts in per_org_rows
     ]
 
     return {
         "totals": {
             "records": records,
-            "works": works,
+            "titles": titles,
             "institutions": institutions,
         },
         "per_org": per_org,
@@ -218,16 +218,15 @@ def overview(con: Connection, **_: object) -> dict:
 
 
 def overlap_histogram(con: Connection, **_: object) -> dict:
-    """How many works are held by exactly N institutions (the rarity curve)."""
+    """How many titles are held by exactly N institutions (the rarity curve)."""
     rows = con.execute(Q_OVERLAP_HISTOGRAM).fetchall()
-    return {"held_by": [{"institutions": n, "works": w} for n, w in rows]}
+    return {"held_by": [{"institutions": n, "titles": t} for n, t in rows]}
 
 
 def overlap_pairwise(con: Connection, **_: object) -> dict:
     """
-    For every pair of institutions, the number of works both hold — plus each
-    institution's own work total (the heatmap diagonal). Symmetric, so only
-    a<b pairs are emitted.
+    For every pair of institutions, the number of titles both hold, plus each
+    institution's own title total. Symmetric, so only a<b pairs are emitted.
     """
     totals = dict(
         con.execute(
@@ -237,15 +236,15 @@ def overlap_pairwise(con: Connection, **_: object) -> dict:
     pairs = con.execute(Q_PAIRWISE).fetchall()
     return {
         "institutions": sorted(totals),
-        "works": totals,
+        "titles": totals,
         "pairs": [{"a": a, "b": b, "shared": s} for a, b, s in pairs],
     }
 
 
 def uniqueness(con: Connection, **_: object) -> dict:
-    """Per-institution count of works held by that institution alone."""
+    """Per-institution count of titles held by that institution alone."""
     rows = con.execute(Q_UNIQUENESS).fetchall()
-    return {"per_org": [{"org": org, "unique_works": n} for org, n in rows]}
+    return {"per_org": [{"org": org, "unique_titles": n} for org, n in rows]}
 
 
 def characterization(con: Connection, *, top_n: int = 25, threshold: int = 10) -> dict:

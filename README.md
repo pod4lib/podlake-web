@@ -30,13 +30,26 @@ This is **Tier 1**. The same extract framework is the spine for later tiers:
 
 ## Quickstart
 
-Build the aggregates from a lake (see podlake for how to configure/point at one),
-then run the site:
+Build the aggregates from a lake, then run the site. `extract` takes an explicit
+`--catalog` naming the lake to read — a local `.ducklake` file, an
+`s3://…/x.ducklake` object, or a `postgres:…` DSN — so it can run anywhere the
+lake is reachable, not just next to it:
 
 ```sh
-# 1. compile the public artifacts from the lake (run where the lake is reachable)
+# 1. compile the public artifacts from the lake
 cd extract
-uv run podlake-web extract            # writes site/src/data/*.json
+
+# a local podlake checkout (data path defaults to the sibling lake-data/):
+uv run podlake-web extract --catalog ../../podlake/podlake.ducklake
+
+# a lake published to S3 by `podlake publish`:
+uv run podlake-web extract --catalog s3://my-bucket/podlake/podlake.ducklake
+
+# a Postgres-catalog lake (S3 data path is required — it can't be derived):
+uv run podlake-web extract \
+  --catalog "postgres:host=… dbname=… user=… password=…" \
+  --data-path s3://my-bucket/podlake/lake-data/
+# all three write site/src/data/*.json
 
 # 2. preview the dashboard
 cd ../site
@@ -44,9 +57,14 @@ npm install
 npm run dev                            # or: npm run build  -> site/dist
 ```
 
-`make extract` and `make site` wrap these. The generated `site/src/data/*.json`
-are gitignored — they are rebuilt from the lake, so a deploy runs `extract`
-before `build`.
+For file catalogs `--data-path` defaults to the catalog's sibling `lake-data/`
+(how `podlake publish` lays a lake out); pass it explicitly to override. S3
+access uses DuckDB's credential chain (standard `AWS_*` env vars, shared config,
+or an assumed role).
+
+`make extract CATALOG=…` (and `DATA_PATH=…` when needed) and `make site` wrap
+these. The generated `site/src/data/*.json` are gitignored — they are rebuilt
+from the lake, so a deploy runs `extract` before `build`.
 
 ## Layout
 

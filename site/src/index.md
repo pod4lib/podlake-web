@@ -12,9 +12,9 @@ const overview = FileAttachment("./data/overview.json").json();
 
 <div class="grid grid-cols-3">
   <div class="card">
-    <h2>Works</h2>
-    <span class="big">${d3.format(",")(overview.totals.works)}</span>
-    distinct titles (Gold Rush keys)
+    <h2>Titles</h2>
+    <span class="big">${d3.format(",")(overview.totals.titles)}</span>
+    distinct titles (grouped by Gold Rush key)
   </div>
   <div class="card">
     <h2>Records</h2>
@@ -54,7 +54,7 @@ Inputs.table(
   overview.per_org.map((o) => ({
     institution: o.org,
     records: o.records,
-    works: o.works,
+    titles: o.titles,
     "last synced": o.last_sync ? o.last_sync.slice(0, 10) : "—",
   })),
   {sort: "records", reverse: true, rows: 20}

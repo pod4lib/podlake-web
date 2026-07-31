@@ -1,13 +1,25 @@
 {
-  "generated_at": "2026-07-30T17:09:57.186891+00:00",
+  "generated_at": "2026-07-31T12:19:30.264441+00:00",
   "per_org": [
     {
+      "org": "harvard",
+      "unique_titles": 9158801
+    },
+    {
       "org": "stanford",
-      "unique_works": 7662501
+      "unique_titles": 4416215
+    },
+    {
+      "org": "penn",
+      "unique_titles": 3679110
+    },
+    {
+      "org": "princeton",
+      "unique_titles": 2560768
     },
     {
       "org": "brown",
-      "unique_works": 1601699
+      "unique_titles": 873650
     }
   ]
 }

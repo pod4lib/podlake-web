@@ -6,8 +6,8 @@ export default {
     {name: "Overlap & rarity", path: "/overlap"},
     {name: "Collections", path: "/collections"},
     {name: "Metadata quality", path: "/quality"},
-    {name: "Query it yourself", path: "/query"},
     {name: "About the data", path: "/data"},
+    {name: "Query it yourself", path: "/query"},
   ],
   header: "podlake — consortial collection analytics",
   footer:

@@ -1,10 +1,10 @@
 """
 ``podlake-web extract`` — build the public Tier-1 aggregate artifacts.
 
-Connects read-only to the podlake DuckLake (via podlake's own profile
-resolution, so it reads whatever lake ``podlake config`` points at), runs each
-Tier-1 aggregate query, and writes a JSON file per view plus a ``manifest.json``
-describing the full published data surface for review.
+Connects read-only to an explicitly-named podlake DuckLake (a local
+``.ducklake`` file, an ``s3://…/x.ducklake`` object, or a ``postgres:…`` DSN),
+runs each Tier-1 aggregate query, and writes a JSON file per view plus a
+``manifest.json`` describing the full published data surface for review.
 """
 
 from __future__ import annotations
@@ -15,9 +15,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import typer
-from podlake import lake
 
-from podlake_web import queries
+from podlake_web import queries, source
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +69,22 @@ ARTIFACTS = [
 
 @app.command()
 def extract(
+    catalog: str = typer.Option(
+        ...,
+        "--catalog",
+        help=(
+            "The DuckLake catalog to read: a local .ducklake path, an "
+            "s3://…/x.ducklake URI, or a postgres:… DSN."
+        ),
+    ),
+    data_path: str = typer.Option(
+        None,
+        "--data-path",
+        help=(
+            "Where the lake's Parquet data lives. Defaults to the catalog's "
+            "sibling lake-data/ for file catalogs; required for a Postgres catalog."
+        ),
+    ),
     out: Path = typer.Option(DEFAULT_OUT, help="Directory to write artifacts into."),
     top_n: int = typer.Option(25, help="Max categories kept per distribution."),
     threshold: int = typer.Option(
@@ -80,7 +95,13 @@ def extract(
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     out.mkdir(parents=True, exist_ok=True)
 
-    con = lake.connect(read_only=True)
+    if data_path is None and source.is_postgres(catalog):
+        raise typer.BadParameter(
+            "--data-path is required when --catalog is a Postgres DSN",
+            param_hint="--data-path",
+        )
+
+    con = source.connect(catalog, data_path, read_only=True)
     try:
         generated_at = datetime.now(UTC).isoformat()
         manifest = {
