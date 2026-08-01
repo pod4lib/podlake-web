@@ -178,6 +178,35 @@ def test_characterization_shapes(con):
     assert decades["harvard"] == {2010: 1}
 
 
+def test_comparison_matrix(con):
+    out = queries.comparison(con, threshold=1)
+    dims = out["dimensions"]
+    assert set(dims) == {"language", "country", "record_type", "classification"}
+
+    lang = dims["language"]
+    assert lang["institutions"] == ["harvard", "stanford"]
+    assert lang["categories"] == ["ENG", "FRE"]  # ordered by consortium total
+    assert lang["totals"] == {"harvard": 1, "stanford": 2}
+    assert lang["matrix"]["stanford"] == {"ENG": 1, "FRE": 1}
+    assert lang["matrix"]["harvard"] == {"ENG": 1, "FRE": 0}
+
+    # every record is country 'cau' (a U.S. state) -> rolled up to United States
+    country = dims["country"]
+    assert country["categories"] == ["XXU"]
+    assert country["matrix"]["stanford"]["XXU"] == 2
+
+    # leader type-of-record is 'a' for all
+    assert dims["record_type"]["categories"] == ["a"]
+
+
+def test_comparison_suppresses_small_cells(con):
+    out = queries.comparison(con)  # default threshold 10; every count here is < 10
+    lang = out["dimensions"]["language"]
+    assert lang["matrix"]["stanford"]["ENG"] is None  # 1 < 10 -> suppressed
+    assert lang["matrix"]["harvard"]["FRE"] == 0  # a genuine zero stays 0
+    assert lang["totals"] == {"harvard": 1, "stanford": 2}  # totals are pre-suppression
+
+
 # --- suppression tests -------------------------------------------------------
 
 

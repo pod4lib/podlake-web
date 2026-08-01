@@ -1,11 +1,17 @@
 {
-  "generated_at": "2026-07-31T12:19:30.264441+00:00",
+  "generated_at": "2026-07-31T17:36:26.865164+00:00",
   "per_org": [
     {
       "last_sync": null,
       "org": "brown",
       "records": 2581822,
       "titles": 2548616
+    },
+    {
+      "last_sync": null,
+      "org": "duke",
+      "records": 8628676,
+      "titles": 8124646
     },
     {
       "last_sync": null,
@@ -33,8 +39,8 @@
     }
   ],
   "totals": {
-    "institutions": 5,
-    "records": 39404542,
-    "titles": 27398457
+    "institutions": 6,
+    "records": 48033218,
+    "titles": 31809825
   }
 }

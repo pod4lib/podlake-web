@@ -1,7 +1,8 @@
 {
-  "generated_at": "2026-07-31T12:19:30.264441+00:00",
+  "generated_at": "2026-07-31T17:36:26.865164+00:00",
   "institutions": [
     "brown",
+    "duke",
     "harvard",
     "penn",
     "princeton",
@@ -24,9 +25,19 @@
       "shared": 2208612
     },
     {
+      "a": "duke",
+      "b": "harvard",
+      "shared": 2047781
+    },
+    {
       "a": "harvard",
       "b": "penn",
       "shared": 2002704
+    },
+    {
+      "a": "duke",
+      "b": "stanford",
+      "shared": 1988069
     },
     {
       "a": "princeton",
@@ -34,9 +45,19 @@
       "shared": 1928491
     },
     {
+      "a": "duke",
+      "b": "penn",
+      "shared": 1836967
+    },
+    {
       "a": "penn",
       "b": "princeton",
       "shared": 1643377
+    },
+    {
+      "a": "duke",
+      "b": "princeton",
+      "shared": 1463810
     },
     {
       "a": "brown",
@@ -55,12 +76,18 @@
     },
     {
       "a": "brown",
+      "b": "duke",
+      "shared": 949486
+    },
+    {
+      "a": "brown",
       "b": "stanford",
       "shared": 946917
     }
   ],
   "titles": {
     "brown": 2548616,
+    "duke": 8124646,
     "harvard": 13814006,
     "penn": 7168954,
     "princeton": 6223274,

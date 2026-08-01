@@ -7,7 +7,7 @@
     "phys_desc",
     "classification"
   ],
-  "generated_at": "2026-07-31T12:19:30.264441+00:00",
+  "generated_at": "2026-07-31T17:36:26.865164+00:00",
   "per_org": [
     {
       "coverage": {
@@ -20,6 +20,18 @@
       },
       "org": "brown",
       "records": 2581822
+    },
+    {
+      "coverage": {
+        "author": 0.616,
+        "classification": 0.5835,
+        "isbn": 0.3477,
+        "online": 0.0583,
+        "phys_desc": 0.848,
+        "subjects": 0.8067
+      },
+      "org": "duke",
+      "records": 8628676
     },
     {
       "coverage": {

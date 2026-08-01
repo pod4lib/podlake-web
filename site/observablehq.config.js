@@ -9,6 +9,11 @@ export default {
     {name: "About the data", path: "/data"},
     {name: "Query it yourself", path: "/query"},
   ],
+  // Bump Observable Plot's default label size (10px presentation attribute on
+  // the root <svg>) for more legible axis, tick, and legend text everywhere.
+  // Plain rule beats the presentation attribute; marks with an explicit
+  // fontSize (e.g. heatmap cell labels) keep their own size.
+  head: '<style>svg[class^="plot-"] { font-size: 13px; }</style>',
   header: "podlake — consortial collection analytics",
   footer:
     'Built from <a href="https://pod.stanford.edu/">POD</a> MARC data with ' +

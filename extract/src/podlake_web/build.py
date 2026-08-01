@@ -64,6 +64,11 @@ ARTIFACTS = [
         "Per-institution share of records carrying selected MARC fields.",
         queries.coverage,
     ),
+    (
+        "comparison.json",
+        "Cross-institution category matrices (language / country / type) for comparison.",
+        queries.comparison,
+    ),
 ]
 
 

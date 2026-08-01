@@ -5,24 +5,20 @@
         "org": "brown",
         "values": [
           {
-            "category": "NYU",
-            "count": 476121
+            "category": "XXU",
+            "count": 1216212
           },
           {
-            "category": "ENK",
-            "count": 333613
+            "category": "XXK",
+            "count": 344895
           },
           {
             "category": "GW",
             "count": 137273
           },
           {
-            "category": "MAU",
-            "count": 134890
-          },
-          {
             "category": "XX",
-            "count": 122356
+            "count": 122363
           },
           {
             "category": "FR",
@@ -33,20 +29,8 @@
             "count": 91634
           },
           {
-            "category": "CAU",
-            "count": 74164
-          },
-          {
-            "category": "PAU",
-            "count": 59946
-          },
-          {
-            "category": "DCU",
-            "count": 58313
-          },
-          {
-            "category": "ILU",
-            "count": 50955
+            "category": "XXC",
+            "count": 51065
           },
           {
             "category": "RU",
@@ -57,20 +41,8 @@
             "count": 42308
           },
           {
-            "category": "NJU",
-            "count": 39078
-          },
-          {
             "category": "NE",
             "count": 37360
-          },
-          {
-            "category": "RIU",
-            "count": 36240
-          },
-          {
-            "category": "CTU",
-            "count": 33877
           },
           {
             "category": "BL",
@@ -79,14 +51,6 @@
           {
             "category": "CC",
             "count": 28645
-          },
-          {
-            "category": "MDU",
-            "count": 26411
-          },
-          {
-            "category": "ONC",
-            "count": 23708
           },
           {
             "category": "JA",
@@ -105,8 +69,153 @@
             "count": 18639
           },
           {
+            "category": "PO",
+            "count": 16902
+          },
+          {
+            "category": "UA",
+            "count": 14553
+          },
+          {
+            "category": "IS",
+            "count": 11541
+          },
+          {
+            "category": "CH",
+            "count": 11482
+          },
+          {
+            "category": "BE",
+            "count": 10658
+          },
+          {
+            "category": "AU",
+            "count": 10150
+          },
+          {
+            "category": "AG",
+            "count": 9755
+          },
+          {
+            "category": "KO",
+            "count": 9405
+          },
+          {
+            "category": "LE",
+            "count": 7497
+          },
+          {
             "category": "Other",
-            "count": 489598
+            "count": 122792
+          }
+        ]
+      },
+      {
+        "org": "duke",
+        "values": [
+          {
+            "category": "XXU",
+            "count": 2834856
+          },
+          {
+            "category": "XX",
+            "count": 2187195
+          },
+          {
+            "category": "XXK",
+            "count": 1261741
+          },
+          {
+            "category": "GW",
+            "count": 353617
+          },
+          {
+            "category": "FR",
+            "count": 255341
+          },
+          {
+            "category": "II",
+            "count": 156841
+          },
+          {
+            "category": "RU",
+            "count": 125043
+          },
+          {
+            "category": "NE",
+            "count": 121491
+          },
+          {
+            "category": "IT",
+            "count": 111701
+          },
+          {
+            "category": "SZ",
+            "count": 88392
+          },
+          {
+            "category": "XXC",
+            "count": 86806
+          },
+          {
+            "category": "JA",
+            "count": 66271
+          },
+          {
+            "category": "CC",
+            "count": 59494
+          },
+          {
+            "category": "SP",
+            "count": 59291
+          },
+          {
+            "category": "BE",
+            "count": 51090
+          },
+          {
+            "category": "IS",
+            "count": 47133
+          },
+          {
+            "category": "MX",
+            "count": 42747
+          },
+          {
+            "category": "PL",
+            "count": 42056
+          },
+          {
+            "category": "KO",
+            "count": 37488
+          },
+          {
+            "category": "UA",
+            "count": 33122
+          },
+          {
+            "category": "IE",
+            "count": 32873
+          },
+          {
+            "category": "|||",
+            "count": 29272
+          },
+          {
+            "category": "AU",
+            "count": 29114
+          },
+          {
+            "category": "BL",
+            "count": 28649
+          },
+          {
+            "category": "SI",
+            "count": 23667
+          },
+          {
+            "category": "Other",
+            "count": 461704
           }
         ]
       },
@@ -114,16 +223,16 @@
         "org": "harvard",
         "values": [
           {
+            "category": "XXU",
+            "count": 3062115
+          },
+          {
             "category": "GW",
             "count": 1276157
           },
           {
-            "category": "ENK",
-            "count": 1084202
-          },
-          {
-            "category": "NYU",
-            "count": 987076
+            "category": "XXK",
+            "count": 1151553
           },
           {
             "category": "FR",
@@ -139,15 +248,11 @@
           },
           {
             "category": "XX",
-            "count": 590733
+            "count": 590744
           },
           {
             "category": "CC",
             "count": 508183
-          },
-          {
-            "category": "MAU",
-            "count": 411059
           },
           {
             "category": "RU",
@@ -158,20 +263,12 @@
             "count": 329482
           },
           {
-            "category": "DCU",
-            "count": 310843
-          },
-          {
             "category": "SP",
             "count": 241528
           },
           {
             "category": "NE",
             "count": 237905
-          },
-          {
-            "category": "CAU",
-            "count": 187135
           },
           {
             "category": "SZ",
@@ -182,20 +279,16 @@
             "count": 176546
           },
           {
+            "category": "XXC",
+            "count": 171338
+          },
+          {
             "category": "II",
             "count": 161807
           },
           {
             "category": "PL",
             "count": 157224
-          },
-          {
-            "category": "PAU",
-            "count": 143651
-          },
-          {
-            "category": "ILU",
-            "count": 132699
           },
           {
             "category": "AU",
@@ -214,8 +307,24 @@
             "count": 117069
           },
           {
+            "category": "UA",
+            "count": 115620
+          },
+          {
+            "category": "MX",
+            "count": 105968
+          },
+          {
+            "category": "IR",
+            "count": 98456
+          },
+          {
+            "category": "SW",
+            "count": 97968
+          },
+          {
             "category": "Other",
-            "count": 3807048
+            "count": 2260684
           }
         ]
       },
@@ -223,16 +332,12 @@
         "org": "penn",
         "values": [
           {
-            "category": "ENK",
-            "count": 1217195
+            "category": "XXU",
+            "count": 3058193
           },
           {
-            "category": "NYU",
-            "count": 827971
-          },
-          {
-            "category": "DCU",
-            "count": 780095
+            "category": "XXK",
+            "count": 1472091
           },
           {
             "category": "GW",
@@ -240,11 +345,7 @@
           },
           {
             "category": "XX",
-            "count": 348639
-          },
-          {
-            "category": "PAU",
-            "count": 336925
+            "count": 348702
           },
           {
             "category": "FR",
@@ -255,24 +356,12 @@
             "count": 218159
           },
           {
-            "category": "XXK",
-            "count": 198134
-          },
-          {
-            "category": "MAU",
-            "count": 185882
-          },
-          {
             "category": "CC",
             "count": 155088
           },
           {
             "category": "IT",
             "count": 150022
-          },
-          {
-            "category": "CAU",
-            "count": 129785
           },
           {
             "category": "JA",
@@ -283,48 +372,68 @@
             "count": 98488
           },
           {
-            "category": "MDU",
-            "count": 94581
-          },
-          {
             "category": "SP",
             "count": 79952
-          },
-          {
-            "category": "ILU",
-            "count": 76521
           },
           {
             "category": "|||",
             "count": 75363
           },
           {
-            "category": "NJU",
-            "count": 74379
-          },
-          {
             "category": "SZ",
             "count": 66796
           },
           {
-            "category": "CTU",
-            "count": 65917
-          },
-          {
-            "category": "STK",
-            "count": 52119
+            "category": "XXC",
+            "count": 55082
           },
           {
             "category": "RU",
             "count": 50913
           },
           {
-            "category": "XXU",
-            "count": 50615
+            "category": "IS",
+            "count": 48286
+          },
+          {
+            "category": "UA",
+            "count": 43335
+          },
+          {
+            "category": "IE",
+            "count": 40124
+          },
+          {
+            "category": "CH",
+            "count": 34109
+          },
+          {
+            "category": "MX",
+            "count": 33747
+          },
+          {
+            "category": "XX#",
+            "count": 33660
+          },
+          {
+            "category": "AU",
+            "count": 31685
+          },
+          {
+            "category": "PK",
+            "count": 30595
+          },
+          {
+            "category": "BE",
+            "count": 25951
+          },
+          {
+            "category": "LE",
+            "count": 24435
           },
           {
             "category": "Other",
-            "count": 1308707
+            "count": 467470
           }
         ]
       },
@@ -332,12 +441,12 @@
         "org": "princeton",
         "values": [
           {
-            "category": "NYU",
-            "count": 638650
+            "category": "XXU",
+            "count": 1676458
           },
           {
-            "category": "ENK",
-            "count": 620314
+            "category": "XXK",
+            "count": 648800
           },
           {
             "category": "GW",
@@ -368,24 +477,12 @@
             "count": 173526
           },
           {
-            "category": "DCU",
-            "count": 159591
-          },
-          {
             "category": "SP",
             "count": 119710
           },
           {
-            "category": "MAU",
-            "count": 106464
-          },
-          {
-            "category": "NJU",
-            "count": 106186
-          },
-          {
-            "category": "CAU",
-            "count": 98271
+            "category": "XXC",
+            "count": 85844
           },
           {
             "category": "TU",
@@ -408,10 +505,6 @@
             "count": 78974
           },
           {
-            "category": "PAU",
-            "count": 70807
-          },
-          {
             "category": "UA",
             "count": 70374
           },
@@ -424,16 +517,32 @@
             "count": 61169
           },
           {
-            "category": "ILU",
-            "count": 58864
-          },
-          {
             "category": "MX",
             "count": 58854
           },
           {
+            "category": "LE",
+            "count": 57841
+          },
+          {
+            "category": "II",
+            "count": 54304
+          },
+          {
+            "category": "GR",
+            "count": 53309
+          },
+          {
+            "category": "AG",
+            "count": 50599
+          },
+          {
+            "category": "AU",
+            "count": 49794
+          },
+          {
             "category": "Other",
-            "count": 1529231
+            "count": 711429
           }
         ]
       },
@@ -441,16 +550,12 @@
         "org": "stanford",
         "values": [
           {
-            "category": "ENK",
-            "count": 918113
+            "category": "XXU",
+            "count": 3399313
           },
           {
-            "category": "NYU",
-            "count": 835074
-          },
-          {
-            "category": "DCU",
-            "count": 721630
+            "category": "XXK",
+            "count": 964251
           },
           {
             "category": "GW",
@@ -465,10 +570,6 @@
             "count": 392572
           },
           {
-            "category": "CAU",
-            "count": 348413
-          },
-          {
             "category": "CC",
             "count": 286996
           },
@@ -481,16 +582,8 @@
             "count": 230914
           },
           {
-            "category": "MAU",
-            "count": 203974
-          },
-          {
             "category": "JA",
             "count": 189539
-          },
-          {
-            "category": "NJU",
-            "count": 139365
           },
           {
             "category": "NE",
@@ -501,28 +594,16 @@
             "count": 125833
           },
           {
-            "category": "XXU",
-            "count": 120224
-          },
-          {
             "category": "PL",
             "count": 109590
-          },
-          {
-            "category": "PAU",
-            "count": 106360
-          },
-          {
-            "category": "ILU",
-            "count": 104159
           },
           {
             "category": "SP",
             "count": 101104
           },
           {
-            "category": "MDU",
-            "count": 96579
+            "category": "XXC",
+            "count": 96626
           },
           {
             "category": "BL",
@@ -533,22 +614,50 @@
             "count": 81115
           },
           {
-            "category": "VAU",
-            "count": 79114
+            "category": "IS",
+            "count": 73166
           },
           {
-            "category": "CTU",
-            "count": 77824
+            "category": "KO",
+            "count": 70668
+          },
+          {
+            "category": "CH",
+            "count": 67340
+          },
+          {
+            "category": "AU",
+            "count": 62458
+          },
+          {
+            "category": "II",
+            "count": 61451
+          },
+          {
+            "category": "UA",
+            "count": 50666
+          },
+          {
+            "category": "AG",
+            "count": 49633
+          },
+          {
+            "category": "TU",
+            "count": 46407
+          },
+          {
+            "category": "UN",
+            "count": 44164
           },
           {
             "category": "Other",
-            "count": 2205049
+            "count": 969735
           }
         ]
       }
     ]
   },
-  "generated_at": "2026-07-31T12:19:30.264441+00:00",
+  "generated_at": "2026-07-31T17:36:26.865164+00:00",
   "language": {
     "per_org": [
       {
@@ -657,6 +766,115 @@
           {
             "category": "Other",
             "count": 19141
+          }
+        ]
+      },
+      {
+        "org": "duke",
+        "values": [
+          {
+            "category": "ENG",
+            "count": 6453180
+          },
+          {
+            "category": "FRE",
+            "count": 374262
+          },
+          {
+            "category": "GER",
+            "count": 319570
+          },
+          {
+            "category": "SPA",
+            "count": 246374
+          },
+          {
+            "category": "CHI",
+            "count": 156886
+          },
+          {
+            "category": "RUS",
+            "count": 150755
+          },
+          {
+            "category": "ZXX",
+            "count": 118750
+          },
+          {
+            "category": "LAT",
+            "count": 116254
+          },
+          {
+            "category": "ITA",
+            "count": 108354
+          },
+          {
+            "category": "ARA",
+            "count": 82052
+          },
+          {
+            "category": "HEB",
+            "count": 67992
+          },
+          {
+            "category": "JPN",
+            "count": 65432
+          },
+          {
+            "category": "KOR",
+            "count": 45246
+          },
+          {
+            "category": "POR",
+            "count": 40937
+          },
+          {
+            "category": "POL",
+            "count": 37808
+          },
+          {
+            "category": "DUT",
+            "count": 31595
+          },
+          {
+            "category": "HIN",
+            "count": 17409
+          },
+          {
+            "category": "|||",
+            "count": 15150
+          },
+          {
+            "category": "TUR",
+            "count": 14925
+          },
+          {
+            "category": "BEN",
+            "count": 12294
+          },
+          {
+            "category": "UKR",
+            "count": 12023
+          },
+          {
+            "category": "URD",
+            "count": 9969
+          },
+          {
+            "category": "SWE",
+            "count": 9874
+          },
+          {
+            "category": "DAN",
+            "count": 8282
+          },
+          {
+            "category": "MUL",
+            "count": 7153
+          },
+          {
+            "category": "Other",
+            "count": 80523
           }
         ]
       },
@@ -1333,6 +1551,247 @@
           },
           {
             "count": 4,
+            "decade": "Other"
+          }
+        ]
+      },
+      {
+        "org": "duke",
+        "values": [
+          {
+            "count": 1330198,
+            "decade": 2010
+          },
+          {
+            "count": 1055671,
+            "decade": 2000
+          },
+          {
+            "count": 850963,
+            "decade": 1990
+          },
+          {
+            "count": 596053,
+            "decade": 1980
+          },
+          {
+            "count": 572461,
+            "decade": 2020
+          },
+          {
+            "count": 513797,
+            "decade": 1970
+          },
+          {
+            "count": 399363,
+            "decade": 1960
+          },
+          {
+            "count": 242270,
+            "decade": 1940
+          },
+          {
+            "count": 239679,
+            "decade": 1950
+          },
+          {
+            "count": 230558,
+            "decade": 1930
+          },
+          {
+            "count": 182796,
+            "decade": 1920
+          },
+          {
+            "count": 144935,
+            "decade": 1910
+          },
+          {
+            "count": 129480,
+            "decade": 1900
+          },
+          {
+            "count": 104978,
+            "decade": 1890
+          },
+          {
+            "count": 91207,
+            "decade": 1880
+          },
+          {
+            "count": 84105,
+            "decade": 1790
+          },
+          {
+            "count": 72548,
+            "decade": 1840
+          },
+          {
+            "count": 71433,
+            "decade": 1870
+          },
+          {
+            "count": 70127,
+            "decade": 1860
+          },
+          {
+            "count": 69843,
+            "decade": 1850
+          },
+          {
+            "count": 67225,
+            "decade": 1830
+          },
+          {
+            "count": 59752,
+            "decade": 1780
+          },
+          {
+            "count": 55379,
+            "decade": 1770
+          },
+          {
+            "count": 52173,
+            "decade": 1640
+          },
+          {
+            "count": 50674,
+            "decade": 1820
+          },
+          {
+            "count": 46539,
+            "decade": 1680
+          },
+          {
+            "count": 44140,
+            "decade": 1690
+          },
+          {
+            "count": 41200,
+            "decade": 1760
+          },
+          {
+            "count": 38903,
+            "decade": 1800
+          },
+          {
+            "count": 35873,
+            "decade": 1810
+          },
+          {
+            "count": 34981,
+            "decade": 1650
+          },
+          {
+            "count": 34150,
+            "decade": 1750
+          },
+          {
+            "count": 32095,
+            "decade": 1670
+          },
+          {
+            "count": 31253,
+            "decade": 1660
+          },
+          {
+            "count": 29718,
+            "decade": 1700
+          },
+          {
+            "count": 29244,
+            "decade": 1710
+          },
+          {
+            "count": 28069,
+            "decade": 1740
+          },
+          {
+            "count": 26413,
+            "decade": 1730
+          },
+          {
+            "count": 25975,
+            "decade": 1720
+          },
+          {
+            "count": 17258,
+            "decade": 1620
+          },
+          {
+            "count": 16955,
+            "decade": 1630
+          },
+          {
+            "count": 15058,
+            "decade": 1610
+          },
+          {
+            "count": 13044,
+            "decade": 1600
+          },
+          {
+            "count": 9561,
+            "decade": 1590
+          },
+          {
+            "count": 9371,
+            "decade": 1580
+          },
+          {
+            "count": 7688,
+            "decade": 1570
+          },
+          {
+            "count": 6461,
+            "decade": 1550
+          },
+          {
+            "count": 6263,
+            "decade": 1560
+          },
+          {
+            "count": 4996,
+            "decade": 1540
+          },
+          {
+            "count": 3830,
+            "decade": 1530
+          },
+          {
+            "count": 3640,
+            "decade": 1490
+          },
+          {
+            "count": 2891,
+            "decade": 1520
+          },
+          {
+            "count": 2509,
+            "decade": 1500
+          },
+          {
+            "count": 2507,
+            "decade": 1510
+          },
+          {
+            "count": 2287,
+            "decade": 1480
+          },
+          {
+            "count": 1622,
+            "decade": 1470
+          },
+          {
+            "count": 429,
+            "decade": 1460
+          },
+          {
+            "count": 363,
+            "decade": 1450
+          },
+          {
+            "count": 1,
             "decade": "Other"
           }
         ]
@@ -2367,6 +2826,83 @@
         ]
       },
       {
+        "org": "duke",
+        "values": [
+          {
+            "category": "a",
+            "count": 7858058
+          },
+          {
+            "category": "g",
+            "count": 368593
+          },
+          {
+            "category": "c",
+            "count": 153927
+          },
+          {
+            "category": "j",
+            "count": 144345
+          },
+          {
+            "category": "e",
+            "count": 32423
+          },
+          {
+            "category": "t",
+            "count": 25999
+          },
+          {
+            "category": "p",
+            "count": 20403
+          },
+          {
+            "category": "k",
+            "count": 10562
+          },
+          {
+            "category": "i",
+            "count": 9085
+          },
+          {
+            "category": "m",
+            "count": 2761
+          },
+          {
+            "category": "r",
+            "count": 780
+          },
+          {
+            "category": "d",
+            "count": 740
+          },
+          {
+            "category": "Z",
+            "count": 440
+          },
+          {
+            "category": "f",
+            "count": 261
+          },
+          {
+            "category": "b",
+            "count": 224
+          },
+          {
+            "category": "o",
+            "count": 40
+          },
+          {
+            "category": "h",
+            "count": 30
+          },
+          {
+            "category": "Other",
+            "count": 5
+          }
+        ]
+      },
+      {
         "org": "harvard",
         "values": [
           {
@@ -2748,6 +3284,111 @@
           {
             "category": "Gay men",
             "count": 7832
+          }
+        ]
+      },
+      {
+        "org": "duke",
+        "values": [
+          {
+            "category": "Jews",
+            "count": 139379
+          },
+          {
+            "category": "World War, 1939-1945",
+            "count": 112956
+          },
+          {
+            "category": "Women",
+            "count": 90837
+          },
+          {
+            "category": "Nursery stock",
+            "count": 68609
+          },
+          {
+            "category": "Law",
+            "count": 67501
+          },
+          {
+            "category": "Education",
+            "count": 59285
+          },
+          {
+            "category": "Holocaust, Jewish (1939-1945)",
+            "count": 58201
+          },
+          {
+            "category": "Holocaust survivors",
+            "count": 51818
+          },
+          {
+            "category": "Music",
+            "count": 51745
+          },
+          {
+            "category": "African Americans",
+            "count": 51239
+          },
+          {
+            "category": "Politics and government",
+            "count": 44851
+          },
+          {
+            "category": "Agriculture",
+            "count": 44608
+          },
+          {
+            "category": "Catalogs",
+            "count": 44571
+          },
+          {
+            "category": "Economics",
+            "count": 39326
+          },
+          {
+            "category": "Finance",
+            "count": 38201
+          },
+          {
+            "category": "Indians of North America",
+            "count": 35741
+          },
+          {
+            "category": "English language",
+            "count": 35597
+          },
+          {
+            "category": "Seeds",
+            "count": 32439
+          },
+          {
+            "category": "Prices",
+            "count": 32316
+          },
+          {
+            "category": "Slavery",
+            "count": 31627
+          },
+          {
+            "category": "Popular music",
+            "count": 31573
+          },
+          {
+            "category": "Science",
+            "count": 31147
+          },
+          {
+            "category": "Motion pictures",
+            "count": 30726
+          },
+          {
+            "category": "Art",
+            "count": 28599
+          },
+          {
+            "category": "Families",
+            "count": 28230
           }
         ]
       },

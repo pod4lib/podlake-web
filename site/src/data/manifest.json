@@ -25,11 +25,15 @@
       "file": "coverage.json"
     },
     {
+      "description": "Cross-institution category matrices (language / country / type) for comparison.",
+      "file": "comparison.json"
+    },
+    {
       "description": "The DuckDB SQL behind each view.",
       "file": "queries.json"
     }
   ],
-  "generated_at": "2026-07-31T12:19:30.264441+00:00",
+  "generated_at": "2026-07-31T17:36:26.865164+00:00",
   "suppression": {
     "threshold": 10,
     "top_n": 25

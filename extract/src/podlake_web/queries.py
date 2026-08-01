@@ -247,11 +247,118 @@ def uniqueness(con: Connection, **_: object) -> dict:
     return {"per_org": [{"org": org, "unique_titles": n} for org, n in rows]}
 
 
+# MARC country codes for the 50 U.S. states + D.C. (plus "xxu", the whole-US
+# code). Place of publication normalizes these to "xxu" so state-level codes roll
+# up into one "United States" total instead of scattering across the top-n. An
+# explicit list — not a "3 chars ending in u" pattern — because a long tail of
+# malformed codes (gwu, fru, 9xu, …) also ends in u but is not a U.S. state.
+_US_PLACE_CODES = (
+    "xxu",
+    "alu",
+    "aku",
+    "azu",
+    "aru",
+    "cau",
+    "cou",
+    "ctu",
+    "dcu",
+    "deu",
+    "flu",
+    "gau",
+    "hiu",
+    "idu",
+    "ilu",
+    "inu",
+    "iau",
+    "ksu",
+    "kyu",
+    "lau",
+    "meu",
+    "mdu",
+    "mau",
+    "miu",
+    "mnu",
+    "msu",
+    "mou",
+    "mtu",
+    "nbu",
+    "nvu",
+    "nhu",
+    "nju",
+    "nmu",
+    "nyu",
+    "ncu",
+    "ndu",
+    "ohu",
+    "oku",
+    "oru",
+    "pau",
+    "riu",
+    "scu",
+    "sdu",
+    "tnu",
+    "txu",
+    "utu",
+    "vtu",
+    "vau",
+    "wau",
+    "wvu",
+    "wiu",
+    "wyu",
+)
+# Canadian provinces/territories (+ "xxc" Canada) and the UK's constituent
+# countries (+ "xxk" United Kingdom, "uik" UK Misc. Islands). Same explicit-list
+# rationale as the U.S. codes above (junk codes such as "nbc"/"-hk" also share a
+# suffix but are not real subdivisions).
+_CANADA_PLACE_CODES = (
+    "xxc",
+    "abc",
+    "bcc",
+    "mbc",
+    "nkc",
+    "nfc",
+    "nsc",
+    "ntc",
+    "nuc",
+    "onc",
+    "pic",
+    "quc",
+    "snc",
+    "ykc",
+)
+_UK_PLACE_CODES = ("xxk", "enk", "stk", "wlk", "nik", "uik")
+# Non-standard "undetermined place" fills (some systems emit an all-"u" 008), the
+# same meaning as the standard "xx" (no place / unknown), so folded in with it.
+_UNKNOWN_PLACE_CODES = ("uuu",)
+
+# Roll sub-national place codes up to their country before the top-n cut, so each
+# country's total is complete rather than split across states/provinces/nations;
+# fold undetermined-place fills into the standard unknown ("xx") bucket.
+_PLACE_ROLLUP = (
+    ("XXU", _US_PLACE_CODES),
+    ("XXC", _CANADA_PLACE_CODES),
+    ("XXK", _UK_PLACE_CODES),
+    ("XX", _UNKNOWN_PLACE_CODES),
+)
+_PLACE_CODE = "upper(trim(substr(value, 16, 3)))"
+_COUNTRY_EXPR = (
+    "CASE "
+    + " ".join(
+        f"WHEN {_PLACE_CODE} IN ({', '.join(f'{c.upper()!r}' for c in codes)}) "
+        f"THEN '{country}'"
+        for country, codes in _PLACE_ROLLUP
+    )
+    + f" ELSE {_PLACE_CODE} END"
+)
+
+
 def characterization(con: Connection, *, top_n: int = 25, threshold: int = 10) -> dict:
     """
     Per-institution collection characterization: publication-decade histogram,
     and top languages / countries / subjects / record types. Each distribution
-    is suppressed (top-n + small-cell folding).
+    is suppressed (top-n + small-cell folding). Place-of-publication codes for
+    U.S. states, Canadian provinces, and UK nations are rolled up into their
+    country totals (xxu / xxc / xxk).
     """
     return {
         "publication_decade": _decade_histogram(con, threshold=threshold),
@@ -264,7 +371,7 @@ def characterization(con: Connection, *, top_n: int = 25, threshold: int = 10) -
         ),
         "country": _small_card_dist(
             con,
-            expr="upper(trim(substr(value, 16, 3)))",
+            expr=_COUNTRY_EXPR,
             where="field_tag = '008' AND length(value) >= 18",
             top_n=top_n,
             threshold=threshold,
@@ -277,6 +384,83 @@ def characterization(con: Connection, *, top_n: int = 25, threshold: int = 10) -
             threshold=threshold,
         ),
         "subject": _subject_dist(con, top_n=top_n, threshold=threshold),
+    }
+
+
+# Dimensions offered as cross-institution comparison matrices (heatmap / small
+# multiples). Same (expr, where) as characterization's coded categoricals — incl.
+# the U.S./Canada/UK place rollup — so the two views agree on categories.
+_COMPARE_DIMENSIONS = {
+    "language": (
+        "upper(trim(substr(value, 36, 3)))",
+        "field_tag = '008' AND length(value) >= 38",
+    ),
+    "country": (_COUNTRY_EXPR, "field_tag = '008' AND length(value) >= 18"),
+    "record_type": ("substr(value, 7, 1)", "field_tag = 'LDR' AND length(value) >= 7"),
+    # Library of Congress class = first letter of the LC call number (050, or the
+    # locally-assigned 090). A shared controlled scheme, so it compares cleanly
+    # across institutions. Restricted to a leading A–Z so stray values drop out.
+    "classification": (
+        "upper(substr(trim(value), 1, 1))",
+        (
+            "field_tag IN ('050', '090') AND subfield_code = 'a' "
+            "AND regexp_matches(upper(substr(trim(value), 1, 1)), '[A-Z]')"
+        ),
+    ),
+}
+# Global top-k categories per dimension shown in the comparison heatmaps. Large
+# enough to surface the long tail, small enough that rows stay legible.
+_COMPARE_TOP_K = 15
+
+
+def comparison(con: Connection, *, threshold: int = 10, **_: object) -> dict:
+    """
+    Cross-institution comparison matrices for the small-multiples / heatmap
+    views. For each dimension, the global top-k categories (ranked by total
+    count across all institutions), every institution's count per category, and
+    each institution's dimension total (the denominator for a share). Counts in
+    ``1..threshold-1`` are suppressed to null so no small cell is exposed; a
+    genuine zero stays 0. Category codes are labeled client-side.
+    """
+    return {
+        "dimensions": {
+            name: _comparison_matrix(con, expr=expr, where=where, threshold=threshold)
+            for name, (expr, where) in _COMPARE_DIMENSIONS.items()
+        }
+    }
+
+
+def _comparison_matrix(
+    con: Connection, *, expr: str, where: str, threshold: int
+) -> dict:
+    rows = con.execute(
+        f"SELECT org, {expr} AS cat, count(*) AS n "
+        f"FROM records WHERE {where} AND {expr} IS NOT NULL AND trim({expr}) <> '' "
+        "GROUP BY org, cat"
+    ).fetchall()
+
+    orgs = sorted({org for org, _cat, _n in rows})
+    totals: dict[str, int] = dict.fromkeys(orgs, 0)
+    cat_totals: dict[str, int] = {}
+    counts: dict[tuple[str, str], int] = {}
+    for org, cat, n in rows:
+        totals[org] += n
+        cat_totals[cat] = cat_totals.get(cat, 0) + n
+        counts[(org, cat)] = n
+
+    categories = [
+        cat for cat, _ in sorted(cat_totals.items(), key=lambda kv: (-kv[1], kv[0]))
+    ][:_COMPARE_TOP_K]
+
+    def cell(org: str, cat: str) -> int | None:
+        n = counts.get((org, cat), 0)
+        return n if (n == 0 or n >= threshold) else None
+
+    return {
+        "categories": categories,
+        "institutions": orgs,
+        "totals": totals,
+        "matrix": {org: {cat: cell(org, cat) for cat in categories} for org in orgs},
     }
 
 
