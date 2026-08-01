@@ -96,7 +96,29 @@ WHERE field_tag = '008'
 GROUP BY org, decade
 ORDER BY org, decade"""
 
-Q_COVERAGE = """\
+# Where an LC call number lives, in priority order (first match wins): the
+# standard 050/090, plus the local holdings/item fields libraries actually use
+# (852 at Harvard/Princeton, 950 at Stanford, 900 $f at Brown, …). A leading A–Z
+# marks an LC call number and skips non-LC schemes (Dewey numbers lead with a
+# digit). Shared by the LC-classification heatmap and the completeness scorecard.
+_LC_LOCATIONS = [
+    ("050", "a"),
+    ("090", "a"),
+    ("852", "h"),
+    ("950", "a"),
+    ("900", "f"),
+    ("099", "a"),
+    ("949", "a"),
+]
+_LC_CALLNUM = (
+    "("
+    + " OR ".join(
+        f"(field_tag = '{f}' AND subfield_code = '{s}')" for f, s in _LC_LOCATIONS
+    )
+    + ") AND regexp_matches(upper(substr(trim(value), 1, 1)), '[A-Z]')"
+)
+
+Q_COVERAGE = f"""\
 WITH present AS (
   SELECT org, pod_record_id,
          max(field_tag = '020')                AS isbn,
@@ -104,14 +126,14 @@ WITH present AS (
          max(field_tag IN ('100','110','111')) AS author,
          max(field_tag = '856')                AS online,
          max(field_tag = '300')                AS phys_desc,
-         max(field_tag IN ('050','082','090')) AS classification
+         max({_LC_CALLNUM}) AS lc_classification
   FROM records
   GROUP BY org, pod_record_id
 )
 SELECT org, count(*) AS records,
        sum(isbn) AS isbn, sum(subjects) AS subjects, sum(author) AS author,
        sum(online) AS online, sum(phys_desc) AS phys_desc,
-       sum(classification) AS classification
+       sum(lc_classification) AS lc_classification
 FROM present
 GROUP BY org
 ORDER BY org"""
@@ -193,7 +215,7 @@ def coverage(con: Connection, **_: object) -> dict:
     classification). Denominators are large, so no suppression is needed.
     """
     rows = con.execute(Q_COVERAGE).fetchall()
-    fields = ["isbn", "subjects", "author", "online", "phys_desc", "classification"]
+    fields = ["isbn", "subjects", "author", "online", "phys_desc", "lc_classification"]
     per_org = []
     for org, records, *counts in rows:
         pct = {
@@ -316,30 +338,68 @@ _COUNTRY_EXPR = (
     + f" ELSE {_PLACE_CODE} END"
 )
 
-# Dimensions offered as cross-institution comparison matrices (the Languages,
-# Place of publication, Format, and LC classification heatmaps). Each is a coded
-# categorical read straight out of MARC — (value expression, WHERE clause).
-_COMPARE_DIMENSIONS = {
-    "language": (
-        "upper(trim(substr(value, 36, 3)))",
-        "field_tag = '008' AND length(value) >= 38",
-    ),
-    "country": (_COUNTRY_EXPR, "field_tag = '008' AND length(value) >= 18"),
-    "record_type": ("substr(value, 7, 1)", "field_tag = 'LDR' AND length(value) >= 7"),
-    # Library of Congress class = first letter of the LC call number (050, or the
-    # locally-assigned 090). A shared controlled scheme, so it compares cleanly
-    # across institutions. Restricted to a leading A–Z so stray values drop out.
-    "classification": (
-        "upper(substr(trim(value), 1, 1))",
-        (
-            "field_tag IN ('050', '090') AND subfield_code = 'a' "
-            "AND regexp_matches(upper(substr(trim(value), 1, 1)), '[A-Z]')"
+# The cross-institution comparison heatmaps (Languages, Place of publication,
+# Format, LC classification). Each dimension supplies a query returning
+# (org, category, n); the first three are coded categoricals read from a single
+# MARC field, LC classification is assembled across several call-number slots.
+_COMPARE_TOP_K = 15  # global top categories kept per dimension
+
+
+def _dist_sql(expr: str, where: str) -> str:
+    """A per-record coded categorical → (org, category, n)."""
+    return (
+        f"SELECT org, {expr} AS category, count(*) AS n\n"
+        f"FROM records\n"
+        f"WHERE {where}\n"
+        f"  AND {expr} IS NOT NULL AND trim({expr}) <> ''\n"
+        f"GROUP BY org, category"
+    )
+
+
+def _lc_class_sql() -> str:
+    """
+    One LC class letter per record: scan the call-number locations (_LC_CALLNUM)
+    in priority order, keep only LC-shaped values, and take the first match — so
+    non-LC schemes and records with no call number simply drop out.
+    """
+    priority = "\n      ".join(
+        f"WHEN field_tag = '{f}' AND subfield_code = '{s}' THEN {i}"
+        for i, (f, s) in enumerate(_LC_LOCATIONS)
+    )
+    return (
+        "WITH candidate AS (\n"
+        "  SELECT org, pod_record_id,\n"
+        "    upper(substr(trim(value), 1, 1)) AS category,\n"
+        f"    CASE\n      {priority}\n    END AS priority\n"
+        "  FROM records\n"
+        f"  WHERE {_LC_CALLNUM}\n"
+        "),\n"
+        "first_match AS (\n"
+        "  SELECT org, category\n"
+        "  FROM candidate\n"
+        "  QUALIFY row_number() OVER "
+        "(PARTITION BY org, pod_record_id ORDER BY priority) = 1\n"
+        ")\n"
+        "SELECT org, category, count(*) AS n\n"
+        "FROM first_match\n"
+        "GROUP BY org, category"
+    )
+
+
+def _compare_sql() -> dict[str, str]:
+    return {
+        "language": _dist_sql(
+            "upper(trim(substr(value, 36, 3)))",
+            "field_tag = '008' AND length(value) >= 38",
         ),
-    ),
-}
-# Global top-k categories per dimension shown in the comparison heatmaps. Large
-# enough to surface the long tail, small enough that rows stay legible.
-_COMPARE_TOP_K = 15
+        "country": _dist_sql(
+            _COUNTRY_EXPR, "field_tag = '008' AND length(value) >= 18"
+        ),
+        "record_type": _dist_sql(
+            "substr(value, 7, 1)", "field_tag = 'LDR' AND length(value) >= 7"
+        ),
+        "classification": _lc_class_sql(),
+    }
 
 
 def comparison(con: Connection, *, threshold: int = 10, **_: object) -> dict:
@@ -354,22 +414,13 @@ def comparison(con: Connection, *, threshold: int = 10, **_: object) -> dict:
     """
     return {
         "dimensions": {
-            name: _comparison_matrix(con, expr=expr, where=where, threshold=threshold)
-            for name, (expr, where) in _COMPARE_DIMENSIONS.items()
+            name: _comparison_matrix(con, sql, threshold=threshold)
+            for name, sql in _compare_sql().items()
         }
     }
 
 
-def _comparison_matrix(
-    con: Connection, *, expr: str, where: str, threshold: int
-) -> dict:
-    sql = (
-        f"SELECT org, {expr} AS category, count(*) AS n\n"
-        f"FROM records\n"
-        f"WHERE {where}\n"
-        f"  AND {expr} IS NOT NULL AND trim({expr}) <> ''\n"
-        f"GROUP BY org, category"
-    )
+def _comparison_matrix(con: Connection, sql: str, *, threshold: int) -> dict:
     rows = con.execute(sql).fetchall()
 
     orgs = sorted({org for org, _cat, _n in rows})

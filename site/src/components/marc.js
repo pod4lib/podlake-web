@@ -1,4 +1,5 @@
-// Human-readable labels for the MARC coded values shown on the Collections page.
+// Human-readable labels for the MARC coded values shown on the collection
+// comparison pages (languages, place of publication, format, LC classification).
 // Each lookup is case-insensitive on the raw code and falls back to the code
 // itself, so uncommon values (and the suppression "Other" bucket) pass through
 // unchanged rather than being dropped.

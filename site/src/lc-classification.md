@@ -1,9 +1,15 @@
 # LC classification
 
-Share of each institution's call-numbered records in each Library of Congress
-class (the first letter of the MARC 050 / 090 call number) — a shared, controlled
-scheme, so it compares cleanly across institutions. Only records carrying an LC
-call number are counted.
+This chart shows the Library of Congress class — the first letter of the call
+number — for each institution's records. The call number is taken from the
+first place it appears among several: the standard `050`/`090`, or a local
+holdings/item field, which varies by institution (`852`,`950`, `900`). Non-LC
+schemes such as Dewey are skipped, and electronic resources typically carry no
+call number at all, so the shares are within each institution's LC-classified
+records.
+
+See the [completeness](./completeness) chart for a sense of how many records
+include an LC Classification. 
 
 ```js
 import {lcClassLabel} from "./components/marc.js";

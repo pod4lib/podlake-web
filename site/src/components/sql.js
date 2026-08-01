@@ -1,6 +1,5 @@
 import hljs from "npm:highlight.js/lib/core";
 import sqlGrammar from "npm:highlight.js/lib/languages/sql";
-import {html} from "npm:htl";
 
 hljs.registerLanguage("sql", sqlGrammar);
 
@@ -16,13 +15,4 @@ export function sqlBlock(code) {
   pre.style.lineHeight = "1.4";
   pre.append(el);
   return pre;
-}
-
-// A titled card wrapping one showcase query ({title, note, sql}).
-export function sqlCard(q) {
-  return html`<div class="card" style="margin: 1rem 0;">
-    <h3 style="margin-top: 0;">${q.title}</h3>
-    <p style="max-width: 640px;">${q.note}</p>
-    ${sqlBlock(q.sql)}
-  </div>`;
 }

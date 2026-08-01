@@ -1,8 +1,8 @@
 # Publication era
 
-How each institution's holdings are distributed over time, by decade of
-publication (from the MARC 008 date). Only plausible years (1450–2030) are
-counted.
+How are each institution's holdings are distributed over time? This chart
+visualizes the decade of publication (from the MARC 008 date). Only plausible
+years (1450–2030) are counted.
 
 ```js
 import {provenance} from "./components/provenance.js";

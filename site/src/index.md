@@ -1,10 +1,15 @@
 # Overview
 
-A window into the collective collection described by [POD](https://pod.stanford.edu/) —
-what the participating institutions hold, where they overlap, and how their
-metadata compares. Everything here is an **aggregate**: counts and distributions
-compiled from the shared catalog, never individual records. See
-[About the data](./data) for exactly what is published.
+The podlake site site provides a view into the MARC records collected as part
+of the [POD](https://pod.stanford.edu/) project. It provides some initial
+insight into what the participating institutions hold, where they overlap, and
+how their metadata compares.
+
+But the true goal of the site is to illustrate the types of analyses that can
+be done with [the data](./data). Each visualization has a "Behind this chart"
+section which contains the SQL query that was used to query the project's data
+lake, which POD members have full access to.
+
 
 ```js
 import {provenance} from "./components/provenance.js";

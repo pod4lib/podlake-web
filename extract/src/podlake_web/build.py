@@ -36,22 +36,22 @@ DEFAULT_OUT = Path(__file__).resolve().parents[3] / "site" / "src" / "data"
 ARTIFACTS = [
     (
         "overview.json",
-        "Corpus totals and per-institution record/work counts.",
+        "Corpus totals and per-institution record/title counts.",
         queries.overview,
     ),
     (
         "overlap_histogram.json",
-        "Works held by exactly N institutions (rarity curve).",
+        "Titles held by exactly N institutions (rarity curve).",
         queries.overlap_histogram,
     ),
     (
         "overlap_pairwise.json",
-        "Shared works between each pair of institutions.",
+        "Shared titles between each pair of institutions.",
         queries.overlap_pairwise,
     ),
     (
         "uniqueness.json",
-        "Works held by a single institution alone.",
+        "Titles held by a single institution alone.",
         queries.uniqueness,
     ),
     (
@@ -66,7 +66,7 @@ ARTIFACTS = [
     ),
     (
         "comparison.json",
-        "Cross-institution category matrices (language / country / type) for comparison.",
+        "Cross-institution matrices: language, place, format, LC classification.",
         queries.comparison,
     ),
 ]
@@ -91,9 +91,8 @@ def extract(
         ),
     ),
     out: Path = typer.Option(DEFAULT_OUT, help="Directory to write artifacts into."),
-    top_n: int = typer.Option(25, help="Max categories kept per distribution."),
     threshold: int = typer.Option(
-        10, help="Cells with a count below this are folded into 'Other'."
+        10, help="Counts below this are suppressed (folded into 'Other' or blanked)."
     ),
 ) -> None:
     """Build the Tier-1 aggregate artifacts into OUT."""
@@ -111,11 +110,11 @@ def extract(
         generated_at = datetime.now(UTC).isoformat()
         manifest = {
             "generated_at": generated_at,
-            "suppression": {"top_n": top_n, "threshold": threshold},
+            "suppression": {"threshold": threshold},
             "artifacts": [],
         }
         for filename, description, fn in ARTIFACTS:
-            data = fn(con, top_n=top_n, threshold=threshold)
+            data = fn(con, threshold=threshold)
             data["generated_at"] = generated_at
             path = out / filename
             path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")

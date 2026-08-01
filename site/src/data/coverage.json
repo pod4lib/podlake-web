@@ -5,15 +5,15 @@
     "author",
     "online",
     "phys_desc",
-    "classification"
+    "lc_classification"
   ],
   "generated_at": "2026-08-01T10:28:34.728357+00:00",
   "per_org": [
     {
       "coverage": {
         "author": 0.8191,
-        "classification": 0.6764,
         "isbn": 0.4525,
+        "lc_classification": 0.9457,
         "online": 0.0547,
         "phys_desc": 0.9935,
         "subjects": 0.8565
@@ -24,8 +24,8 @@
     {
       "coverage": {
         "author": 0.616,
-        "classification": 0.5835,
         "isbn": 0.3477,
+        "lc_classification": 0.6678,
         "online": 0.0583,
         "phys_desc": 0.848,
         "subjects": 0.8067
@@ -36,8 +36,8 @@
     {
       "coverage": {
         "author": 0.7803,
-        "classification": 0.7142,
         "isbn": 0.4354,
+        "lc_classification": 0.904,
         "online": 0.0726,
         "phys_desc": 0.9591,
         "subjects": 0.871
@@ -48,8 +48,8 @@
     {
       "coverage": {
         "author": 0.7787,
-        "classification": 0.6178,
         "isbn": 0.3604,
+        "lc_classification": 0.7005,
         "online": 0.2427,
         "phys_desc": 0.9832,
         "subjects": 0.9152
@@ -60,8 +60,8 @@
     {
       "coverage": {
         "author": 0.7739,
-        "classification": 0.7865,
         "isbn": 0.569,
+        "lc_classification": 0.9584,
         "online": 0.0132,
         "phys_desc": 0.9798,
         "subjects": 0.9124
@@ -72,8 +72,8 @@
     {
       "coverage": {
         "author": 0.7615,
-        "classification": 0.6384,
         "isbn": 0.4795,
+        "lc_classification": 0.8512,
         "online": 0.3142,
         "phys_desc": 0.979,
         "subjects": 0.9064
@@ -85,7 +85,7 @@
   "sql": [
     {
       "label": "Records carrying each field, per institution",
-      "sql": "WITH present AS (\n  SELECT org, pod_record_id,\n         max(field_tag = '020')                AS isbn,\n         max(field_tag LIKE '6%')              AS subjects,\n         max(field_tag IN ('100','110','111')) AS author,\n         max(field_tag = '856')                AS online,\n         max(field_tag = '300')                AS phys_desc,\n         max(field_tag IN ('050','082','090')) AS classification\n  FROM records\n  GROUP BY org, pod_record_id\n)\nSELECT org, count(*) AS records,\n       sum(isbn) AS isbn, sum(subjects) AS subjects, sum(author) AS author,\n       sum(online) AS online, sum(phys_desc) AS phys_desc,\n       sum(classification) AS classification\nFROM present\nGROUP BY org\nORDER BY org"
+      "sql": "WITH present AS (\n  SELECT org, pod_record_id,\n         max(field_tag = '020')                AS isbn,\n         max(field_tag LIKE '6%')              AS subjects,\n         max(field_tag IN ('100','110','111')) AS author,\n         max(field_tag = '856')                AS online,\n         max(field_tag = '300')                AS phys_desc,\n         max(((field_tag = '050' AND subfield_code = 'a') OR (field_tag = '090' AND subfield_code = 'a') OR (field_tag = '852' AND subfield_code = 'h') OR (field_tag = '950' AND subfield_code = 'a') OR (field_tag = '900' AND subfield_code = 'f') OR (field_tag = '099' AND subfield_code = 'a') OR (field_tag = '949' AND subfield_code = 'a')) AND regexp_matches(upper(substr(trim(value), 1, 1)), '[A-Z]')) AS lc_classification\n  FROM records\n  GROUP BY org, pod_record_id\n)\nSELECT org, count(*) AS records,\n       sum(isbn) AS isbn, sum(subjects) AS subjects, sum(author) AS author,\n       sum(online) AS online, sum(phys_desc) AS phys_desc,\n       sum(lc_classification) AS lc_classification\nFROM present\nGROUP BY org\nORDER BY org"
     }
   ]
 }

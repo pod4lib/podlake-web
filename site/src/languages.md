@@ -1,7 +1,7 @@
 # Languages
 
-Share of each institution's records in each of the consortium's most common
-languages (from the MARC 008 language code).
+This chart illustrates the share of each institution's records in each of the
+consortium's most common languages (from the MARC 008 language code).
 
 ```js
 import {languageLabel} from "./components/marc.js";

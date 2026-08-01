@@ -18,7 +18,7 @@ const fieldLabels = {
   author: "Author (1xx)",
   online: "Online access (856)",
   phys_desc: "Physical description (300)",
-  classification: "Classification (050/082/090)",
+  lc_classification: "LC classification",
 };
 const covRows = coverage.per_org.flatMap((o) =>
   coverage.fields.map((f) => ({

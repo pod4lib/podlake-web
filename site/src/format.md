@@ -1,6 +1,6 @@
 # Format
 
-Share of each institution's records of each material type (from the MARC
+This chart tallies each institution's records by material type (from the MARC
 leader's type-of-record code).
 
 ```js

@@ -1,19 +1,19 @@
 {
   "artifacts": [
     {
-      "description": "Corpus totals and per-institution record/work counts.",
+      "description": "Corpus totals and per-institution record/title counts.",
       "file": "overview.json"
     },
     {
-      "description": "Works held by exactly N institutions (rarity curve).",
+      "description": "Titles held by exactly N institutions (rarity curve).",
       "file": "overlap_histogram.json"
     },
     {
-      "description": "Shared works between each pair of institutions.",
+      "description": "Shared titles between each pair of institutions.",
       "file": "overlap_pairwise.json"
     },
     {
-      "description": "Works held by a single institution alone.",
+      "description": "Titles held by a single institution alone.",
       "file": "uniqueness.json"
     },
     {
@@ -25,13 +25,12 @@
       "file": "coverage.json"
     },
     {
-      "description": "Cross-institution category matrices (language / country / type) for comparison.",
+      "description": "Cross-institution matrices: language, place, format, LC classification.",
       "file": "comparison.json"
     }
   ],
   "generated_at": "2026-08-01T10:28:34.728357+00:00",
   "suppression": {
-    "threshold": 10,
-    "top_n": 25
+    "threshold": 10
   }
 }

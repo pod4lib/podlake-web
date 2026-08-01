@@ -9,13 +9,14 @@ by many is a safe candidate to store or weed.
 
 **How records are grouped into titles.** Each institution contributes many
 individual MARC records for the same book. To count *titles* rather than raw
-records, records are collapsed using the
-[Gold Rush match key](https://gitlab.com/pymarc/goldrush) — a normalized
-fingerprint derived from a record's title, author, publication year, edition,
-publisher, pagination, material type, and carrier (print vs. electronic).
-Records that generate the same key are treated as one title. The key is roughly
-*manifestation*-level: because it captures edition and carrier, a print book and
-its e-book edition count as two distinct titles.
+records, records are collapsed using the [Gold Rush match
+key](https://github.com/co-alliance/coalliance-matchkey) developed by the
+[Colorado Alliance of Research Libraries](https://coalliance.org/). The key is
+a normalized fingerprint derived from a record's title, author, publication
+year, edition, publisher, pagination, material type, and carrier (print vs.
+electronic). Records that generate the same key are treated as one title. The
+key is roughly *manifestation*-level: because it captures edition and carrier,
+a print book and its e-book edition count as two distinct titles.
 
 </div>
 
@@ -53,8 +54,8 @@ provenance({sql: histogram.sql, dataUrl: await histogramFile.url(), dataName: "o
 
 ## Titles held by a single institution
 
-Each institution's uniquely-held titles — material that would disappear from the
-consortium if that copy were lost.
+Each institution's uniquely-held titles. This is material that would disappear
+from the consortium if that copy were lost.
 
 ```js
 Plot.plot({
@@ -75,10 +76,9 @@ provenance({sql: uniqueness.sql, dataUrl: await uniquenessFile.url(), dataName: 
 
 ## Shared titles between institutions
 
-The number of titles each pair of institutions both hold — the overlap that
-drives comparative collection analysis. The diagonal is left blank: an
-institution's own total sits on a far larger scale and would flatten the
-contrast between the pairwise cells.
+The number of titles each pair of institutions both hold. The diagonal is left
+blank: an institution's own total sits on a far larger scale and would flatten
+the contrast between the pairwise cells.
 
 ```js
 const cells = (() => {

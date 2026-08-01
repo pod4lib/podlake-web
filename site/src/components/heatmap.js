@@ -39,7 +39,12 @@ export function shareHeatmap(comparison, dim, label, {marginLeft = 155} = {}) {
       unknown: "color-mix(in srgb, var(--theme-foreground) 12%, transparent)",
     },
     marks: [
-      Plot.cell(rows, {x: "org", y: "category", fill: "share", tip: true}),
+      Plot.cell(rows, {
+        x: "org",
+        y: "category",
+        fill: "share",
+        tip: {format: {fill: ".0%"}},
+      }),
       Plot.text(rows, {
         x: "org",
         y: "category",

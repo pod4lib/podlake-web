@@ -8,7 +8,7 @@ import pytest
 from podlake import lake
 from podlake.config import Config
 
-from podlake_web import queries, suppress
+from podlake_web import queries, record, suppress
 
 # --- fixtures / builders -----------------------------------------------------
 
@@ -200,6 +200,51 @@ def test_comparison_suppresses_small_cells(con):
     assert lang["matrix"]["stanford"]["ENG"] is None  # 1 < 10 -> suppressed
     assert lang["matrix"]["harvard"]["FRE"] == 0  # a genuine zero stays 0
     assert lang["totals"] == {"harvard": 1, "stanford": 2}  # totals are pre-suppression
+
+
+def test_classification_first_lc_match(tmp_path):
+    # LC class comes from the first LC-shaped call number across the priority of
+    # locations; non-LC (Dewey) values are skipped, one class per record.
+    def rec(rid, gr, *fields):
+        org, pid = "x", f"x:{rid}"
+        rows = [(org, pid, "LDR", 0, None, None, None, None, LEADER)]
+        for i, (tag, code, val) in enumerate(fields, start=1):
+            rows.append((org, pid, tag, i, " ", " ", code, 0, val))
+        return rows, (org, pid, gr)
+
+    records = [
+        rec("a", "k1", ("050", "a", "QA76 .A1")),  # 050 -> Q
+        rec("b", "k2", ("852", "h", "PN1993 .B7")),  # local 852$h holds LC -> P
+        rec("c", "k3", ("852", "h", "823.91 A437")),  # Dewey only -> dropped
+        rec(
+            "d", "k4", ("852", "h", "500 X9"), ("900", "f", "DA10 .Z9")
+        ),  # skip Dewey -> D
+    ]
+    config = _build_lake(tmp_path, {"x": records})
+    connection = lake.connect(read_only=True, config=config)
+    try:
+        out = queries.comparison(connection, threshold=1)
+    finally:
+        connection.close()
+
+    cls = out["dimensions"]["classification"]
+    counts = {c: cls["matrix"]["x"][c] for c in cls["categories"]}
+    assert counts == {"D": 1, "P": 1, "Q": 1}  # Dewey-only record contributes nothing
+
+
+def test_reconstitute_record(con):
+    fields = record.reconstitute(con, "stanford", "stanford:a1")
+    by_tag = {f.tag: f for f in fields}
+    # leader + control field come back as control (value, no subfields)
+    assert by_tag["LDR"].is_control and by_tag["LDR"].value
+    # data field keeps indicators and ordered subfields
+    assert by_tag["245"].ind1 == "1" and by_tag["245"].ind2 == "0"
+    assert by_tag["245"].subfields == [("a", "Title a1")]
+    assert by_tag["650"].subfields == [("a", "Music")]
+    # and renders to text
+    assert "245 10" in record.to_text(con, "stanford", "stanford:a1")
+    # unknown id -> empty
+    assert record.reconstitute(con, "stanford", "nope") == []
 
 
 # --- suppression tests -------------------------------------------------------

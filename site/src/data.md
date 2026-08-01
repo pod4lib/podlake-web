@@ -1,10 +1,10 @@
 # About the data
 
 This dashboard is deliberately built to be **safe to publish**. The underlying
-podlake DuckLake holds hundreds of millions of record-level rows and is **not**
-public. What this site loads instead is a small set of pre-computed
-**aggregates** — counts, distributions, and percentages — with no record
-identifiers, Gold Rush keys, titles, or raw field values.
+podlake DuckLake holds hundreds of millions of record-level rows and is only
+available to POD members. What this site loads instead is a small set of
+pre-computed **aggregates** — counts, distributions, and percentages — with no
+record identifiers, Gold Rush keys, titles, or raw field values.
 
 ```js
 const manifest = FileAttachment("./data/manifest.json").json();
@@ -21,29 +21,11 @@ Inputs.table(manifest.artifacts, {
 })
 ```
 
-## How small values are protected
-
-Even aggregates can leak information when a cell is tiny (for example, "one title
-in a rare language uniquely held by one institution" could point at a specific
-item). To prevent that:
-
-- Long-tail categories are capped at the top **${manifest.suppression.top_n}**
-  per institution; everything else is grouped into **Other**.
-- Any category with fewer than **${manifest.suppression.threshold}** records is
-  also folded into **Other**, so no small count is ever reported on its own.
-- Totals and the **Other** bucket aggregate many records and reveal nothing
-  about an individual one.
-
 Aggregates were last rebuilt from the lake on
 **${manifest.generated_at.slice(0, 10)}**.
 
-## How it is built
-
 A read-only extract step queries the private lake and writes these JSON files;
-the static site reads only those files. Nothing here can reach back into the
-lake. Deeper, record-level analysis (last-copy lists, text search, external
-matching against HathiTrust or the public domain) is handled separately through
-gated tools, not this public site.
+the static site reads only those files.
 
 ## The queries behind the views
 
