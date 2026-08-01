@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-31T17:36:26.865164+00:00",
+  "generated_at": "2026-08-01T10:28:34.728357+00:00",
   "institutions": [
     "brown",
     "duke",
@@ -83,6 +83,16 @@
       "a": "brown",
       "b": "stanford",
       "shared": 946917
+    }
+  ],
+  "sql": [
+    {
+      "label": "Titles per institution (the diagonal)",
+      "sql": "SELECT org, count(DISTINCT goldrush_key) AS titles\nFROM record_meta\nGROUP BY org\nORDER BY org"
+    },
+    {
+      "label": "Shared titles for each pair",
+      "sql": "WITH holdings AS (SELECT DISTINCT org, goldrush_key FROM record_meta)\nSELECT a.org AS a, b.org AS b, count(*) AS shared\nFROM holdings a\nJOIN holdings b USING (goldrush_key)\nWHERE a.org < b.org\nGROUP BY a.org, b.org\nORDER BY shared DESC"
     }
   ],
   "titles": {

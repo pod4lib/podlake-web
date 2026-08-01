@@ -17,8 +17,8 @@
       "file": "uniqueness.json"
     },
     {
-      "description": "Per-institution decade / language / country / subject / type distributions.",
-      "file": "characterization.json"
+      "description": "Per-institution distribution of records by decade of publication.",
+      "file": "publication_decade.json"
     },
     {
       "description": "Per-institution share of records carrying selected MARC fields.",
@@ -27,13 +27,9 @@
     {
       "description": "Cross-institution category matrices (language / country / type) for comparison.",
       "file": "comparison.json"
-    },
-    {
-      "description": "The DuckDB SQL behind each view.",
-      "file": "queries.json"
     }
   ],
-  "generated_at": "2026-07-31T17:36:26.865164+00:00",
+  "generated_at": "2026-08-01T10:28:34.728357+00:00",
   "suppression": {
     "threshold": 10,
     "top_n": 25

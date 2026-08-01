@@ -164,18 +164,13 @@ def test_coverage(con):
     assert per_org["harvard"]["coverage"]["online"] == 0.0
 
 
-def test_characterization_shapes(con):
-    out = queries.characterization(con, top_n=25, threshold=1)
-    langs = {
-        r["org"]: {v["category"]: v["count"] for v in r["values"]}
-        for r in out["language"]["per_org"]
-    }
-    assert langs["stanford"] == {"ENG": 1, "FRE": 1}
+def test_publication_decade(con):
+    out = queries.publication_decade(con, threshold=1)
     decades = {
-        r["org"]: {v["decade"]: v["count"] for v in r["values"]}
-        for r in out["publication_decade"]["per_org"]
+        r["org"]: {v["decade"]: v["count"] for v in r["values"]} for r in out["per_org"]
     }
     assert decades["harvard"] == {2010: 1}
+    assert out["sql"]  # the query is embedded for the "behind this chart" panel
 
 
 def test_comparison_matrix(con):
@@ -226,40 +221,29 @@ def test_bucket_top_n_folds_tail_and_small_cells():
     assert suppress.small_cells(out, threshold=10) == []
 
 
-def test_showcase_queries_are_formatted_and_runnable(con):
-    shown = queries.showcase(top_n=7, threshold=3)
-    assert {q["id"] for q in shown} >= {"overlap", "pairwise", "uniqueness", "subjects"}
-    for q in shown:
-        assert q["title"] and q["note"] and q["sql"]
-        # no unfilled {top_n}/{threshold} placeholders leaked into the shown SQL
-        assert "{top_n}" not in q["sql"] and "{threshold}" not in q["sql"]
-        # every published query actually executes against the lake
-        con.execute(q["sql"])
-    subjects = next(q for q in shown if q["id"] == "subjects")
-    assert "rn <= 7" in subjects["sql"] and "records >= 3" in subjects["sql"]
+def test_artifacts_expose_runnable_sql(con):
+    # Every published artifact embeds the SQL that produced it, and that SQL
+    # actually executes against the lake (so the per-chart "behind this chart"
+    # panels stay honest).
+    for fn in (
+        queries.overview,
+        queries.overlap_histogram,
+        queries.overlap_pairwise,
+        queries.uniqueness,
+        queries.publication_decade,
+        queries.coverage,
+    ):
+        out = fn(con, top_n=7, threshold=1)
+        assert out["sql"], f"{fn.__name__} exposes no sql"
+        for q in out["sql"]:
+            con.execute(q["sql"])
+    # comparison carries one query per dimension
+    for dim in queries.comparison(con, threshold=1)["dimensions"].values():
+        assert dim["sql"]
+        con.execute(dim["sql"])
 
 
 def test_fold_small_keeps_all_above_threshold():
     rows = [{"category": x, "count": c} for x, c in [("a", 30), ("b", 20), ("c", 1)]]
     out = suppress.fold_small(rows, threshold=10)
     assert {r["category"]: r["count"] for r in out} == {"a": 30, "b": 20, "Other": 1}
-
-
-def test_characterization_never_leaks_small_cells(tmp_path):
-    # stanford: 5 English + 1 French record; with threshold=2 the lone French
-    # record must be folded into Other, never exposed as a count of 1.
-    records = [_record("stanford", f"e{i}", f"k{i}", lang="eng") for i in range(5)]
-    records.append(_record("stanford", "f1", "kf", lang="fre"))
-    config = _build_lake(tmp_path, {"stanford": records})
-    connection = lake.connect(read_only=True, config=config)
-    try:
-        out = queries.characterization(connection, top_n=25, threshold=2)
-    finally:
-        connection.close()
-
-    langs = out["language"]["per_org"][0]["values"]
-    by_cat = {v["category"]: v["count"] for v in langs}
-    assert by_cat.get("ENG") == 5
-    assert by_cat.get("FRE") is None
-    assert by_cat.get("Other") == 1
-    assert suppress.small_cells(langs, threshold=2) == []

@@ -6,9 +6,15 @@ languages (from the MARC 008 language code).
 ```js
 import {languageLabel} from "./components/marc.js";
 import {shareHeatmap} from "./components/heatmap.js";
-const comparison = FileAttachment("./data/comparison.json").json();
+import {provenance} from "./components/provenance.js";
+const comparisonFile = FileAttachment("./data/comparison.json");
+const comparison = comparisonFile.json();
 ```
 
 ```js
 shareHeatmap(comparison, "language", languageLabel)
+```
+
+```js
+provenance({sql: comparison.dimensions.language.sql, dataUrl: await comparisonFile.url(), dataName: "comparison.json"})
 ```

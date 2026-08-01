@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-31T17:36:26.865164+00:00",
+  "generated_at": "2026-08-01T10:28:34.728357+00:00",
   "per_org": [
     {
       "last_sync": null,
@@ -36,6 +36,16 @@
       "org": "stanford",
       "records": 8959493,
       "titles": 8609418
+    }
+  ],
+  "sql": [
+    {
+      "label": "Corpus totals",
+      "sql": "SELECT count(*) AS records,\n       count(DISTINCT goldrush_key) AS titles,\n       count(DISTINCT org) AS institutions\nFROM record_meta"
+    },
+    {
+      "label": "Records and titles per institution",
+      "sql": "SELECT org, count(*) AS records, count(DISTINCT goldrush_key) AS titles\nFROM record_meta\nGROUP BY org\nORDER BY org"
     }
   ],
   "totals": {

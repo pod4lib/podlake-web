@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-31T17:36:26.865164+00:00",
+  "generated_at": "2026-08-01T10:28:34.728357+00:00",
   "per_org": [
     {
       "org": "harvard",
@@ -24,6 +24,12 @@
     {
       "org": "brown",
       "unique_titles": 813908
+    }
+  ],
+  "sql": [
+    {
+      "label": "Titles held by a single institution",
+      "sql": "SELECT org, count(*) AS unique_titles\nFROM (\n  SELECT any_value(org) AS org\n  FROM record_meta\n  GROUP BY goldrush_key\n  HAVING count(DISTINCT org) = 1\n)\nGROUP BY org\nORDER BY unique_titles DESC"
     }
   ]
 }

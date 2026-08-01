@@ -7,9 +7,15 @@ their countries.
 ```js
 import {placeLabel} from "./components/marc.js";
 import {shareHeatmap} from "./components/heatmap.js";
-const comparison = FileAttachment("./data/comparison.json").json();
+import {provenance} from "./components/provenance.js";
+const comparisonFile = FileAttachment("./data/comparison.json");
+const comparison = comparisonFile.json();
 ```
 
 ```js
 shareHeatmap(comparison, "country", placeLabel)
+```
+
+```js
+provenance({sql: comparison.dimensions.country.sql, dataUrl: await comparisonFile.url(), dataName: "comparison.json"})
 ```

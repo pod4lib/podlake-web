@@ -8,9 +8,15 @@ call number are counted.
 ```js
 import {lcClassLabel} from "./components/marc.js";
 import {shareHeatmap} from "./components/heatmap.js";
-const comparison = FileAttachment("./data/comparison.json").json();
+import {provenance} from "./components/provenance.js";
+const comparisonFile = FileAttachment("./data/comparison.json");
+const comparison = comparisonFile.json();
 ```
 
 ```js
 shareHeatmap(comparison, "classification", lcClassLabel, {marginLeft: 210})
+```
+
+```js
+provenance({sql: comparison.dimensions.classification.sql, dataUrl: await comparisonFile.url(), dataName: "comparison.json"})
 ```

@@ -6,7 +6,9 @@ So it is important not to read too much into these values. A record can be
 complete but inaccurate, or sparse but perfectly fit for its material.
 
 ```js
-const coverage = FileAttachment("./data/coverage.json").json();
+import {provenance} from "./components/provenance.js";
+const coverageFile = FileAttachment("./data/coverage.json");
+const coverage = coverageFile.json();
 ```
 
 ```js
@@ -55,4 +57,8 @@ Plot.plot({
     }),
   ],
 })
+```
+
+```js
+provenance({sql: coverage.sql, dataUrl: await coverageFile.url(), dataName: "coverage.json"})
 ```

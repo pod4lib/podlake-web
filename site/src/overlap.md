@@ -20,9 +20,13 @@ its e-book edition count as two distinct titles.
 </div>
 
 ```js
-const histogram = FileAttachment("./data/overlap_histogram.json").json();
-const uniqueness = FileAttachment("./data/uniqueness.json").json();
-const pairwise = FileAttachment("./data/overlap_pairwise.json").json();
+import {provenance} from "./components/provenance.js";
+const histogramFile = FileAttachment("./data/overlap_histogram.json");
+const histogram = histogramFile.json();
+const uniquenessFile = FileAttachment("./data/uniqueness.json");
+const uniqueness = uniquenessFile.json();
+const pairwiseFile = FileAttachment("./data/overlap_pairwise.json");
+const pairwise = pairwiseFile.json();
 ```
 
 ## Titles held by _N_ institutions
@@ -43,6 +47,10 @@ Plot.plot({
 })
 ```
 
+```js
+provenance({sql: histogram.sql, dataUrl: await histogramFile.url(), dataName: "overlap_histogram.json"})
+```
+
 ## Titles held by a single institution
 
 Each institution's uniquely-held titles — material that would disappear from the
@@ -59,6 +67,10 @@ Plot.plot({
     Plot.ruleX([0]),
   ],
 })
+```
+
+```js
+provenance({sql: uniqueness.sql, dataUrl: await uniquenessFile.url(), dataName: "uniqueness.json"})
 ```
 
 ## Shared titles between institutions
@@ -102,4 +114,8 @@ Plot.plot({
     }),
   ],
 })
+```
+
+```js
+provenance({sql: pairwise.sql, dataUrl: await pairwiseFile.url(), dataName: "overlap_pairwise.json"})
 ```

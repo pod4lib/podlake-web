@@ -76,16 +76,12 @@ Two tables:
 
 ## 4. The queries behind the dashboard
 
-Every chart on this site is one of these — run them yourself and modify away:
-
-```js
-import {sqlCard} from "./components/sql.js";
-const queries = FileAttachment("./data/queries.json").json();
-```
-
-```js
-html`${queries.queries.map(sqlCard)}`
-```
+Every chart has a **Behind this chart** panel with the exact DuckDB query that
+produced it and a link to download the derived data — open any
+[visualization](./) and expand it to copy the SQL and run it here. The Python
+that runs those queries and shapes the results (suppression, share matrices,
+place roll-ups) is in the extract:
+[`extract/src/podlake_web`](https://github.com/sul-dlss/podlake-web/tree/main/extract/src/podlake_web).
 
 ## 5. Going deeper: record-level queries
 

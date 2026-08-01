@@ -6,9 +6,12 @@ distributions, percentages — never a ``pod_record_id``, ``goldrush_key``, titl
 or raw field value used as an identifier. Categorical distributions are passed
 through :mod:`podlake_web.suppress` so no small cell is exposed on its own.
 
-The core SQL lives in named ``Q_*`` constants that both the query functions
-execute *and* :func:`showcase` publishes to the dashboard's "About the data"
-page — so what visitors see is exactly what runs.
+Each artifact embeds, in a ``sql`` field, the exact DuckDB query (or queries)
+that produced it — so the dashboard can show the query behind every chart, and
+the "About the data" / "Query it yourself" pages stay in sync with what actually
+runs. The Python post-processing (suppression, the comparison share matrix, the
+place roll-ups) is *not* expressible in that SQL; the site links back to this
+module for it.
 
 MARC notes (DuckDB ``substr`` is 1-indexed):
 
@@ -30,10 +33,22 @@ from podlake_web import suppress
 Connection = duckdb.DuckDBPyConnection
 
 
-# --- SQL (also surfaced verbatim on the "About the data" page) ---------------
+# --- SQL --------------------------------------------------------------------
+
+Q_TOTALS = """\
+SELECT count(*) AS records,
+       count(DISTINCT goldrush_key) AS titles,
+       count(DISTINCT org) AS institutions
+FROM record_meta"""
 
 Q_PER_ORG = """\
 SELECT org, count(*) AS records, count(DISTINCT goldrush_key) AS titles
+FROM record_meta
+GROUP BY org
+ORDER BY org"""
+
+Q_ORG_TITLES = """\
+SELECT org, count(DISTINCT goldrush_key) AS titles
 FROM record_meta
 GROUP BY org
 ORDER BY org"""
@@ -81,24 +96,6 @@ WHERE field_tag = '008'
 GROUP BY org, decade
 ORDER BY org, decade"""
 
-# {top_n} / {threshold} are filled in at build time via .format().
-Q_SUBJECTS = """\
-WITH subjects AS (
-  SELECT org, rtrim(value, ' .,;:/') AS subject, count(*) AS records
-  FROM records
-  WHERE field_tag = '650' AND subfield_code = 'a'
-    AND value IS NOT NULL AND trim(value) <> ''
-  GROUP BY org, subject
-),
-ranked AS (
-  SELECT *, row_number() OVER (PARTITION BY org ORDER BY records DESC) AS rn
-  FROM subjects
-)
-SELECT org, subject, records
-FROM ranked
-WHERE rn <= {top_n} AND records >= {threshold}
-ORDER BY org, records DESC"""
-
 Q_COVERAGE = """\
 WITH present AS (
   SELECT org, pod_record_id,
@@ -120,107 +117,36 @@ GROUP BY org
 ORDER BY org"""
 
 
-def showcase(*, top_n: int = 25, threshold: int = 10) -> list[dict]:
-    """
-    The core queries behind the dashboard, as copy-pasteable DuckDB SQL, for the
-    "About the data" page. Ordered from the headline consortial questions to the
-    MARC-parsing examples that invite people to write their own.
-    """
-    return [
-        {
-            "id": "overlap",
-            "title": "Titles held by N institutions",
-            "note": "The rarity curve: group each title (by its Gold Rush key) by "
-            "how many distinct institutions hold it. The left of the curve is rare "
-            "material; the right is the widely-duplicated core.",
-            "sql": Q_OVERLAP_HISTOGRAM,
-        },
-        {
-            "id": "pairwise",
-            "title": "Shared titles between institutions",
-            "note": "A self-join on the Gold Rush key counts, for every pair of "
-            "institutions, how many titles both hold — the basis of comparative "
-            "collection analysis.",
-            "sql": Q_PAIRWISE,
-        },
-        {
-            "id": "uniqueness",
-            "title": "Titles held by a single institution",
-            "note": "Titles whose Gold Rush key appears at exactly one institution — "
-            'the "last copies" that preservation and shared-print decisions turn on.',
-            "sql": Q_UNIQUENESS,
-        },
-        {
-            "id": "per_org",
-            "title": "Records and titles per institution",
-            "note": "Records are individual bibliographic records; titles collapse "
-            "them by Gold Rush key, so the gap shows within-library duplication.",
-            "sql": Q_PER_ORG,
-        },
-        {
-            "id": "decade",
-            "title": "Publication era from the MARC 008 field",
-            "note": "Characters 8–11 of the 008 fixed field hold the publication "
-            "year — pull them straight out of the record with substr and bucket "
-            "into decades.",
-            "sql": Q_DECADE,
-        },
-        {
-            "id": "subjects",
-            "title": "Top subject headings (MARC 650 $a)",
-            "note": f"The {top_n} most common subject headings per institution "
-            "(the tall/EAV layout makes any subfield a plain WHERE clause).",
-            "sql": Q_SUBJECTS.format(top_n=top_n, threshold=threshold),
-        },
-        {
-            "id": "coverage",
-            "title": "Metadata coverage",
-            "note": "For each record, does it carry a given field? A boolean pivot "
-            "per record, then averaged — a quick metadata-completeness scorecard.",
-            "sql": Q_COVERAGE,
-        },
-    ]
-
-
 # --- query functions ---------------------------------------------------------
 
 
 def overview(con: Connection, **_: object) -> dict:
     """Corpus totals and per-institution record/title counts (+ last sync)."""
-    totals_row = con.execute(
-        "SELECT count(*), count(DISTINCT goldrush_key), count(DISTINCT org) "
-        "FROM record_meta"
-    ).fetchone()
+    totals_row = con.execute(Q_TOTALS).fetchone()
     assert totals_row is not None
     records, titles, institutions = totals_row
-
-    per_org_rows = con.execute(Q_PER_ORG).fetchall()
-
     last_sync = _last_sync(con)
     per_org = [
-        {
-            "org": org,
-            "records": recs,
-            "titles": tts,
-            "last_sync": last_sync.get(org),
-        }
-        for org, recs, tts in per_org_rows
+        {"org": org, "records": recs, "titles": tts, "last_sync": last_sync.get(org)}
+        for org, recs, tts in con.execute(Q_PER_ORG).fetchall()
     ]
-
     return {
-        "totals": {
-            "records": records,
-            "titles": titles,
-            "institutions": institutions,
-        },
+        "totals": {"records": records, "titles": titles, "institutions": institutions},
         "per_org": per_org,
+        "sql": [
+            {"label": "Corpus totals", "sql": Q_TOTALS},
+            {"label": "Records and titles per institution", "sql": Q_PER_ORG},
+        ],
     }
 
 
 def overlap_histogram(con: Connection, **_: object) -> dict:
     """How many titles are held by exactly N institutions (the rarity curve)."""
     rows = con.execute(Q_OVERLAP_HISTOGRAM).fetchall()
-    return {"held_by": [{"institutions": n, "titles": t} for n, t in rows]}
+    return {
+        "held_by": [{"institutions": n, "titles": t} for n, t in rows],
+        "sql": [{"label": "Titles held by N institutions", "sql": Q_OVERLAP_HISTOGRAM}],
+    }
 
 
 def overlap_pairwise(con: Connection, **_: object) -> dict:
@@ -228,24 +154,63 @@ def overlap_pairwise(con: Connection, **_: object) -> dict:
     For every pair of institutions, the number of titles both hold, plus each
     institution's own title total. Symmetric, so only a<b pairs are emitted.
     """
-    totals = dict(
-        con.execute(
-            "SELECT org, count(DISTINCT goldrush_key) FROM record_meta GROUP BY org"
-        ).fetchall()
-    )
+    totals = dict(con.execute(Q_ORG_TITLES).fetchall())
     pairs = con.execute(Q_PAIRWISE).fetchall()
     return {
         "institutions": sorted(totals),
         "titles": totals,
         "pairs": [{"a": a, "b": b, "shared": s} for a, b, s in pairs],
+        "sql": [
+            {"label": "Titles per institution (the diagonal)", "sql": Q_ORG_TITLES},
+            {"label": "Shared titles for each pair", "sql": Q_PAIRWISE},
+        ],
     }
 
 
 def uniqueness(con: Connection, **_: object) -> dict:
     """Per-institution count of titles held by that institution alone."""
     rows = con.execute(Q_UNIQUENESS).fetchall()
-    return {"per_org": [{"org": org, "unique_titles": n} for org, n in rows]}
+    return {
+        "per_org": [{"org": org, "unique_titles": n} for org, n in rows],
+        "sql": [{"label": "Titles held by a single institution", "sql": Q_UNIQUENESS}],
+    }
 
+
+def publication_decade(con: Connection, *, threshold: int = 10, **_: object) -> dict:
+    """
+    Records by decade of publication (008 date1), per institution — plausible
+    years only (1450–2030), with sparse decades folded into an Other bucket.
+    """
+    data = _decade_histogram(con, threshold=threshold)
+    data["sql"] = [{"label": "Records by decade of publication", "sql": Q_DECADE}]
+    return data
+
+
+def coverage(con: Connection, **_: object) -> dict:
+    """
+    Per-institution metadata completeness: share of records carrying selected
+    fields (ISBN, subjects, author, electronic access, physical description,
+    classification). Denominators are large, so no suppression is needed.
+    """
+    rows = con.execute(Q_COVERAGE).fetchall()
+    fields = ["isbn", "subjects", "author", "online", "phys_desc", "classification"]
+    per_org = []
+    for org, records, *counts in rows:
+        pct = {
+            field: (round(count / records, 4) if records else 0.0)
+            for field, count in zip(fields, counts)
+        }
+        per_org.append({"org": org, "records": records, "coverage": pct})
+    return {
+        "fields": fields,
+        "per_org": per_org,
+        "sql": [
+            {"label": "Records carrying each field, per institution", "sql": Q_COVERAGE}
+        ],
+    }
+
+
+# --- cross-institution comparison matrices -----------------------------------
 
 # MARC country codes for the 50 U.S. states + D.C. (plus "xxu", the whole-US
 # code). Place of publication normalizes these to "xxu" so state-level codes roll
@@ -351,45 +316,9 @@ _COUNTRY_EXPR = (
     + f" ELSE {_PLACE_CODE} END"
 )
 
-
-def characterization(con: Connection, *, top_n: int = 25, threshold: int = 10) -> dict:
-    """
-    Per-institution collection characterization: publication-decade histogram,
-    and top languages / countries / subjects / record types. Each distribution
-    is suppressed (top-n + small-cell folding). Place-of-publication codes for
-    U.S. states, Canadian provinces, and UK nations are rolled up into their
-    country totals (xxu / xxc / xxk).
-    """
-    return {
-        "publication_decade": _decade_histogram(con, threshold=threshold),
-        "language": _small_card_dist(
-            con,
-            expr="upper(trim(substr(value, 36, 3)))",
-            where="field_tag = '008' AND length(value) >= 38",
-            top_n=top_n,
-            threshold=threshold,
-        ),
-        "country": _small_card_dist(
-            con,
-            expr=_COUNTRY_EXPR,
-            where="field_tag = '008' AND length(value) >= 18",
-            top_n=top_n,
-            threshold=threshold,
-        ),
-        "record_type": _small_card_dist(
-            con,
-            expr="substr(value, 7, 1)",
-            where="field_tag = 'LDR' AND length(value) >= 7",
-            top_n=top_n,
-            threshold=threshold,
-        ),
-        "subject": _subject_dist(con, top_n=top_n, threshold=threshold),
-    }
-
-
-# Dimensions offered as cross-institution comparison matrices (heatmap / small
-# multiples). Same (expr, where) as characterization's coded categoricals — incl.
-# the U.S./Canada/UK place rollup — so the two views agree on categories.
+# Dimensions offered as cross-institution comparison matrices (the Languages,
+# Place of publication, Format, and LC classification heatmaps). Each is a coded
+# categorical read straight out of MARC — (value expression, WHERE clause).
 _COMPARE_DIMENSIONS = {
     "language": (
         "upper(trim(substr(value, 36, 3)))",
@@ -415,12 +344,13 @@ _COMPARE_TOP_K = 15
 
 def comparison(con: Connection, *, threshold: int = 10, **_: object) -> dict:
     """
-    Cross-institution comparison matrices for the small-multiples / heatmap
-    views. For each dimension, the global top-k categories (ranked by total
-    count across all institutions), every institution's count per category, and
-    each institution's dimension total (the denominator for a share). Counts in
-    ``1..threshold-1`` are suppressed to null so no small cell is exposed; a
-    genuine zero stays 0. Category codes are labeled client-side.
+    Cross-institution comparison matrices for the heatmap views. For each
+    dimension: the global top-k categories (ranked by total count across all
+    institutions), every institution's count per category, each institution's
+    dimension total (the denominator for a share), and the SQL that produced the
+    raw counts. Counts in ``1..threshold-1`` are suppressed to null so no small
+    cell is exposed; a genuine zero stays 0. Category codes are labeled
+    client-side.
     """
     return {
         "dimensions": {
@@ -433,11 +363,14 @@ def comparison(con: Connection, *, threshold: int = 10, **_: object) -> dict:
 def _comparison_matrix(
     con: Connection, *, expr: str, where: str, threshold: int
 ) -> dict:
-    rows = con.execute(
-        f"SELECT org, {expr} AS cat, count(*) AS n "
-        f"FROM records WHERE {where} AND {expr} IS NOT NULL AND trim({expr}) <> '' "
-        "GROUP BY org, cat"
-    ).fetchall()
+    sql = (
+        f"SELECT org, {expr} AS category, count(*) AS n\n"
+        f"FROM records\n"
+        f"WHERE {where}\n"
+        f"  AND {expr} IS NOT NULL AND trim({expr}) <> ''\n"
+        f"GROUP BY org, category"
+    )
+    rows = con.execute(sql).fetchall()
 
     orgs = sorted({org for org, _cat, _n in rows})
     totals: dict[str, int] = dict.fromkeys(orgs, 0)
@@ -461,26 +394,8 @@ def _comparison_matrix(
         "institutions": orgs,
         "totals": totals,
         "matrix": {org: {cat: cell(org, cat) for cat in categories} for org in orgs},
+        "sql": sql,
     }
-
-
-def coverage(con: Connection, **_: object) -> dict:
-    """
-    Per-institution metadata coverage: share of records carrying selected
-    fields (ISBN, subjects, author, electronic access, physical description,
-    classification). Denominators are large, so no suppression is needed.
-    """
-    rows = con.execute(Q_COVERAGE).fetchall()
-
-    fields = ["isbn", "subjects", "author", "online", "phys_desc", "classification"]
-    per_org = []
-    for org, records, *counts in rows:
-        pct = {
-            field: (round(count / records, 4) if records else 0.0)
-            for field, count in zip(fields, counts)
-        }
-        per_org.append({"org": org, "records": records, "coverage": pct})
-    return {"fields": fields, "per_org": per_org}
 
 
 # --- internals ---------------------------------------------------------------
@@ -505,36 +420,6 @@ def _decade_histogram(con: Connection, *, threshold: int) -> dict:
         ),
         label_key="decade",
     )
-
-
-def _small_card_dist(
-    con: Connection, *, expr: str, where: str, top_n: int, threshold: int
-) -> dict:
-    """A low-cardinality categorical (language/country/record type), top-n + Other."""
-    rows = con.execute(
-        f"SELECT org, {expr} AS cat, count(*) AS count "
-        f"FROM records WHERE {where} AND {expr} IS NOT NULL AND trim({expr}) <> '' "
-        "GROUP BY org, cat"
-    ).fetchall()
-    return _group_and_suppress(
-        rows,
-        fold=lambda bucket: suppress.bucket_top_n(bucket, n=top_n, threshold=threshold),
-        label_key="category",
-    )
-
-
-def _subject_dist(con: Connection, *, top_n: int, threshold: int) -> dict:
-    """
-    Top 650 $a subject headings per org. High cardinality, so the top-n cut is
-    done in SQL (a window per org) before anything leaves the database.
-    """
-    rows = con.execute(
-        Q_SUBJECTS.format(top_n=int(top_n), threshold=int(threshold))
-    ).fetchall()
-    by_org: dict[str, list[dict]] = {}
-    for org, subject, count in rows:
-        by_org.setdefault(org, []).append({"category": subject, "count": count})
-    return {"per_org": [{"org": org, "values": vals} for org, vals in by_org.items()]}
 
 
 def _group_and_suppress(rows, *, fold, label_key: str) -> dict:

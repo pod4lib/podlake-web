@@ -130,6 +130,7 @@
           "T": 292735
         }
       },
+      "sql": "SELECT org, upper(substr(trim(value), 1, 1)) AS category, count(*) AS n\nFROM records\nWHERE field_tag IN ('050', '090') AND subfield_code = 'a' AND regexp_matches(upper(substr(trim(value), 1, 1)), '[A-Z]')\n  AND upper(substr(trim(value), 1, 1)) IS NOT NULL AND trim(upper(substr(trim(value), 1, 1))) <> ''\nGROUP BY org, category",
       "totals": {
         "brown": 2642558,
         "duke": 6400068,
@@ -269,6 +270,7 @@
           "XXU": 3399313
         }
       },
+      "sql": "SELECT org, CASE WHEN upper(trim(substr(value, 16, 3))) IN ('XXU', 'ALU', 'AKU', 'AZU', 'ARU', 'CAU', 'COU', 'CTU', 'DCU', 'DEU', 'FLU', 'GAU', 'HIU', 'IDU', 'ILU', 'INU', 'IAU', 'KSU', 'KYU', 'LAU', 'MEU', 'MDU', 'MAU', 'MIU', 'MNU', 'MSU', 'MOU', 'MTU', 'NBU', 'NVU', 'NHU', 'NJU', 'NMU', 'NYU', 'NCU', 'NDU', 'OHU', 'OKU', 'ORU', 'PAU', 'RIU', 'SCU', 'SDU', 'TNU', 'TXU', 'UTU', 'VTU', 'VAU', 'WAU', 'WVU', 'WIU', 'WYU') THEN 'XXU' WHEN upper(trim(substr(value, 16, 3))) IN ('XXC', 'ABC', 'BCC', 'MBC', 'NKC', 'NFC', 'NSC', 'NTC', 'NUC', 'ONC', 'PIC', 'QUC', 'SNC', 'YKC') THEN 'XXC' WHEN upper(trim(substr(value, 16, 3))) IN ('XXK', 'ENK', 'STK', 'WLK', 'NIK', 'UIK') THEN 'XXK' WHEN upper(trim(substr(value, 16, 3))) IN ('UUU') THEN 'XX' ELSE upper(trim(substr(value, 16, 3))) END AS category, count(*) AS n\nFROM records\nWHERE field_tag = '008' AND length(value) >= 18\n  AND CASE WHEN upper(trim(substr(value, 16, 3))) IN ('XXU', 'ALU', 'AKU', 'AZU', 'ARU', 'CAU', 'COU', 'CTU', 'DCU', 'DEU', 'FLU', 'GAU', 'HIU', 'IDU', 'ILU', 'INU', 'IAU', 'KSU', 'KYU', 'LAU', 'MEU', 'MDU', 'MAU', 'MIU', 'MNU', 'MSU', 'MOU', 'MTU', 'NBU', 'NVU', 'NHU', 'NJU', 'NMU', 'NYU', 'NCU', 'NDU', 'OHU', 'OKU', 'ORU', 'PAU', 'RIU', 'SCU', 'SDU', 'TNU', 'TXU', 'UTU', 'VTU', 'VAU', 'WAU', 'WVU', 'WIU', 'WYU') THEN 'XXU' WHEN upper(trim(substr(value, 16, 3))) IN ('XXC', 'ABC', 'BCC', 'MBC', 'NKC', 'NFC', 'NSC', 'NTC', 'NUC', 'ONC', 'PIC', 'QUC', 'SNC', 'YKC') THEN 'XXC' WHEN upper(trim(substr(value, 16, 3))) IN ('XXK', 'ENK', 'STK', 'WLK', 'NIK', 'UIK') THEN 'XXK' WHEN upper(trim(substr(value, 16, 3))) IN ('UUU') THEN 'XX' ELSE upper(trim(substr(value, 16, 3))) END IS NOT NULL AND trim(CASE WHEN upper(trim(substr(value, 16, 3))) IN ('XXU', 'ALU', 'AKU', 'AZU', 'ARU', 'CAU', 'COU', 'CTU', 'DCU', 'DEU', 'FLU', 'GAU', 'HIU', 'IDU', 'ILU', 'INU', 'IAU', 'KSU', 'KYU', 'LAU', 'MEU', 'MDU', 'MAU', 'MIU', 'MNU', 'MSU', 'MOU', 'MTU', 'NBU', 'NVU', 'NHU', 'NJU', 'NMU', 'NYU', 'NCU', 'NDU', 'OHU', 'OKU', 'ORU', 'PAU', 'RIU', 'SCU', 'SDU', 'TNU', 'TXU', 'UTU', 'VTU', 'VAU', 'WAU', 'WVU', 'WIU', 'WYU') THEN 'XXU' WHEN upper(trim(substr(value, 16, 3))) IN ('XXC', 'ABC', 'BCC', 'MBC', 'NKC', 'NFC', 'NSC', 'NTC', 'NUC', 'ONC', 'PIC', 'QUC', 'SNC', 'YKC') THEN 'XXC' WHEN upper(trim(substr(value, 16, 3))) IN ('XXK', 'ENK', 'STK', 'WLK', 'NIK', 'UIK') THEN 'XXK' WHEN upper(trim(substr(value, 16, 3))) IN ('UUU') THEN 'XX' ELSE upper(trim(substr(value, 16, 3))) END) <> ''\nGROUP BY org, category",
       "totals": {
         "brown": 2569418,
         "duke": 8626995,
@@ -408,6 +410,7 @@
           "ZXX": 236365
         }
       },
+      "sql": "SELECT org, upper(trim(substr(value, 36, 3))) AS category, count(*) AS n\nFROM records\nWHERE field_tag = '008' AND length(value) >= 38\n  AND upper(trim(substr(value, 36, 3))) IS NOT NULL AND trim(upper(trim(substr(value, 36, 3)))) <> ''\nGROUP BY org, category",
       "totals": {
         "brown": 2553033,
         "duke": 8603049,
@@ -547,6 +550,7 @@
           "t": 25397
         }
       },
+      "sql": "SELECT org, substr(value, 7, 1) AS category, count(*) AS n\nFROM records\nWHERE field_tag = 'LDR' AND length(value) >= 7\n  AND substr(value, 7, 1) IS NOT NULL AND trim(substr(value, 7, 1)) <> ''\nGROUP BY org, category",
       "totals": {
         "brown": 2581822,
         "duke": 8628676,
@@ -557,5 +561,5 @@
       }
     }
   },
-  "generated_at": "2026-07-31T17:36:26.865164+00:00"
+  "generated_at": "2026-08-01T10:28:34.728357+00:00"
 }

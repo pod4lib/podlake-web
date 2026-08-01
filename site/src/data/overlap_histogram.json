@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-31T17:36:26.865164+00:00",
+  "generated_at": "2026-08-01T10:28:34.728357+00:00",
   "held_by": [
     {
       "institutions": 1,
@@ -24,6 +24,12 @@
     {
       "institutions": 6,
       "titles": 341099
+    }
+  ],
+  "sql": [
+    {
+      "label": "Titles held by N institutions",
+      "sql": "SELECT institutions, count(*) AS titles\nFROM (\n  SELECT goldrush_key, count(DISTINCT org) AS institutions\n  FROM record_meta\n  GROUP BY goldrush_key\n)\nGROUP BY institutions\nORDER BY institutions"
     }
   ]
 }

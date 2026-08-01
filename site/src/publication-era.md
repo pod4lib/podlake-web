@@ -5,16 +5,18 @@ publication (from the MARC 008 date). Only plausible years (1450–2030) are
 counted.
 
 ```js
-const characterization = FileAttachment("./data/characterization.json").json();
+import {provenance} from "./components/provenance.js";
+const decadeFile = FileAttachment("./data/publication_decade.json");
+const decadeData = decadeFile.json();
 ```
 
 ```js
-const orgs = characterization.publication_decade.per_org.map((r) => r.org).sort();
+const orgs = decadeData.per_org.map((r) => r.org).sort();
 const org = view(Inputs.select(orgs, {label: "Institution", value: orgs[0]}));
 ```
 
 ```js
-const decades = (characterization.publication_decade.per_org.find((r) => r.org === org) ?? {values: []})
+const decades = (decadeData.per_org.find((r) => r.org === org) ?? {values: []})
   .values.filter((d) => typeof d.decade === "number")
   .sort((a, b) => a.decade - b.decade);
 ```
@@ -30,4 +32,8 @@ Plot.plot({
     Plot.ruleY([0]),
   ],
 })
+```
+
+```js
+provenance({sql: decadeData.sql, dataUrl: await decadeFile.url(), dataName: "publication_decade.json"})
 ```

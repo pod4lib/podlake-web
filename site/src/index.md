@@ -7,7 +7,9 @@ compiled from the shared catalog, never individual records. See
 [About the data](./data) for exactly what is published.
 
 ```js
-const overview = FileAttachment("./data/overview.json").json();
+import {provenance} from "./components/provenance.js";
+const overviewFile = FileAttachment("./data/overview.json");
+const overview = overviewFile.json();
 ```
 
 <div class="grid grid-cols-3">
@@ -59,4 +61,8 @@ Inputs.table(
   })),
   {sort: "records", reverse: true, rows: 20}
 )
+```
+
+```js
+provenance({sql: overview.sql, dataUrl: await overviewFile.url(), dataName: "overview.json"})
 ```

@@ -6,9 +6,15 @@ leader's type-of-record code).
 ```js
 import {recordTypeLabel} from "./components/marc.js";
 import {shareHeatmap} from "./components/heatmap.js";
-const comparison = FileAttachment("./data/comparison.json").json();
+import {provenance} from "./components/provenance.js";
+const comparisonFile = FileAttachment("./data/comparison.json");
+const comparison = comparisonFile.json();
 ```
 
 ```js
 shareHeatmap(comparison, "record_type", recordTypeLabel, {marginLeft: 205})
+```
+
+```js
+provenance({sql: comparison.dimensions.record_type.sql, dataUrl: await comparisonFile.url(), dataName: "comparison.json"})
 ```

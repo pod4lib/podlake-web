@@ -55,9 +55,9 @@ ARTIFACTS = [
         queries.uniqueness,
     ),
     (
-        "characterization.json",
-        "Per-institution decade / language / country / subject / type distributions.",
-        queries.characterization,
+        "publication_decade.json",
+        "Per-institution distribution of records by decade of publication.",
+        queries.publication_decade,
     ),
     (
         "coverage.json",
@@ -123,19 +123,6 @@ def extract(
             manifest["artifacts"].append({"file": filename, "description": description})
     finally:
         con.close()
-
-    # the SQL behind the views, published verbatim for the "About the data" page
-    queries_doc = {
-        "generated_at": generated_at,
-        "queries": queries.showcase(top_n=top_n, threshold=threshold),
-    }
-    (out / "queries.json").write_text(json.dumps(queries_doc, indent=2) + "\n")
-    logger.info(
-        "wrote %s (%d queries)", out / "queries.json", len(queries_doc["queries"])
-    )
-    manifest["artifacts"].append(
-        {"file": "queries.json", "description": "The DuckDB SQL behind each view."}
-    )
 
     (out / "manifest.json").write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n"

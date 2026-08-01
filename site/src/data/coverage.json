@@ -7,7 +7,7 @@
     "phys_desc",
     "classification"
   ],
-  "generated_at": "2026-07-31T17:36:26.865164+00:00",
+  "generated_at": "2026-08-01T10:28:34.728357+00:00",
   "per_org": [
     {
       "coverage": {
@@ -80,6 +80,12 @@
       },
       "org": "stanford",
       "records": 8959493
+    }
+  ],
+  "sql": [
+    {
+      "label": "Records carrying each field, per institution",
+      "sql": "WITH present AS (\n  SELECT org, pod_record_id,\n         max(field_tag = '020')                AS isbn,\n         max(field_tag LIKE '6%')              AS subjects,\n         max(field_tag IN ('100','110','111')) AS author,\n         max(field_tag = '856')                AS online,\n         max(field_tag = '300')                AS phys_desc,\n         max(field_tag IN ('050','082','090')) AS classification\n  FROM records\n  GROUP BY org, pod_record_id\n)\nSELECT org, count(*) AS records,\n       sum(isbn) AS isbn, sum(subjects) AS subjects, sum(author) AS author,\n       sum(online) AS online, sum(phys_desc) AS phys_desc,\n       sum(classification) AS classification\nFROM present\nGROUP BY org\nORDER BY org"
     }
   ]
 }

@@ -45,22 +45,18 @@ lake. Deeper, record-level analysis (last-copy lists, text search, external
 matching against HathiTrust or the public domain) is handled separately through
 gated tools, not this public site.
 
-## The queries behind these views
+## The queries behind the views
 
-These are the actual DuckDB queries that produce the figures above — nothing
-fancier than SQL over two tables. `record_meta` has one row per record (with its
-Gold Rush match key, `goldrush_key`); `records` is a tall table with one row per
-MARC subfield (`org, pod_record_id, field_tag, field_seq, ind1, ind2,
-subfield_code, subfield_seq, value`), so any field or subfield is a plain `WHERE`
-clause. If they spark an idea for a view we're missing, that's exactly the point
-— see [Query it yourself](./query) to run queries like these against the lake
-directly with DuckDB.
+Every chart on this site has a **Behind this chart** panel showing the exact
+DuckDB query that produced its data, plus a link to download that derived data.
+The queries are nothing fancier than SQL over two tables: `record_meta` (one row
+per record, with its Gold Rush match key `goldrush_key`) and `records` (a tall
+table, one row per MARC subfield, so any field or subfield is a plain `WHERE`
+clause).
 
-```js
-import {sqlCard} from "./components/sql.js";
-const queries = FileAttachment("./data/queries.json").json();
-```
-
-```js
-html`${queries.queries.map(sqlCard)}`
-```
+The SQL is only half the story — the raw counts are then shaped in Python
+(small-cell suppression, the comparison share matrices, the place roll-ups). All
+of that lives in the extract:
+[`extract/src/podlake_web`](https://github.com/sul-dlss/podlake-web/tree/main/extract/src/podlake_web).
+To run queries like these against the lake yourself, see
+[Query it yourself](./query).
