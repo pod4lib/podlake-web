@@ -3,7 +3,7 @@
 Serials and other continuing resources, identified from the MARC leader's
 bibliographic level (position 07 = `s`). Every institution's serial holdings
 grow along the same historical curve, so these views instead look for what makes
-each collection *different* — how current it is, how far back it reaches, and
+each collection *different*: how current it is, how far back it reaches, and
 what its serials are about.
 
 ```js
@@ -20,14 +20,11 @@ const succession = successionFile.json();
 
 ## Active serials over time
 
-How many of an institution's serials were *being published* in a given year — a
-serial counts in every year from its start to its end (from the 008 dates), with
-titles still published running to ${timeline.now_year}. You can watch the great
-wave of 19th- and 20th-century serial founding accumulate, and the growth
-flatten (and for some, dip) in the last few years as titles cease or migrate
-online. Serials with an unknown start or an undetermined end can't be placed on
-the timeline and are omitted. The shape is remarkably consistent across
-institutions — the sections below are where they diverge.
+How many of an institution's serials were *being published* in a given year?
+This chart contains serial counts in every year from its start to its end (from
+the dates in the MARC 008 field), with titles still published running to
+${timeline.now_year}. Serials with an unknown start or an undetermined end
+can't be placed on the timeline and are omitted.
 
 ```js
 const serialOrgs = timeline.active.map((r) => r.org).sort();
@@ -59,11 +56,9 @@ provenance({sql: [timeline.sql[0]], dataUrl: await timelineFile.url(), dataName:
 
 ## Currency: still published, ceased, or unknown
 
-The publication status recorded in the 008 (character 06) — a measure of how
-*living* each serial collection is. Brown and Penn lean archival (most of their
-serials have ceased), Harvard holds the largest share still being published, and
-Duke's serials are disproportionately coded "unknown." Columns sum to ~100%;
-serials without one of these three status codes are omitted.
+The publication status recorded in the 008 (character 06) is a measure of how
+*living* each serial collection is. Columns sum to ~100\% since serials without
+one of these three status codes are omitted.
 
 ```js
 // re-order categories to the semantic still-published → ceased → unknown
@@ -127,26 +122,25 @@ absorbs another. Catalogers record these events directly on the record with two
 **linking-entry** fields: **`780`** points *backward* to the title a serial
 **continues** (its predecessor), and **`785`** points *forward* to the title it
 **became** (its successor). Together they stitch separate catalog records into a
-single lineage — so a run you might think of as one long-lived journal is often
+single lineage. So a run you might think of as one long-lived journal is often
 several records chained by these links.
 
 Reconstructing the full chains (title A → B → C) is genuinely hard: it means
 matching each linked title back to its own record. So these two charts take the
-low-hanging fruit instead — *how often* the links appear, and *what kind* of
-change they record. Two things to keep in mind while reading them:
+low-hanging fruit instead and show *how often* the links appear, and *what
+kind* of change they record. Two things to keep in mind while reading them:
 
 - A single lineage appears as **several** linked records, not one, so these
   count links, not distinct histories.
 - Whether a link is present reflects **cataloging thoroughness** as much as the
-  underlying history — a missing link doesn't prove a title never changed.
+  underlying history. A missing link doesn't prove a title never changed.
 
 ### Serials that are part of a lineage
 
-The share of each institution's serials that carry a predecessor (`780`) or a
-successor (`785`) link — i.e. that are documented as part of a title's larger
-history. Roughly a fifth to nearly half of each collection is linked this way.
-The two rows are **independent** (a serial can have both a predecessor and a
-successor), so they do not sum to 100%.
+The share of each institution's serials that carry a predecessor (`780`) or
+a successor (`785`) link, i.e. that are documented as part of a title's larger
+history. The two rows are **independent** (a serial can have both a predecessor
+and a successor), so they do not sum to 100%.
 
 ```js
 shareHeatmap(succession, "succession_link", successionLinkLabel, {marginLeft: 240, legendLabel: "share of serials", rowHeight: 66})
@@ -159,12 +153,9 @@ provenance({sql: succession.dimensions.succession_link.sql, dataUrl: await succe
 ### How serials transform
 
 Among the serials that *were* succeeded by another title, the kind of change
-recorded — read from the `785` field's second indicator. A plain **rename**
-("continued by") is by far the most common; **mergers** (two titles combine),
-**splits** (one title divides), and **absorptions** (one title swallows another)
-are the rarer, more interesting transitions. Each cell is a share of all that
-institution's serials, so a column roughly totals its "continued by a later
-title" figure above.
+recorded (read from the `785` field's second indicator). Each cell is a share
+of all that institution's serials, so a column roughly totals its "continued by
+a later title" figure above.
 
 ```js
 shareHeatmap(succession, "succession_type", successionTypeLabel, {marginLeft: 190, legendLabel: "share of serials"})
@@ -178,7 +169,7 @@ provenance({sql: succession.dimensions.succession_type.sql, dataUrl: await succe
 
 The subject mix *within* each institution's serials: of the serials that carry
 an LC call number, the share in each Library of Congress class (so a column adds
-up to ~100%). Same first-LC-match logic as the
+up to ~100\%). Same first-LC-match logic as the
 [LC classification](./lc-classification) page, restricted to serial records.
 
 ```js
