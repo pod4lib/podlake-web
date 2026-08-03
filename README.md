@@ -1,70 +1,73 @@
 # podlake-web
 
 A public, client-side dashboard that showcases the consortial collection
-analytics possible with [podlake](https://github.com/sul-dlss/podlake) — overlap
-and rarity, collection characterization, and metadata quality across the
+analytics possible with [podlake](https://github.com/sul-dlss/podlake) for the
 [POD](https://pod.stanford.edu/) community.
 
-## Why it is built this way
+Live at <https://sul-dlss.github.io/podlake-web/>.
 
-The podlake DuckLake holds hundreds of millions of record-level rows and **cannot
-be made public**. So this project splits cleanly in two:
+## Design
+
+The podlake DuckLake holds hundreds of millions of record-level rows and is only
+accessible to POD members. So this project has two components:
 
 1. **`extract/`** — a Python step that connects *read-only* to the private lake
    and compiles a handful of small, **aggregate-only** JSON artifacts (counts,
-   distributions, percentages — no record ids, work keys, titles, or raw field
-   values). Small cells are suppressed so nothing can finger an individual
-   holding. This is the only thing that touches the lake.
+   distributions, percentages — never record identifiers, titles, or raw field
+   values).
 2. **`site/`** — an [Observable Framework](https://observablehq.com/framework/)
    app that reads *only* those artifacts and renders them. It is fully static and
-   serverless: deploy the built files to S3 or GitHub Pages, no database to reach.
+   serverless: the built files deploy to GitHub Pages, with no database to reach.
 
-This is **Tier 1**. The same extract framework is the spine for later tiers:
-
-- **Tier 2** — a compact, non-identifying work-membership extract queried
-  client-side with DuckDB-WASM for "my institution vs. selected partners"
-  comparisons.
-- **Tier 3** — record-level work (last-copy lists, list upload, text search,
-  external matching) served through *gated* tools against the private lake, never
-  from this public site.
+The aggregate artifacts in `site/src/data/*.json` are **committed** — they are the
+published snapshot the site is built from. Refreshing the figures means re-running
+`extract` against the lake and committing the updated JSON.
 
 ## Quickstart
 
-Build the aggregates from a lake, then run the site. `extract` takes an explicit
-`--catalog` naming the lake to read — a local `.ducklake` file, an
-`s3://…/x.ducklake` object, or a `postgres:…` DSN — so it can run anywhere the
-lake is reachable, not just next to it:
+The `Makefile` wraps the common tasks. `extract` needs an explicit `CATALOG`
+naming the lake to read — a local `.ducklake` file, an `s3://…/x.ducklake`
+object, or a `postgres:…` DSN — so it can run anywhere the lake is reachable:
 
 ```sh
-# 1. compile the public artifacts from the lake
-cd extract
+# one-time: install the site's npm deps (extract's Python deps are handled by uv)
+cd site && npm install && cd ..
+
+# 1. compile the public aggregate artifacts into site/src/data/*.json
 
 # a local podlake checkout (data path defaults to the sibling lake-data/):
-uv run podlake-web extract --catalog ../../podlake/podlake.ducklake
+make extract CATALOG=../../podlake/podlake.ducklake
 
 # a lake published to S3 by `podlake publish`:
-uv run podlake-web extract --catalog s3://my-bucket/podlake/podlake.ducklake
+make extract CATALOG=s3://my-bucket/podlake/podlake.ducklake
 
 # a Postgres-catalog lake (S3 data path is required — it can't be derived):
-uv run podlake-web extract \
-  --catalog "postgres:host=… dbname=… user=… password=…" \
-  --data-path s3://my-bucket/podlake/lake-data/
-# all three write site/src/data/*.json
+make extract CATALOG="postgres:host=… dbname=… user=… password=…" \
+             DATA_PATH=s3://my-bucket/podlake/lake-data/
 
-# 2. preview the dashboard
-cd ../site
-npm install
-npm run dev                            # or: npm run build  -> site/dist
+# 2. preview the dashboard (reads the artifacts from step 1)
+make site            # dev server at http://127.0.0.1:3000
+make build           # or: produce the static site in site/dist
+
+# lint, type-check, and test the extract step
+make check
 ```
 
-For file catalogs `--data-path` defaults to the catalog's sibling `lake-data/`
-(how `podlake publish` lays a lake out); pass it explicitly to override. S3
-access uses DuckDB's credential chain (standard `AWS_*` env vars, shared config,
-or an assumed role).
+For file catalogs `DATA_PATH` defaults to the catalog's sibling `lake-data/` (how
+`podlake publish` lays a lake out); pass it explicitly to override. S3 access uses
+DuckDB's credential chain (standard `AWS_*` env vars, shared config, or an assumed
+role).
 
-`make extract CATALOG=…` (and `DATA_PATH=…` when needed) and `make site` wrap
-these. The generated `site/src/data/*.json` are gitignored — they are rebuilt
-from the lake, so a deploy runs `extract` before `build`.
+## Deployment
+
+`.github/workflows/deploy.yml` deploys the site to GitHub Pages on every push to
+`main`: it runs `npm run build` and publishes `site/dist`. **The build uses the
+committed `site/src/data/*.json` snapshot — CI never touches the private lake.**
+So updating the live figures is a two-step commit: `make extract CATALOG=…`, then
+commit the changed artifacts.
+
+The repository's **Settings → Pages → Source** must be set to **"GitHub Actions"**
+(not "Deploy from a branch"); the workflow already handles the build and upload.
 
 ## Layout
 
