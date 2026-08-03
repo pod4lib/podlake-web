@@ -60,6 +60,16 @@ ARTIFACTS = [
         queries.publication_decade,
     ),
     (
+        "serials_timeline.json",
+        "Per-institution count of serials actively published in each year.",
+        queries.serials_timeline,
+    ),
+    (
+        "serials_succession.json",
+        "Per-institution serial succession: lineage links and transition types.",
+        queries.serials_succession,
+    ),
+    (
         "coverage.json",
         "Per-institution share of records carrying selected MARC fields.",
         queries.coverage,

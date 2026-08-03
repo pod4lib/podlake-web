@@ -1,0 +1,162 @@
+{
+  "dimensions": {
+    "succession_link": {
+      "categories": [
+        "pred",
+        "succ"
+      ],
+      "institutions": [
+        "brown",
+        "duke",
+        "harvard",
+        "penn",
+        "princeton",
+        "stanford"
+      ],
+      "matrix": {
+        "brown": {
+          "pred": 17721,
+          "succ": 16413
+        },
+        "duke": {
+          "pred": 64431,
+          "succ": 50948
+        },
+        "harvard": {
+          "pred": 100711,
+          "succ": 96062
+        },
+        "penn": {
+          "pred": 46537,
+          "succ": 44401
+        },
+        "princeton": {
+          "pred": 47451,
+          "succ": 42714
+        },
+        "stanford": {
+          "pred": 75519,
+          "succ": 69716
+        }
+      },
+      "sql": "WITH serial AS (\n  SELECT DISTINCT org, pod_record_id FROM records\n  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'\n)\nSELECT org, 'pred' AS category, count(*) AS n FROM serial\nWHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '780')\nGROUP BY org\nUNION ALL\nSELECT org, 'succ' AS category, count(*) AS n FROM serial\nWHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '785')\nGROUP BY org",
+      "totals": {
+        "brown": 60329,
+        "duke": 447729,
+        "harvard": 479758,
+        "penn": 180600,
+        "princeton": 161044,
+        "stanford": 341843
+      }
+    },
+    "succession_type": {
+      "categories": [
+        "0",
+        "7",
+        "4",
+        "2",
+        "1",
+        "6",
+        "3",
+        "5",
+        "8"
+      ],
+      "institutions": [
+        "brown",
+        "duke",
+        "harvard",
+        "penn",
+        "princeton",
+        "stanford"
+      ],
+      "matrix": {
+        "brown": {
+          "0": 12882,
+          "1": 477,
+          "2": 663,
+          "3": 96,
+          "4": 716,
+          "5": 50,
+          "6": 321,
+          "7": 1244,
+          "8": 58
+        },
+        "duke": {
+          "0": 41872,
+          "1": 1593,
+          "2": 398,
+          "3": 52,
+          "4": 1856,
+          "5": 104,
+          "6": 1011,
+          "7": 4401,
+          "8": 40
+        },
+        "harvard": {
+          "0": 78505,
+          "1": 1939,
+          "2": 3506,
+          "3": 295,
+          "4": 3345,
+          "5": 238,
+          "6": 1630,
+          "7": 6134,
+          "8": 169
+        },
+        "penn": {
+          "0": 35929,
+          "1": 1018,
+          "2": 927,
+          "3": 111,
+          "4": 1936,
+          "5": 151,
+          "6": 727,
+          "7": 3737,
+          "8": 70
+        },
+        "princeton": {
+          "0": 36131,
+          "1": 938,
+          "2": 788,
+          "3": 77,
+          "4": 1190,
+          "5": 84,
+          "6": 872,
+          "7": 2720,
+          "8": 73
+        },
+        "stanford": {
+          "0": 57947,
+          "1": 1479,
+          "2": 2757,
+          "3": 213,
+          "4": 2081,
+          "5": 144,
+          "6": 1185,
+          "7": 4149,
+          "8": 66
+        }
+      },
+      "sql": "WITH serial AS (\n  SELECT DISTINCT org, pod_record_id FROM records\n  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'\n)\nSELECT r.org, r.ind2 AS category, count(DISTINCT r.pod_record_id) AS n\nFROM records r\nJOIN serial USING (org, pod_record_id)\nWHERE r.field_tag = '785' AND r.ind2 IN ('0','1','2','3','4','5','6','7','8')\nGROUP BY r.org, r.ind2",
+      "totals": {
+        "brown": 60329,
+        "duke": 447729,
+        "harvard": 479758,
+        "penn": 180600,
+        "princeton": 161044,
+        "stanford": 341843
+      }
+    }
+  },
+  "generated_at": "2026-08-01T10:28:34.728357+00:00",
+  "sql": [
+    {
+      "label": "Serials linked to a predecessor / successor",
+      "sql": "WITH serial AS (\n  SELECT DISTINCT org, pod_record_id FROM records\n  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'\n)\nSELECT org, 'pred' AS category, count(*) AS n FROM serial\nWHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '780')\nGROUP BY org\nUNION ALL\nSELECT org, 'succ' AS category, count(*) AS n FROM serial\nWHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '785')\nGROUP BY org"
+    },
+    {
+      "label": "Serials by succeeding-entry (785) relationship type",
+      "sql": "WITH serial AS (\n  SELECT DISTINCT org, pod_record_id FROM records\n  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'\n)\nSELECT r.org, r.ind2 AS category, count(DISTINCT r.pod_record_id) AS n\nFROM records r\nJOIN serial USING (org, pod_record_id)\nWHERE r.field_tag = '785' AND r.ind2 IN ('0','1','2','3','4','5','6','7','8')\nGROUP BY r.org, r.ind2"
+    }
+  ]
+}

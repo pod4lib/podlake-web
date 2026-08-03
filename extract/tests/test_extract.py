@@ -173,10 +173,95 @@ def test_publication_decade(con):
     assert out["sql"]  # the query is embedded for the "behind this chart" panel
 
 
+def test_serials_timeline(tmp_path):
+    # A serial is active in every year of its run; 'c'/9999 run to NOW_YEAR,
+    # 'd' uses its numeric end. Non-serials and undated serials drop out.
+    serial_leader = "00000nas a2200000 a 4500"  # leader/07 = 's'
+
+    def serial(rid, gr, date_type, y1, y2):
+        pid = f"z:{rid}"
+        v = list(" " * 40)
+        v[0:6] = list("000000")
+        v[6] = date_type
+        v[7:11] = list(y1)
+        v[11:15] = list(y2)
+        rows = [
+            ("z", pid, "LDR", 0, None, None, None, None, serial_leader),
+            ("z", pid, "008", 1, None, None, None, None, "".join(v)),
+        ]
+        return rows, ("z", pid, gr)
+
+    records = [
+        serial("a", "k1", "d", "1990", "1995"),  # ceased: active 1990..1995
+        serial("b", "k2", "c", "2000", "9999"),  # ongoing: active 2000..NOW_YEAR
+        serial("c", "k3", "u", "18uu", "9999"),  # unknown start -> dropped
+    ]
+    config = _build_lake(tmp_path, {"z": records})
+    connection = lake.connect(read_only=True, config=config)
+    try:
+        out = queries.serials_timeline(connection)
+    finally:
+        connection.close()
+
+    assert out["now_year"] == queries.NOW_YEAR
+    by_year = {v["year"]: v["count"] for v in out["active"][0]["values"]}
+    assert by_year[1990] == 1 and by_year[1995] == 1  # ceased serial spans these
+    assert 1996 not in by_year  # and not beyond its end
+    assert by_year[2000] == 1 and by_year[queries.NOW_YEAR] == 1  # ongoing to present
+    assert 1998 not in by_year  # gap between the two serials
+
+    # start-decade vintage: the two dated serials fall in the 1990s and 2000s;
+    # the undated one (18uu) is excluded.
+    decades = {v["decade"]: v["count"] for v in out["start_decade"][0]["values"]}
+    assert decades == {1990: 1, 2000: 1}
+
+
+def test_serials_succession(tmp_path):
+    # 780 (predecessor) / 785 (successor) links, measured against total serials.
+    serial_leader = "00000nas a2200000 a 4500"  # leader/07 = 's'
+
+    def serial(rid, *links):  # links: (tag, ind2)
+        pid = f"w:{rid}"
+        rows = [("w", pid, "LDR", 0, None, None, None, None, serial_leader)]
+        for i, (tag, ind2) in enumerate(links, start=1):
+            rows.append(("w", pid, tag, i, " ", ind2, "t", 0, "Linked title"))
+        return rows, ("w", pid, rid)
+
+    records = [
+        serial("s1", ("780", "0"), ("785", "0")),  # predecessor + "continued by"
+        serial("s2", ("785", "7")),  # "merged to form"
+        serial("s3"),  # no links
+    ]
+    config = _build_lake(tmp_path, {"w": records})
+    connection = lake.connect(read_only=True, config=config)
+    try:
+        out = queries.serials_succession(connection, threshold=1)
+    finally:
+        connection.close()
+
+    link = out["dimensions"]["succession_link"]
+    assert link["totals"]["w"] == 3  # denominator is all serials
+    assert link["matrix"]["w"]["pred"] == 1  # only s1 has a 780
+    assert link["matrix"]["w"]["succ"] == 2  # s1 and s2 have a 785
+
+    types = out["dimensions"]["succession_type"]
+    assert types["matrix"]["w"]["0"] == 1  # s1 continued by
+    assert types["matrix"]["w"]["7"] == 1  # s2 merged
+    # ranked most-common-first; only present types kept
+    assert set(types["categories"]) == {"0", "7"}
+
+
 def test_comparison_matrix(con):
     out = queries.comparison(con, threshold=1)
     dims = out["dimensions"]
-    assert set(dims) == {"language", "country", "record_type", "classification"}
+    assert set(dims) == {
+        "language",
+        "country",
+        "record_type",
+        "classification",
+        "serial_classification",
+        "serial_status",
+    }
 
     lang = dims["language"]
     assert lang["institutions"] == ["harvard", "stanford"]
@@ -204,21 +289,29 @@ def test_comparison_suppresses_small_cells(con):
 
 def test_classification_first_lc_match(tmp_path):
     # LC class comes from the first LC-shaped call number across the priority of
-    # locations; non-LC (Dewey) values are skipped, one class per record.
+    # locations; non-LC values (Dewey, NLM, and 852s whose scheme indicator is
+    # not LC) are skipped, one class per record.
     def rec(rid, gr, *fields):
+        # each field is (tag, code, val) or (tag, code, val, ind1)
         org, pid = "x", f"x:{rid}"
         rows = [(org, pid, "LDR", 0, None, None, None, None, LEADER)]
-        for i, (tag, code, val) in enumerate(fields, start=1):
-            rows.append((org, pid, tag, i, " ", " ", code, 0, val))
+        for i, field in enumerate(fields, start=1):
+            tag, code, val = field[:3]
+            ind1 = field[3] if len(field) > 3 else " "
+            rows.append((org, pid, tag, i, ind1, " ", code, 0, val))
         return rows, (org, pid, gr)
 
     records = [
         rec("a", "k1", ("050", "a", "QA76 .A1")),  # 050 -> Q
-        rec("b", "k2", ("852", "h", "PN1993 .B7")),  # local 852$h holds LC -> P
-        rec("c", "k3", ("852", "h", "823.91 A437")),  # Dewey only -> dropped
+        rec("b", "k2", ("852", "h", "PN1993 .B7", "0")),  # 852 ind1=0 (LC) -> P
+        rec("c", "k3", ("852", "h", "823.91 A437", "0")),  # Dewey value -> dropped
         rec(
-            "d", "k4", ("852", "h", "500 X9"), ("900", "f", "DA10 .Z9")
-        ),  # skip Dewey -> D
+            "e", "k5", ("852", "h", "PN1993 .B7", "1")
+        ),  # 852 ind1=1 (Dewey) -> dropped
+        rec("f", "k6", ("050", "a", "QW 100")),  # NLM QW in 050 -> dropped
+        rec(
+            "d", "k4", ("852", "h", "500 X9", "0"), ("900", "f", "DA10 .Z9")
+        ),  # skip Dewey 852 -> first LC match is 900$f -> D
     ]
     config = _build_lake(tmp_path, {"x": records})
     connection = lake.connect(read_only=True, config=config)
@@ -229,7 +322,9 @@ def test_classification_first_lc_match(tmp_path):
 
     cls = out["dimensions"]["classification"]
     counts = {c: cls["matrix"]["x"][c] for c in cls["categories"]}
-    assert counts == {"D": 1, "P": 1, "Q": 1}  # Dewey-only record contributes nothing
+    # Q from record a only (NLM 'QW' dropped); P from the LC-indicator 852 only
+    # (the Dewey-indicator 852 dropped); D from the 900$f fallback.
+    assert counts == {"D": 1, "P": 1, "Q": 1}
 
 
 def test_reconstitute_record(con):

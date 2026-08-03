@@ -9,9 +9,9 @@ export default {
     {name: "Place of publication", path: "/place-of-publication"},
     {name: "Format", path: "/format"},
     {name: "LC classification", path: "/lc-classification"},
+    {name: "Serials", path: "/serials"},
     {name: "Completeness", path: "/completeness"},
     {name: "About the data", path: "/data"},
-    {name: "Query it yourself", path: "/query"},
   ],
   // Bump Observable Plot's default label size (10px presentation attribute on
   // the root <svg>) for more legible axis, tick, and legend text everywhere.

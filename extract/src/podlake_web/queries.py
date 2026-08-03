@@ -96,26 +96,143 @@ WHERE field_tag = '008'
 GROUP BY org, decade
 ORDER BY org, decade"""
 
+# Treat "still published" (008/06='c') and the 9999 open-ended marker as running
+# to this year — the snapshot's notion of "present". Records dated past it are
+# clamped out; bump when the lake is refreshed well beyond it.
+NOW_YEAR = 2025
+
+# Serials active per year: a serial (leader/07='s') is "active" in every year its
+# publication run covers. Start = 008 date1; end = 008 date2, except 'c' (still
+# published) and the 9999 marker run to NOW_YEAR. Serials with an unknown start
+# or an undetermined end ('u' status, non-numeric date2) can't be placed on the
+# timeline and drop out. The {N} tokens are filled with NOW_YEAR before running
+# (an f-string would collide with the regexp {4} quantifier).
+Q_SERIALS_ACTIVE = """\
+WITH serial AS (
+  SELECT DISTINCT org, pod_record_id FROM records
+  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'
+),
+dated AS (
+  SELECT s.org,
+         substr(r.value, 7, 1) AS date_type,
+         CAST(substr(r.value, 8, 4) AS INTEGER) AS y1,
+         substr(r.value, 12, 4) AS d2
+  FROM serial s JOIN records r USING (org, pod_record_id)
+  WHERE r.field_tag = '008' AND length(r.value) >= 15
+    AND regexp_matches(substr(r.value, 8, 4), '^[0-9]{4}$')
+    AND CAST(substr(r.value, 8, 4) AS INTEGER) BETWEEN 1500 AND {N}
+),
+span AS (
+  SELECT org, y1,
+         CASE
+           WHEN d2 = '9999' THEN {N}
+           WHEN date_type = 'c' THEN {N}
+           WHEN date_type = 'd' AND regexp_matches(d2, '^[0-9]{4}$')
+                THEN CAST(d2 AS INTEGER)
+         END AS y2
+  FROM dated
+),
+active AS (
+  SELECT org, y1, y2 FROM span
+  WHERE y2 IS NOT NULL AND y2 >= y1 AND y2 <= {N}
+)
+SELECT org, yr AS year, count(*) AS records
+FROM active, unnest(generate_series(y1, y2)) AS g(yr)
+GROUP BY org, yr
+ORDER BY org, yr"""
+
+# Serials by decade of first publication (008 date1). Normalized per institution
+# on the site, this shows collection *vintage* — deep historical runs vs mostly
+# recent — independent of collection size.
+Q_SERIALS_START_DECADE = """\
+WITH serial AS (
+  SELECT DISTINCT org, pod_record_id FROM records
+  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'
+)
+SELECT s.org,
+       (CAST(substr(r.value, 8, 4) AS INTEGER) // 10) * 10 AS decade,
+       count(*) AS records
+FROM serial s JOIN records r USING (org, pod_record_id)
+WHERE r.field_tag = '008' AND length(r.value) >= 11
+  AND regexp_matches(substr(r.value, 8, 4), '^[0-9]{4}$')
+  AND CAST(substr(r.value, 8, 4) AS INTEGER) BETWEEN 1700 AND 2025
+GROUP BY s.org, decade
+ORDER BY s.org, decade"""
+
+# Serial succession: catalogers record title changes with linking-entry fields —
+# 780 (preceding entry, what this serial continues) and 785 (succeeding entry,
+# what it became). These queries measure the *presence* of those links per
+# serial, and the 785 relationship type (its indicator 2), against the total
+# serial count. They do not reconstruct chains.
+Q_SER_TOTAL = """\
+SELECT org, count(*) AS n
+FROM (SELECT DISTINCT org, pod_record_id FROM records
+      WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's')
+GROUP BY org"""
+
+Q_SER_LINK = """\
+WITH serial AS (
+  SELECT DISTINCT org, pod_record_id FROM records
+  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'
+)
+SELECT org, 'pred' AS category, count(*) AS n FROM serial
+WHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '780')
+GROUP BY org
+UNION ALL
+SELECT org, 'succ' AS category, count(*) AS n FROM serial
+WHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '785')
+GROUP BY org"""
+
+Q_SER_TYPE = """\
+WITH serial AS (
+  SELECT DISTINCT org, pod_record_id FROM records
+  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'
+)
+SELECT r.org, r.ind2 AS category, count(DISTINCT r.pod_record_id) AS n
+FROM records r
+JOIN serial USING (org, pod_record_id)
+WHERE r.field_tag = '785' AND r.ind2 IN ('0','1','2','3','4','5','6','7','8')
+GROUP BY r.org, r.ind2"""
+
 # Where an LC call number lives, in priority order (first match wins): the
 # standard 050/090, plus the local holdings/item fields libraries actually use
-# (852 at Harvard/Princeton, 950 at Stanford, 900 $f at Brown, …). A leading A–Z
-# marks an LC call number and skips non-LC schemes (Dewey numbers lead with a
-# digit). Shared by the LC-classification heatmap and the completeness scorecard.
+# (852 at Harvard/Princeton, 950 at Stanford, 900 $f at Brown, …). Shared by the
+# LC-classification heatmap and the completeness scorecard.
+#
+# Each location is (field, subfield, extra) where `extra` is an additional SQL
+# condition or None. The 852 holdings field's first indicator encodes the
+# shelving scheme, so we require ind1='0' (LC classification) — otherwise its $h
+# also carries Dewey, NLM, SuDoc, and local schemes. The 050/090 fields are LC
+# by definition/convention; the local 9xx fields have no scheme indicator, so we
+# lean on the LC-shaped value check and accept that a stray non-LC number there
+# is indistinguishable (we would rather undercount than mislabel).
 _LC_LOCATIONS = [
-    ("050", "a"),
-    ("090", "a"),
-    ("852", "h"),
-    ("950", "a"),
-    ("900", "f"),
-    ("099", "a"),
-    ("949", "a"),
+    ("050", "a", None),
+    ("090", "a", None),
+    ("852", "h", "ind1 = '0'"),
+    ("950", "a", None),
+    ("900", "f", None),
+    ("099", "a", None),
+    ("949", "a", None),
 ]
+
+
+def _lc_loc_cond(field: str, subfield: str, extra: str | None) -> str:
+    cond = f"field_tag = '{field}' AND subfield_code = '{subfield}'"
+    return f"{cond} AND {extra}" if extra else cond
+
+
+# LC-shaped value: leads with a class letter LC actually uses (A–H, J–N, P–V, Z
+# — LC skips I, O, W, X, Y), and is not an NLM preclinical number (NLM reuses Q
+# for QS–QZ, which LC never does). Dewey/UDC lead with a digit and fall out here.
+_LC_SHAPE = (
+    "regexp_matches(upper(substr(trim(value), 1, 1)), '[A-HJ-NP-VZ]') "
+    "AND NOT regexp_matches(upper(substr(trim(value), 1, 2)), '^Q[S-Z]')"
+)
 _LC_CALLNUM = (
     "("
-    + " OR ".join(
-        f"(field_tag = '{f}' AND subfield_code = '{s}')" for f, s in _LC_LOCATIONS
-    )
-    + ") AND regexp_matches(upper(substr(trim(value), 1, 1)), '[A-Z]')"
+    + " OR ".join(f"({_lc_loc_cond(*loc)})" for loc in _LC_LOCATIONS)
+    + f") AND {_LC_SHAPE}"
 )
 
 Q_COVERAGE = f"""\
@@ -206,6 +323,92 @@ def publication_decade(con: Connection, *, threshold: int = 10, **_: object) -> 
     data = _decade_histogram(con, threshold=threshold)
     data["sql"] = [{"label": "Records by decade of publication", "sql": Q_DECADE}]
     return data
+
+
+def serials_timeline(con: Connection, **_: object) -> dict:
+    """
+    Two time views of each institution's serials, both counting holdings (a title
+    held by several institutions is counted once per holder):
+
+    - ``active``: serials being published in each year (start ≤ year ≤ end); see
+      ``Q_SERIALS_ACTIVE`` for how the run is derived from the 008 dates.
+    - ``start_decade``: serials by decade of first publication, for a normalized
+      view of collection vintage.
+    """
+    active_sql = Q_SERIALS_ACTIVE.replace("{N}", str(NOW_YEAR))
+    active: dict[str, list] = {}
+    for org, year, records in con.execute(active_sql).fetchall():
+        active.setdefault(org, []).append({"year": year, "count": records})
+
+    starts: dict[str, list] = {}
+    for org, decade, records in con.execute(Q_SERIALS_START_DECADE).fetchall():
+        starts.setdefault(org, []).append({"decade": decade, "count": records})
+
+    orgs = sorted(set(active) | set(starts))
+    return {
+        "now_year": NOW_YEAR,
+        "active": [{"org": o, "values": active.get(o, [])} for o in orgs],
+        "start_decade": [{"org": o, "values": starts.get(o, [])} for o in orgs],
+        "sql": [
+            {"label": "Active serials per year", "sql": active_sql},
+            {
+                "label": "Serials by decade of first publication",
+                "sql": Q_SERIALS_START_DECADE,
+            },
+        ],
+    }
+
+
+def serials_succession(con: Connection, *, threshold: int = 10, **_: object) -> dict:
+    """
+    Serial succession as recorded in the 780/785 linking-entry fields, shaped as
+    two share-heatmap dimensions (denominator = each institution's total serials,
+    so the shares are of *all* serials, not just linked ones):
+
+    - ``succession_link``: share of serials carrying a predecessor (780) or a
+      successor (785) link — the two overlap and do not sum to 100%.
+    - ``succession_type``: share of serials with each kind of 785 relationship
+      (its indicator 2: continued by, merged, split, absorbed, …).
+
+    Counts below ``threshold`` are suppressed to null.
+    """
+    totals = dict(con.execute(Q_SER_TOTAL).fetchall())
+    orgs = sorted(totals)
+
+    def dimension(sql: str, categories: list[str], *, rank: bool) -> dict:
+        counts = {(org, cat): n for org, cat, n in con.execute(sql).fetchall()}
+        cats = categories
+        if rank:  # keep the categories present, most common first
+            totals_by_cat: dict[str, int] = {}
+            for (_org, cat), n in counts.items():
+                totals_by_cat[cat] = totals_by_cat.get(cat, 0) + n
+            cats = sorted(totals_by_cat, key=lambda c: -totals_by_cat[c])
+
+        def cell(org: str, cat: str) -> int | None:
+            n = counts.get((org, cat), 0)
+            return n if (n == 0 or n >= threshold) else None
+
+        return {
+            "categories": cats,
+            "institutions": orgs,
+            "totals": totals,
+            "matrix": {org: {c: cell(org, c) for c in cats} for org in orgs},
+            "sql": sql,
+        }
+
+    return {
+        "dimensions": {
+            "succession_link": dimension(Q_SER_LINK, ["pred", "succ"], rank=False),
+            "succession_type": dimension(Q_SER_TYPE, list("012345678"), rank=True),
+        },
+        "sql": [
+            {"label": "Serials linked to a predecessor / successor", "sql": Q_SER_LINK},
+            {
+                "label": "Serials by succeeding-entry (785) relationship type",
+                "sql": Q_SER_TYPE,
+            },
+        ],
+    }
 
 
 def coverage(con: Connection, **_: object) -> dict:
@@ -356,22 +559,30 @@ def _dist_sql(expr: str, where: str) -> str:
     )
 
 
-def _lc_class_sql() -> str:
+def _lc_class_sql(serials_only: bool = False) -> str:
     """
     One LC class letter per record: scan the call-number locations (_LC_CALLNUM)
     in priority order, keep only LC-shaped values, and take the first match — so
-    non-LC schemes and records with no call number simply drop out.
+    non-LC schemes and records with no call number simply drop out. With
+    ``serials_only`` the records are first restricted to serials (leader/07='s').
     """
     priority = "\n      ".join(
-        f"WHEN field_tag = '{f}' AND subfield_code = '{s}' THEN {i}"
-        for i, (f, s) in enumerate(_LC_LOCATIONS)
+        f"WHEN {_lc_loc_cond(*loc)} THEN {i}" for i, loc in enumerate(_LC_LOCATIONS)
     )
+    source = "records"
+    if serials_only:
+        source = (
+            "records\n"
+            "    JOIN (SELECT DISTINCT org, pod_record_id FROM records\n"
+            "          WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's')\n"
+            "      USING (org, pod_record_id)"
+        )
     return (
         "WITH candidate AS (\n"
         "  SELECT org, pod_record_id,\n"
         "    upper(substr(trim(value), 1, 1)) AS category,\n"
         f"    CASE\n      {priority}\n    END AS priority\n"
-        "  FROM records\n"
+        f"  FROM {source}\n"
         f"  WHERE {_LC_CALLNUM}\n"
         "),\n"
         "first_match AS (\n"
@@ -399,28 +610,66 @@ def _compare_sql() -> dict[str, str]:
             "substr(value, 7, 1)", "field_tag = 'LDR' AND length(value) >= 7"
         ),
         "classification": _lc_class_sql(),
+        # LC class of just the serials — what the continuing resources are about
+        "serial_classification": _lc_class_sql(serials_only=True),
+        # publication status of serials (008/06): still published / ceased /
+        # unknown — the "currency" of each institution's continuing resources
+        "serial_status": _serial_status_sql(),
     }
+
+
+def _serial_status_sql() -> str:
+    """
+    Serials (leader/07='s') counted by 008 publication-status code (char 06):
+    'c' still published, 'd' ceased, 'u' status unknown. Other codes are dropped
+    so the three shares sum to ~100%.
+    """
+    return (
+        "WITH serial AS (\n"
+        "  SELECT DISTINCT org, pod_record_id FROM records\n"
+        "  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'\n"
+        ")\n"
+        "SELECT s.org, substr(r.value, 7, 1) AS category, count(*) AS n\n"
+        "FROM serial s JOIN records r USING (org, pod_record_id)\n"
+        "WHERE r.field_tag = '008' AND length(r.value) >= 7\n"
+        "  AND substr(r.value, 7, 1) IN ('c', 'd', 'u')\n"
+        "GROUP BY s.org, category"
+    )
 
 
 def comparison(con: Connection, *, threshold: int = 10, **_: object) -> dict:
     """
     Cross-institution comparison matrices for the heatmap views. For each
-    dimension: the global top-k categories (ranked by total count across all
-    institutions), every institution's count per category, each institution's
-    dimension total (the denominator for a share), and the SQL that produced the
-    raw counts. Counts in ``1..threshold-1`` are suppressed to null so no small
-    cell is exposed; a genuine zero stays 0. Category codes are labeled
+    dimension: the categories (ranked by total count across all institutions),
+    every institution's count per category, each institution's dimension total
+    (the denominator for a share), and the SQL that produced the raw counts.
+    Most dimensions keep the top ``_COMPARE_TOP_K``; the LC-classification
+    dimensions show every class (a bounded ~21-value set) so each institution's
+    column sums to ~100%. Counts in ``1..threshold-1`` are suppressed to null so
+    no small cell is exposed; a genuine zero stays 0. Category codes are labeled
     client-side.
     """
     return {
         "dimensions": {
-            name: _comparison_matrix(con, sql, threshold=threshold)
+            name: _comparison_matrix(
+                con,
+                sql,
+                threshold=threshold,
+                top_k=None if name in _COMPARE_ALL_CATEGORIES else _COMPARE_TOP_K,
+            )
             for name, sql in _compare_sql().items()
         }
     }
 
 
-def _comparison_matrix(con: Connection, sql: str, *, threshold: int) -> dict:
+# Dimensions that show every category rather than the top-k: the LC classes are
+# a bounded set (~21 letters), so all of them fit and columns total ~100%.
+_COMPARE_ALL_CATEGORIES = frozenset({"classification", "serial_classification"})
+
+
+def _comparison_matrix(
+    con: Connection, sql: str, *, threshold: int, top_k: int | None = _COMPARE_TOP_K
+) -> dict:
     rows = con.execute(sql).fetchall()
 
     orgs = sorted({org for org, _cat, _n in rows})
@@ -432,9 +681,10 @@ def _comparison_matrix(con: Connection, sql: str, *, threshold: int) -> dict:
         cat_totals[cat] = cat_totals.get(cat, 0) + n
         counts[(org, cat)] = n
 
-    categories = [
+    ranked = [
         cat for cat, _ in sorted(cat_totals.items(), key=lambda kv: (-kv[1], kv[0]))
-    ][:_COMPARE_TOP_K]
+    ]
+    categories = ranked if top_k is None else ranked[:top_k]
 
     def cell(org: str, cat: str) -> int | None:
         n = counts.get((org, cat), 0)

@@ -25,6 +25,7 @@ const covRows = coverage.per_org.flatMap((o) =>
     org: o.org,
     field: fieldLabels[f] ?? f,
     coverage: o.coverage[f],
+    count: Math.round(o.coverage[f] * o.records),
   }))
 );
 // order fields by mean coverage across institutions (most-covered on top)
@@ -51,9 +52,19 @@ Plot.plot({
     Plot.text(covRows, {
       x: "org",
       y: "field",
+      dy: -6,
       text: (d) => d3.format(".0%")(d.coverage),
       fill: (d) => (d.coverage > 0.55 ? "white" : "black"),
       fontSize: 12,
+    }),
+    Plot.text(covRows, {
+      x: "org",
+      y: "field",
+      dy: 8,
+      text: (d) => d3.format(",")(d.count),
+      fill: (d) => (d.coverage > 0.55 ? "white" : "black"),
+      fillOpacity: 0.65,
+      fontSize: 9.5,
     }),
   ],
 })

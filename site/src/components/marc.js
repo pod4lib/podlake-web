@@ -213,6 +213,32 @@ const LC_CLASS = {
   z: "Library Science",
 };
 
+// MARC continuing-resources 008/06 — publication status.
+const SERIAL_STATUS = {
+  c: "Still published",
+  d: "Ceased",
+  u: "Status unknown",
+};
+
+// Serial linking entries: whether a serial points back/forward in a lineage.
+const SUCCESSION_LINK = {
+  pred: "Continues an earlier title (780)",
+  succ: "Continued by a later title (785)",
+};
+
+// MARC 785 (succeeding entry) indicator 2 — the kind of title change.
+const SUCCESSION_TYPE = {
+  "0": "Continued by",
+  "1": "Continued in part by",
+  "2": "Superseded by",
+  "3": "Superseded in part by",
+  "4": "Absorbed by",
+  "5": "Absorbed in part by",
+  "6": "Split into",
+  "7": "Merged to form",
+  "8": "Changed back to",
+};
+
 const labeler = (table) => (code) =>
   table[String(code).toLowerCase()] ?? code;
 
@@ -220,3 +246,6 @@ export const recordTypeLabel = labeler(RECORD_TYPE);
 export const languageLabel = labeler(LANGUAGE);
 export const placeLabel = labeler(PLACE);
 export const lcClassLabel = labeler(LC_CLASS);
+export const serialStatusLabel = labeler(SERIAL_STATUS);
+export const successionLinkLabel = labeler(SUCCESSION_LINK);
+export const successionTypeLabel = labeler(SUCCESSION_TYPE);
