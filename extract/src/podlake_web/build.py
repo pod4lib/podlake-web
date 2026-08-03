@@ -75,6 +75,11 @@ ARTIFACTS = [
         queries.archives,
     ),
     (
+        "electronic.json",
+        "Per-institution top hosts linked from 856 fields.",
+        queries.electronic,
+    ),
+    (
         "coverage.json",
         "Per-institution share of records carrying selected MARC fields.",
         queries.coverage,

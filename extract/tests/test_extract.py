@@ -383,6 +383,34 @@ def test_archives(tmp_path):
     assert dest["matrix"]["z"]["vendor"] == 0  # fixed taxonomy keeps empty buckets
 
 
+def test_electronic(tmp_path):
+    # each institution's own top 856 link hosts, raw.
+    def rec(rid, *urls):
+        pid = f"e:{rid}"
+        rows = [("e", pid, "LDR", 0, None, None, None, None, LEADER)]
+        for i, u in enumerate(urls, start=1):
+            rows.append(("e", pid, "856", i, "4", "0", "u", 0, u))
+        return rows, ("e", pid, rid)
+
+    records = [
+        rec("r1", "https://jstor.org/a", "https://doi.org/x"),
+        rec("r2", "https://jstor.org/b"),
+        rec("r3", "http://catdir.loc.gov/toc"),  # no scheme-less; still http
+    ]
+    config = _build_lake(tmp_path, {"e": records})
+    connection = lake.connect(read_only=True, config=config)
+    try:
+        out = queries.electronic(connection, threshold=1)
+    finally:
+        connection.close()
+
+    row = {o["org"]: o for o in out["hosts"]}["e"]
+    assert row["total"] == 4  # four 856 $u links total
+    hosts = {v["host"]: v["count"] for v in row["values"]}
+    assert hosts["jstor.org"] == 2  # top host
+    assert hosts["doi.org"] == 1 and hosts["catdir.loc.gov"] == 1
+
+
 def test_reconstitute_record(con):
     fields = record.reconstitute(con, "stanford", "stanford:a1")
     by_tag = {f.tag: f for f in fields}
@@ -441,6 +469,9 @@ def test_artifacts_expose_runnable_sql(con):
     arch = queries.archives(con, threshold=1)
     assert arch["sql"]
     for q in arch["sql"]:
+        con.execute(q["sql"])
+    # electronic likewise
+    for q in queries.electronic(con, threshold=1)["sql"]:
         con.execute(q["sql"])
 
 

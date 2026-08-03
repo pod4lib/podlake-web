@@ -11,6 +11,7 @@ export default {
     {name: "LC classification", path: "/lc-classification"},
     {name: "Serials", path: "/serials"},
     {name: "Archives & manuscripts", path: "/archives"},
+    {name: "Electronic resources", path: "/electronic"},
     {name: "Completeness", path: "/completeness"},
     {name: "About the data", path: "/data"},
   ],

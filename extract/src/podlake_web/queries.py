@@ -588,6 +588,49 @@ def archives(con: Connection, *, threshold: int = 10, **_: object) -> dict:
     }
 
 
+# The bare host of every http 856 $u link. Reported as each institution's own top
+# hosts (they're mostly institution-specific resolvers/proxies, so a shared axis
+# would be diagonal). Raw hosts — proxies and resolvers are left as-is.
+Q_LINK_HOSTS = """\
+SELECT org, regexp_extract(lower(value), 'https?://([^/]+)', 1) AS host, count(*) AS n
+FROM records
+WHERE field_tag = '856' AND subfield_code = 'u' AND value LIKE 'http%'
+GROUP BY org, host"""
+
+
+def electronic(con: Connection, *, threshold: int = 10, **_: object) -> dict:
+    """
+    Where each institution's online (856) links point: its own top link hosts.
+    Reports observed links rather than trying to *detect* electronic resources
+    (which is heavily cataloging-practice dependent). ``total`` is the
+    institution's whole 856 link count; hosts below ``threshold`` are dropped and
+    each institution keeps its top 15.
+    """
+    totals: dict[str, int] = {}
+    hosts: dict[str, list] = {}
+    for org, host, n in con.execute(Q_LINK_HOSTS).fetchall():
+        totals[org] = totals.get(org, 0) + n
+        if host and n >= threshold:
+            hosts.setdefault(org, []).append((host, n))
+    orgs = sorted(totals)
+    return {
+        "hosts": [
+            {
+                "org": o,
+                "total": totals[o],
+                "values": [
+                    {"host": h, "count": n}
+                    for h, n in sorted(
+                        hosts.get(o, []), key=lambda hn: (-hn[1], hn[0])
+                    )[:15]
+                ],
+            }
+            for o in orgs
+        ],
+        "sql": [{"label": "Top 856 link hosts per institution", "sql": Q_LINK_HOSTS}],
+    }
+
+
 def coverage(con: Connection, **_: object) -> dict:
     """
     Per-institution metadata completeness: share of records carrying selected
