@@ -411,6 +411,183 @@ def serials_succession(con: Connection, *, threshold: int = 10, **_: object) -> 
     }
 
 
+# Archives & manuscripts: leader/06 type-of-record t/d/f/p (manuscript text, music,
+# maps, mixed materials) OR leader/08 bibliographic level c/d (collection & subunit).
+# Broad on purpose — captures collection-level description, including some printed
+# collections. Reused by every archives() query below (mirrors the serial-subset
+# idiom). Built with concatenation, not f-strings, so regexp {n} braces stay literal.
+_ARCH_WITH = (
+    "WITH arch AS (\n"
+    "  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n"
+    "  FROM records\n"
+    "  WHERE field_tag = 'LDR' AND length(value) >= 8\n"
+    "    AND (substr(value, 7, 1) IN ('t','d','f','p')\n"
+    "         OR substr(value, 8, 1) IN ('c','d'))\n"
+    ")\n"
+)
+
+Q_ARCH_TOTAL = _ARCH_WITH + "SELECT org, count(*) AS n FROM arch GROUP BY org"
+
+Q_ARCH_TYPE = _ARCH_WITH + (
+    "SELECT org, rtype AS category, count(*) AS n FROM arch GROUP BY org, rtype"
+)
+
+Q_ARCH_GENRE = _ARCH_WITH + (
+    "SELECT a.org, lower(rtrim(trim(r.value), ' .')) AS category,\n"
+    "       count(DISTINCT r.pod_record_id) AS n\n"
+    "FROM arch a JOIN records r USING (org, pod_record_id)\n"
+    "WHERE r.field_tag = '655' AND r.subfield_code = 'a' AND trim(r.value) <> ''\n"
+    "GROUP BY a.org, category"
+)
+
+Q_ARCH_DECADE = _ARCH_WITH + (
+    "SELECT a.org, (CAST(substr(r.value, 8, 4) AS INTEGER) // 10) * 10 AS decade,\n"
+    "       count(*) AS n\n"
+    "FROM arch a JOIN records r USING (org, pod_record_id)\n"
+    "WHERE r.field_tag = '008' AND length(r.value) >= 11\n"
+    "  AND regexp_matches(substr(r.value, 8, 4), '^[0-9]{4}$')\n"
+    "  AND CAST(substr(r.value, 8, 4) AS INTEGER) BETWEEN 100 AND 2025\n"
+    "GROUP BY a.org, decade ORDER BY a.org, decade"
+)
+
+Q_ARCH_LINK = _ARCH_WITH + (
+    "SELECT org, count(*) AS n FROM arch\n"
+    "WHERE (org, pod_record_id) IN\n"
+    "      (SELECT org, pod_record_id FROM records\n"
+    "       WHERE field_tag = '856' AND subfield_code = 'u')\n"
+    "GROUP BY org"
+)
+
+# Classify 856 link hosts into a fixed taxonomy (not raw hostnames) so the chart
+# axis stays constant as POD adds institutions, each with its own finding-aid host.
+Q_ARCH_DEST = _ARCH_WITH + (
+    ", links AS (\n"
+    "  SELECT a.org, r.pod_record_id,\n"
+    "         regexp_extract(lower(r.value), 'https?://([^/]+)', 1) AS host\n"
+    "  FROM arch a JOIN records r USING (org, pod_record_id)\n"
+    "  WHERE r.field_tag = '856' AND r.subfield_code = 'u' AND r.value LIKE 'http%'\n"
+    ")\n"
+    "SELECT org,\n"
+    "  CASE\n"
+    "    WHEN regexp_matches(host, 'findingaid|archives') THEN 'finding_aid'\n"
+    "    WHEN host IN ('oac.cdlib.org','www.oac.cdlib.org')\n"
+    "         OR regexp_matches(host, 'archivegrid|snaccooperative') THEN 'aggregator'\n"
+    "    WHEN regexp_matches(host, '^(nrs|arks|purl|hdl|handle)\\.')\n"
+    "         OR regexp_matches(host, 'doi\\.org$') THEN 'resolver'\n"
+    "    WHEN regexp_matches(host, 'proquest|amdigital|gale|jstor|e-enlightenment')\n"
+    "         THEN 'vendor'\n"
+    "    WHEN regexp_matches(host, 'colenda|digital|repository|dspace|fedora|idn\\.duke')\n"
+    "         THEN 'repository'\n"
+    "    ELSE 'other'\n"
+    "  END AS category,\n"
+    "  count(DISTINCT pod_record_id) AS n\n"
+    "FROM links GROUP BY org, category"
+)
+
+
+def archives(con: Connection, *, threshold: int = 10, **_: object) -> dict:
+    """
+    Archives & manuscripts (see ``_ARCH_WITH`` for the subset). Several views of a
+    small-but-distinctive slice of each catalog, all counting archival *records*:
+
+    - ``material_type``: counts by leader/06 code (rendered as a count heatmap).
+    - ``genre``: each institution's *own* top 655 genre/form terms (LC class barely
+      applies to archives, and the genre vocabulary is a ~5.8k-term long tail that is
+      65% institution-specific, so a shared top-N would be sparse and unrepresentative).
+    - ``start_decade``: 008 date1 by decade, for a normalized vintage view.
+    - ``online_link``: per-org count/total of records with an 856 online link.
+    - ``link_destination``: those links bucketed into a fixed host taxonomy.
+
+    Heatmap dimensions share the ``{categories, institutions, totals, matrix, sql}``
+    shape; ``totals`` is each institution's archival-record count, so shares are of
+    all archival records. Counts below ``threshold`` are suppressed to null.
+    """
+    totals = dict(con.execute(Q_ARCH_TOTAL).fetchall())
+    orgs = sorted(totals)
+
+    def cell(counts: dict, org: str, cat: str) -> int | None:
+        n = counts.get((org, cat), 0)
+        return n if (n == 0 or n >= threshold) else None
+
+    def dimension(
+        sql: str, *, categories: list[str] | None = None, top_k: int | None = None
+    ) -> dict:
+        counts = {(org, cat): n for org, cat, n in con.execute(sql).fetchall()}
+        if categories is None:  # rank present categories by consortium total
+            by_cat: dict[str, int] = {}
+            for (_org, cat), n in counts.items():
+                by_cat[cat] = by_cat.get(cat, 0) + n
+            cats = sorted(by_cat, key=lambda c: (-by_cat[c], c))
+            if top_k is not None:
+                cats = cats[:top_k]
+        else:
+            cats = categories  # fixed order and membership
+        return {
+            "categories": cats,
+            "institutions": orgs,
+            "totals": totals,
+            "matrix": {o: {c: cell(counts, o, c) for c in cats} for o in orgs},
+            "sql": sql,
+        }
+
+    starts: dict[str, list] = {}
+    for org, decade, n in con.execute(Q_ARCH_DECADE).fetchall():
+        starts.setdefault(org, []).append({"decade": decade, "count": n})
+    linked = dict(con.execute(Q_ARCH_LINK).fetchall())
+
+    # genre: each institution's own top terms, not a shared axis (long, divergent
+    # tail). Suppress terms below threshold, then keep each org's top 12.
+    genre_by_org: dict[str, list] = {}
+    for org, term, n in con.execute(Q_ARCH_GENRE).fetchall():
+        if n >= threshold:
+            genre_by_org.setdefault(org, []).append((term, n))
+    genre = []
+    for o in orgs:
+        top = sorted(genre_by_org.get(o, []), key=lambda tn: (-tn[1], tn[0]))[:12]
+        genre.append(
+            {
+                "org": o,
+                "total": totals[o],
+                "values": [{"term": t, "count": n} for t, n in top],
+            }
+        )
+
+    return {
+        "dimensions": {
+            "material_type": dimension(Q_ARCH_TYPE, top_k=10),
+            "link_destination": dimension(
+                Q_ARCH_DEST,
+                categories=[
+                    "finding_aid",
+                    "aggregator",
+                    "resolver",
+                    "repository",
+                    "vendor",
+                    "other",
+                ],
+            ),
+        },
+        "genre": genre,
+        "start_decade": [{"org": o, "values": starts.get(o, [])} for o in orgs],
+        "online_link": [
+            {"org": o, "count": linked.get(o, 0), "total": totals[o]} for o in orgs
+        ],
+        "sql": [
+            {
+                "label": "Archival records by material type (leader/06)",
+                "sql": Q_ARCH_TYPE,
+            },
+            {"label": "Archival records by 655 genre/form term", "sql": Q_ARCH_GENRE},
+            {
+                "label": "Archival records by decade of first date (008)",
+                "sql": Q_ARCH_DECADE,
+            },
+            {"label": "Archival records with an 856 online link", "sql": Q_ARCH_LINK},
+            {"label": "856 link destinations, bucketed by host", "sql": Q_ARCH_DEST},
+        ],
+    }
+
+
 def coverage(con: Connection, **_: object) -> dict:
     """
     Per-institution metadata completeness: share of records carrying selected

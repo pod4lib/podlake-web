@@ -327,6 +327,62 @@ def test_classification_first_lc_match(tmp_path):
     assert counts == {"D": 1, "P": 1, "Q": 1}
 
 
+def test_archives(tmp_path):
+    # archival subset = leader/06 in t/d/f/p OR leader/08 in c/d. A plain book
+    # (leader "...nam...") must be excluded.
+    ms_leader = "00000ntm a2200000 a 4500"  # leader/06='t' manuscript, /08='m'
+    coll_leader = "00000npc a2200000 a 4500"  # leader/06='p' mixed, /08='c' collection
+
+    def rec(rid, leader, *fields, date1=None):
+        pid = f"z:{rid}"
+        rows = [("z", pid, "LDR", 0, None, None, None, None, leader)]
+        if date1 is not None:
+            v = list(" " * 40)
+            v[7:11] = list(date1)
+            rows.append(("z", pid, "008", 1, None, None, None, None, "".join(v)))
+        for i, (tag, code, val) in enumerate(fields, start=2):
+            rows.append(("z", pid, tag, i, " ", " ", code, 0, val))
+        return rows, ("z", pid, rid)
+
+    records = [
+        rec("m1", ms_leader, ("655", "a", "Photographs."), date1="1900"),
+        rec(
+            "c1",
+            coll_leader,
+            ("655", "a", "Correspondence"),
+            ("856", "u", "https://findingaids.example.edu/coll/c1"),
+            date1="1850",
+        ),
+        rec("b1", LEADER),  # plain book -> excluded
+    ]
+    config = _build_lake(tmp_path, {"z": records})
+    connection = lake.connect(read_only=True, config=config)
+    try:
+        out = queries.archives(connection, threshold=1)
+    finally:
+        connection.close()
+
+    mt = out["dimensions"]["material_type"]
+    assert mt["totals"]["z"] == 2  # book excluded
+    assert mt["matrix"]["z"]["t"] == 1 and mt["matrix"]["z"]["p"] == 1
+
+    genre = {
+        v["term"]: v["count"]
+        for v in {o["org"]: o for o in out["genre"]}["z"]["values"]
+    }
+    assert genre.get("photographs") == 1 and genre.get("correspondence") == 1
+
+    decades = {v["decade"]: v["count"] for v in out["start_decade"][0]["values"]}
+    assert decades == {1900: 1, 1850: 1}
+
+    link = {o["org"]: o for o in out["online_link"]}["z"]
+    assert link["count"] == 1 and link["total"] == 2  # only c1 has an 856
+
+    dest = out["dimensions"]["link_destination"]
+    assert dest["matrix"]["z"]["finding_aid"] == 1  # findingaids.* host
+    assert dest["matrix"]["z"]["vendor"] == 0  # fixed taxonomy keeps empty buckets
+
+
 def test_reconstitute_record(con):
     fields = record.reconstitute(con, "stanford", "stanford:a1")
     by_tag = {f.tag: f for f in fields}
@@ -381,6 +437,11 @@ def test_artifacts_expose_runnable_sql(con):
     for dim in queries.comparison(con, threshold=1)["dimensions"].values():
         assert dim["sql"]
         con.execute(dim["sql"])
+    # archives exposes a top-level sql list (and per-dimension sql)
+    arch = queries.archives(con, threshold=1)
+    assert arch["sql"]
+    for q in arch["sql"]:
+        con.execute(q["sql"])
 
 
 def test_fold_small_keeps_all_above_threshold():

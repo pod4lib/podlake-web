@@ -1,0 +1,3247 @@
+{
+  "dimensions": {
+    "link_destination": {
+      "categories": [
+        "finding_aid",
+        "aggregator",
+        "resolver",
+        "repository",
+        "vendor",
+        "other"
+      ],
+      "institutions": [
+        "brown",
+        "duke",
+        "harvard",
+        "penn",
+        "princeton",
+        "stanford"
+      ],
+      "matrix": {
+        "brown": {
+          "aggregator": 0,
+          "finding_aid": 0,
+          "other": 2292,
+          "repository": 100,
+          "resolver": null,
+          "vendor": 863
+        },
+        "duke": {
+          "aggregator": 0,
+          "finding_aid": 462,
+          "other": 4541,
+          "repository": 2539,
+          "resolver": null,
+          "vendor": null
+        },
+        "harvard": {
+          "aggregator": 0,
+          "finding_aid": null,
+          "other": 1796,
+          "repository": null,
+          "resolver": 46907,
+          "vendor": null
+        },
+        "penn": {
+          "aggregator": 0,
+          "finding_aid": 36341,
+          "other": 999,
+          "repository": 8789,
+          "resolver": 7434,
+          "vendor": 15
+        },
+        "princeton": {
+          "aggregator": 0,
+          "finding_aid": 6426,
+          "other": 304,
+          "repository": 0,
+          "resolver": 7677,
+          "vendor": null
+        },
+        "stanford": {
+          "aggregator": 4601,
+          "finding_aid": 3739,
+          "other": 1629,
+          "repository": 249,
+          "resolver": 5719,
+          "vendor": 19844
+        }
+      },
+      "sql": "WITH arch AS (\n  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n  FROM records\n  WHERE field_tag = 'LDR' AND length(value) >= 8\n    AND (substr(value, 7, 1) IN ('t','d','f','p')\n         OR substr(value, 8, 1) IN ('c','d'))\n)\n, links AS (\n  SELECT a.org, r.pod_record_id,\n         regexp_extract(lower(r.value), 'https?://([^/]+)', 1) AS host\n  FROM arch a JOIN records r USING (org, pod_record_id)\n  WHERE r.field_tag = '856' AND r.subfield_code = 'u' AND r.value LIKE 'http%'\n)\nSELECT org,\n  CASE\n    WHEN regexp_matches(host, 'findingaid|archives') THEN 'finding_aid'\n    WHEN host IN ('oac.cdlib.org','www.oac.cdlib.org')\n         OR regexp_matches(host, 'archivegrid|snaccooperative') THEN 'aggregator'\n    WHEN regexp_matches(host, '^(nrs|arks|purl|hdl|handle)\\.')\n         OR regexp_matches(host, 'doi\\.org$') THEN 'resolver'\n    WHEN regexp_matches(host, 'proquest|amdigital|gale|jstor|e-enlightenment')\n         THEN 'vendor'\n    WHEN regexp_matches(host, 'colenda|digital|repository|dspace|fedora|idn\\.duke')\n         THEN 'repository'\n    ELSE 'other'\n  END AS category,\n  count(DISTINCT pod_record_id) AS n\nFROM links GROUP BY org, category",
+      "totals": {
+        "brown": 17355,
+        "duke": 49478,
+        "harvard": 240942,
+        "penn": 177573,
+        "princeton": 45522,
+        "stanford": 56069
+      }
+    },
+    "material_type": {
+      "categories": [
+        "t",
+        "p",
+        "a",
+        "k",
+        "d",
+        "j",
+        "f",
+        "e",
+        "c",
+        "g"
+      ],
+      "institutions": [
+        "brown",
+        "duke",
+        "harvard",
+        "penn",
+        "princeton",
+        "stanford"
+      ],
+      "matrix": {
+        "brown": {
+          "a": 250,
+          "c": 40,
+          "d": 65,
+          "e": null,
+          "f": 215,
+          "g": 15,
+          "j": null,
+          "k": 167,
+          "p": 949,
+          "t": 15643
+        },
+        "duke": {
+          "a": 702,
+          "c": 102,
+          "d": 740,
+          "e": 34,
+          "f": 261,
+          "g": 54,
+          "j": 11,
+          "k": 973,
+          "p": 20403,
+          "t": 25999
+        },
+        "harvard": {
+          "a": 7802,
+          "c": 723,
+          "d": 8194,
+          "e": 40,
+          "f": 480,
+          "g": 272,
+          "j": 49,
+          "k": 6932,
+          "p": 82085,
+          "t": 133977
+        },
+        "penn": {
+          "a": 7575,
+          "c": 127,
+          "d": 3393,
+          "e": 13,
+          "f": 14,
+          "g": 121,
+          "j": 1904,
+          "k": 8025,
+          "p": 22437,
+          "t": 133705
+        },
+        "princeton": {
+          "a": 8400,
+          "c": 76,
+          "d": 1318,
+          "e": 982,
+          "f": 30,
+          "g": 21,
+          "j": 21,
+          "k": 392,
+          "p": 3822,
+          "t": 30353
+        },
+        "stanford": {
+          "a": 13524,
+          "c": 32,
+          "d": 560,
+          "e": 33,
+          "f": 326,
+          "g": 90,
+          "j": 75,
+          "k": 259,
+          "p": 15723,
+          "t": 25397
+        }
+      },
+      "sql": "WITH arch AS (\n  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n  FROM records\n  WHERE field_tag = 'LDR' AND length(value) >= 8\n    AND (substr(value, 7, 1) IN ('t','d','f','p')\n         OR substr(value, 8, 1) IN ('c','d'))\n)\nSELECT org, rtype AS category, count(*) AS n FROM arch GROUP BY org, rtype",
+      "totals": {
+        "brown": 17355,
+        "duke": 49478,
+        "harvard": 240942,
+        "penn": 177573,
+        "princeton": 45522,
+        "stanford": 56069
+      }
+    }
+  },
+  "generated_at": "2026-08-01T10:28:34.728357+00:00",
+  "genre": [
+    {
+      "org": "brown",
+      "total": 17355,
+      "values": [
+        {
+          "count": 2078,
+          "term": "letters"
+        },
+        {
+          "count": 1387,
+          "term": "poems"
+        },
+        {
+          "count": 219,
+          "term": "albums"
+        },
+        {
+          "count": 218,
+          "term": "commonplace books"
+        },
+        {
+          "count": 217,
+          "term": "academic theses"
+        },
+        {
+          "count": 210,
+          "term": "correspondence"
+        },
+        {
+          "count": 204,
+          "term": "scrapbooks"
+        },
+        {
+          "count": 141,
+          "term": "clippings"
+        },
+        {
+          "count": 136,
+          "term": "plays"
+        },
+        {
+          "count": 124,
+          "term": "essays"
+        },
+        {
+          "count": 123,
+          "term": "photographs"
+        },
+        {
+          "count": 107,
+          "term": "songs"
+        }
+      ]
+    },
+    {
+      "org": "duke",
+      "total": 49478,
+      "values": [
+        {
+          "count": 1609,
+          "term": "documentary papyri"
+        },
+        {
+          "count": 1453,
+          "term": "history"
+        },
+        {
+          "count": 887,
+          "term": "photographs"
+        },
+        {
+          "count": 580,
+          "term": "personal correspondence"
+        },
+        {
+          "count": 534,
+          "term": "diaries"
+        },
+        {
+          "count": 342,
+          "term": "accounts"
+        },
+        {
+          "count": 312,
+          "term": "black-and-white photographs"
+        },
+        {
+          "count": 285,
+          "term": "scrapbooks"
+        },
+        {
+          "count": 230,
+          "term": "records and correspondence"
+        },
+        {
+          "count": 211,
+          "term": "academic theses"
+        },
+        {
+          "count": 200,
+          "term": "clippings (information artifacts)"
+        },
+        {
+          "count": 176,
+          "term": "account books"
+        }
+      ]
+    },
+    {
+      "org": "harvard",
+      "total": 240942,
+      "values": [
+        {
+          "count": 21220,
+          "term": "posters"
+        },
+        {
+          "count": 11788,
+          "term": "broadsides"
+        },
+        {
+          "count": 6455,
+          "term": "academic theses"
+        },
+        {
+          "count": 3654,
+          "term": "the\u0300ses et e\u0301crits acade\u0301miques"
+        },
+        {
+          "count": 2859,
+          "term": "photographs"
+        },
+        {
+          "count": 2236,
+          "term": "photographic prints"
+        },
+        {
+          "count": 2207,
+          "term": "photomechanical prints"
+        },
+        {
+          "count": 2201,
+          "term": "clippings"
+        },
+        {
+          "count": 2072,
+          "term": "dissertations"
+        },
+        {
+          "count": 2051,
+          "term": "academic dissertation"
+        },
+        {
+          "count": 1616,
+          "term": "harvard students' essays"
+        },
+        {
+          "count": 1546,
+          "term": "diaries"
+        }
+      ]
+    },
+    {
+      "org": "penn",
+      "total": 177573,
+      "values": [
+        {
+          "count": 3304,
+          "term": "manuscripts"
+        },
+        {
+          "count": 2915,
+          "term": "manuscripts, sanskrit"
+        },
+        {
+          "count": 2654,
+          "term": "scores"
+        },
+        {
+          "count": 2574,
+          "term": "codices (bound manuscripts)"
+        },
+        {
+          "count": 2481,
+          "term": "sound recordings"
+        },
+        {
+          "count": 2415,
+          "term": "manuscripts, american"
+        },
+        {
+          "count": 2177,
+          "term": "facsimiles"
+        },
+        {
+          "count": 2079,
+          "term": "songs"
+        },
+        {
+          "count": 1866,
+          "term": "treatises"
+        },
+        {
+          "count": 1726,
+          "term": "manuscripts, european"
+        },
+        {
+          "count": 1307,
+          "term": "academic theses"
+        },
+        {
+          "count": 1300,
+          "term": "manuscripts, renaissance"
+        }
+      ]
+    },
+    {
+      "org": "princeton",
+      "total": 45522,
+      "values": [
+        {
+          "count": 6082,
+          "term": "manuscripts, arabic"
+        },
+        {
+          "count": 1444,
+          "term": "correspondence"
+        },
+        {
+          "count": 1065,
+          "term": "watermarks"
+        },
+        {
+          "count": 1060,
+          "term": "manuscripts, persian"
+        },
+        {
+          "count": 1055,
+          "term": "maps"
+        },
+        {
+          "count": 963,
+          "term": "fire insurance maps"
+        },
+        {
+          "count": 924,
+          "term": "manuscripts"
+        },
+        {
+          "count": 906,
+          "term": "poetry"
+        },
+        {
+          "count": 837,
+          "term": "early works"
+        },
+        {
+          "count": 690,
+          "term": "autographs"
+        },
+        {
+          "count": 666,
+          "term": "manuscripts, turkish"
+        },
+        {
+          "count": 648,
+          "term": "blind tooled bindings"
+        }
+      ]
+    },
+    {
+      "org": "stanford",
+      "total": 56069,
+      "values": [
+        {
+          "count": 1943,
+          "term": "course catalogs"
+        },
+        {
+          "count": 499,
+          "term": "academic theses"
+        },
+        {
+          "count": 488,
+          "term": "photographs"
+        },
+        {
+          "count": 357,
+          "term": "speeches"
+        },
+        {
+          "count": 342,
+          "term": "history"
+        },
+        {
+          "count": 335,
+          "term": "photoprints"
+        },
+        {
+          "count": 315,
+          "term": "correspondence"
+        },
+        {
+          "count": 217,
+          "term": "ephemera"
+        },
+        {
+          "count": 199,
+          "term": "diaries"
+        },
+        {
+          "count": 188,
+          "term": "personal correspondence"
+        },
+        {
+          "count": 181,
+          "term": "th\u00e8ses et \u00e9crits acad\u00e9miques"
+        },
+        {
+          "count": 157,
+          "term": "academic dissertation"
+        }
+      ]
+    }
+  ],
+  "online_link": [
+    {
+      "count": 3242,
+      "org": "brown",
+      "total": 17355
+    },
+    {
+      "count": 7258,
+      "org": "duke",
+      "total": 49478
+    },
+    {
+      "count": 48040,
+      "org": "harvard",
+      "total": 240942
+    },
+    {
+      "count": 51817,
+      "org": "penn",
+      "total": 177573
+    },
+    {
+      "count": 14410,
+      "org": "princeton",
+      "total": 45522
+    },
+    {
+      "count": 31552,
+      "org": "stanford",
+      "total": 56069
+    }
+  ],
+  "sql": [
+    {
+      "label": "Archival records by material type (leader/06)",
+      "sql": "WITH arch AS (\n  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n  FROM records\n  WHERE field_tag = 'LDR' AND length(value) >= 8\n    AND (substr(value, 7, 1) IN ('t','d','f','p')\n         OR substr(value, 8, 1) IN ('c','d'))\n)\nSELECT org, rtype AS category, count(*) AS n FROM arch GROUP BY org, rtype"
+    },
+    {
+      "label": "Archival records by 655 genre/form term",
+      "sql": "WITH arch AS (\n  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n  FROM records\n  WHERE field_tag = 'LDR' AND length(value) >= 8\n    AND (substr(value, 7, 1) IN ('t','d','f','p')\n         OR substr(value, 8, 1) IN ('c','d'))\n)\nSELECT a.org, lower(rtrim(trim(r.value), ' .')) AS category,\n       count(DISTINCT r.pod_record_id) AS n\nFROM arch a JOIN records r USING (org, pod_record_id)\nWHERE r.field_tag = '655' AND r.subfield_code = 'a' AND trim(r.value) <> ''\nGROUP BY a.org, category"
+    },
+    {
+      "label": "Archival records by decade of first date (008)",
+      "sql": "WITH arch AS (\n  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n  FROM records\n  WHERE field_tag = 'LDR' AND length(value) >= 8\n    AND (substr(value, 7, 1) IN ('t','d','f','p')\n         OR substr(value, 8, 1) IN ('c','d'))\n)\nSELECT a.org, (CAST(substr(r.value, 8, 4) AS INTEGER) // 10) * 10 AS decade,\n       count(*) AS n\nFROM arch a JOIN records r USING (org, pod_record_id)\nWHERE r.field_tag = '008' AND length(r.value) >= 11\n  AND regexp_matches(substr(r.value, 8, 4), '^[0-9]{4}$')\n  AND CAST(substr(r.value, 8, 4) AS INTEGER) BETWEEN 100 AND 2025\nGROUP BY a.org, decade ORDER BY a.org, decade"
+    },
+    {
+      "label": "Archival records with an 856 online link",
+      "sql": "WITH arch AS (\n  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n  FROM records\n  WHERE field_tag = 'LDR' AND length(value) >= 8\n    AND (substr(value, 7, 1) IN ('t','d','f','p')\n         OR substr(value, 8, 1) IN ('c','d'))\n)\nSELECT org, count(*) AS n FROM arch\nWHERE (org, pod_record_id) IN\n      (SELECT org, pod_record_id FROM records\n       WHERE field_tag = '856' AND subfield_code = 'u')\nGROUP BY org"
+    },
+    {
+      "label": "856 link destinations, bucketed by host",
+      "sql": "WITH arch AS (\n  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n  FROM records\n  WHERE field_tag = 'LDR' AND length(value) >= 8\n    AND (substr(value, 7, 1) IN ('t','d','f','p')\n         OR substr(value, 8, 1) IN ('c','d'))\n)\n, links AS (\n  SELECT a.org, r.pod_record_id,\n         regexp_extract(lower(r.value), 'https?://([^/]+)', 1) AS host\n  FROM arch a JOIN records r USING (org, pod_record_id)\n  WHERE r.field_tag = '856' AND r.subfield_code = 'u' AND r.value LIKE 'http%'\n)\nSELECT org,\n  CASE\n    WHEN regexp_matches(host, 'findingaid|archives') THEN 'finding_aid'\n    WHEN host IN ('oac.cdlib.org','www.oac.cdlib.org')\n         OR regexp_matches(host, 'archivegrid|snaccooperative') THEN 'aggregator'\n    WHEN regexp_matches(host, '^(nrs|arks|purl|hdl|handle)\\.')\n         OR regexp_matches(host, 'doi\\.org$') THEN 'resolver'\n    WHEN regexp_matches(host, 'proquest|amdigital|gale|jstor|e-enlightenment')\n         THEN 'vendor'\n    WHEN regexp_matches(host, 'colenda|digital|repository|dspace|fedora|idn\\.duke')\n         THEN 'repository'\n    ELSE 'other'\n  END AS category,\n  count(DISTINCT pod_record_id) AS n\nFROM links GROUP BY org, category"
+    }
+  ],
+  "start_decade": [
+    {
+      "org": "brown",
+      "values": [
+        {
+          "count": 1,
+          "decade": 1050
+        },
+        {
+          "count": 1,
+          "decade": 1180
+        },
+        {
+          "count": 1,
+          "decade": 1250
+        },
+        {
+          "count": 1,
+          "decade": 1260
+        },
+        {
+          "count": 2,
+          "decade": 1300
+        },
+        {
+          "count": 1,
+          "decade": 1340
+        },
+        {
+          "count": 1,
+          "decade": 1420
+        },
+        {
+          "count": 2,
+          "decade": 1440
+        },
+        {
+          "count": 1,
+          "decade": 1450
+        },
+        {
+          "count": 4,
+          "decade": 1460
+        },
+        {
+          "count": 5,
+          "decade": 1470
+        },
+        {
+          "count": 5,
+          "decade": 1480
+        },
+        {
+          "count": 5,
+          "decade": 1490
+        },
+        {
+          "count": 7,
+          "decade": 1500
+        },
+        {
+          "count": 3,
+          "decade": 1510
+        },
+        {
+          "count": 3,
+          "decade": 1530
+        },
+        {
+          "count": 5,
+          "decade": 1540
+        },
+        {
+          "count": 5,
+          "decade": 1550
+        },
+        {
+          "count": 3,
+          "decade": 1560
+        },
+        {
+          "count": 8,
+          "decade": 1570
+        },
+        {
+          "count": 6,
+          "decade": 1580
+        },
+        {
+          "count": 6,
+          "decade": 1590
+        },
+        {
+          "count": 12,
+          "decade": 1600
+        },
+        {
+          "count": 2,
+          "decade": 1610
+        },
+        {
+          "count": 2,
+          "decade": 1620
+        },
+        {
+          "count": 8,
+          "decade": 1630
+        },
+        {
+          "count": 11,
+          "decade": 1640
+        },
+        {
+          "count": 12,
+          "decade": 1650
+        },
+        {
+          "count": 18,
+          "decade": 1660
+        },
+        {
+          "count": 21,
+          "decade": 1670
+        },
+        {
+          "count": 17,
+          "decade": 1680
+        },
+        {
+          "count": 15,
+          "decade": 1690
+        },
+        {
+          "count": 31,
+          "decade": 1700
+        },
+        {
+          "count": 22,
+          "decade": 1710
+        },
+        {
+          "count": 18,
+          "decade": 1720
+        },
+        {
+          "count": 29,
+          "decade": 1730
+        },
+        {
+          "count": 36,
+          "decade": 1740
+        },
+        {
+          "count": 56,
+          "decade": 1750
+        },
+        {
+          "count": 78,
+          "decade": 1760
+        },
+        {
+          "count": 113,
+          "decade": 1770
+        },
+        {
+          "count": 113,
+          "decade": 1780
+        },
+        {
+          "count": 142,
+          "decade": 1790
+        },
+        {
+          "count": 304,
+          "decade": 1800
+        },
+        {
+          "count": 185,
+          "decade": 1810
+        },
+        {
+          "count": 263,
+          "decade": 1820
+        },
+        {
+          "count": 342,
+          "decade": 1830
+        },
+        {
+          "count": 361,
+          "decade": 1840
+        },
+        {
+          "count": 459,
+          "decade": 1850
+        },
+        {
+          "count": 565,
+          "decade": 1860
+        },
+        {
+          "count": 377,
+          "decade": 1870
+        },
+        {
+          "count": 382,
+          "decade": 1880
+        },
+        {
+          "count": 318,
+          "decade": 1890
+        },
+        {
+          "count": 398,
+          "decade": 1900
+        },
+        {
+          "count": 380,
+          "decade": 1910
+        },
+        {
+          "count": 549,
+          "decade": 1920
+        },
+        {
+          "count": 418,
+          "decade": 1930
+        },
+        {
+          "count": 389,
+          "decade": 1940
+        },
+        {
+          "count": 573,
+          "decade": 1950
+        },
+        {
+          "count": 895,
+          "decade": 1960
+        },
+        {
+          "count": 778,
+          "decade": 1970
+        },
+        {
+          "count": 958,
+          "decade": 1980
+        },
+        {
+          "count": 2395,
+          "decade": 1990
+        },
+        {
+          "count": 3438,
+          "decade": 2000
+        },
+        {
+          "count": 1383,
+          "decade": 2010
+        },
+        {
+          "count": 16,
+          "decade": 2020
+        }
+      ]
+    },
+    {
+      "org": "duke",
+      "values": [
+        {
+          "count": 230,
+          "decade": 100
+        },
+        {
+          "count": 10,
+          "decade": 110
+        },
+        {
+          "count": 5,
+          "decade": 120
+        },
+        {
+          "count": 5,
+          "decade": 130
+        },
+        {
+          "count": 4,
+          "decade": 140
+        },
+        {
+          "count": 1,
+          "decade": 160
+        },
+        {
+          "count": 2,
+          "decade": 170
+        },
+        {
+          "count": 5,
+          "decade": 180
+        },
+        {
+          "count": 3,
+          "decade": 190
+        },
+        {
+          "count": 78,
+          "decade": 200
+        },
+        {
+          "count": 13,
+          "decade": 210
+        },
+        {
+          "count": 2,
+          "decade": 220
+        },
+        {
+          "count": 2,
+          "decade": 230
+        },
+        {
+          "count": 2,
+          "decade": 250
+        },
+        {
+          "count": 11,
+          "decade": 280
+        },
+        {
+          "count": 4,
+          "decade": 290
+        },
+        {
+          "count": 136,
+          "decade": 300
+        },
+        {
+          "count": 3,
+          "decade": 320
+        },
+        {
+          "count": 31,
+          "decade": 340
+        },
+        {
+          "count": 2,
+          "decade": 350
+        },
+        {
+          "count": 2,
+          "decade": 360
+        },
+        {
+          "count": 1,
+          "decade": 380
+        },
+        {
+          "count": 1,
+          "decade": 390
+        },
+        {
+          "count": 42,
+          "decade": 400
+        },
+        {
+          "count": 1,
+          "decade": 410
+        },
+        {
+          "count": 1,
+          "decade": 480
+        },
+        {
+          "count": 114,
+          "decade": 500
+        },
+        {
+          "count": 1,
+          "decade": 510
+        },
+        {
+          "count": 2,
+          "decade": 530
+        },
+        {
+          "count": 1,
+          "decade": 540
+        },
+        {
+          "count": 122,
+          "decade": 600
+        },
+        {
+          "count": 1,
+          "decade": 640
+        },
+        {
+          "count": 1,
+          "decade": 650
+        },
+        {
+          "count": 151,
+          "decade": 700
+        },
+        {
+          "count": 1,
+          "decade": 740
+        },
+        {
+          "count": 56,
+          "decade": 800
+        },
+        {
+          "count": 11,
+          "decade": 900
+        },
+        {
+          "count": 1,
+          "decade": 930
+        },
+        {
+          "count": 2,
+          "decade": 970
+        },
+        {
+          "count": 1,
+          "decade": 980
+        },
+        {
+          "count": 15,
+          "decade": 1000
+        },
+        {
+          "count": 1,
+          "decade": 1010
+        },
+        {
+          "count": 2,
+          "decade": 1020
+        },
+        {
+          "count": 1,
+          "decade": 1030
+        },
+        {
+          "count": 4,
+          "decade": 1050
+        },
+        {
+          "count": 1,
+          "decade": 1060
+        },
+        {
+          "count": 1,
+          "decade": 1070
+        },
+        {
+          "count": 1,
+          "decade": 1090
+        },
+        {
+          "count": 29,
+          "decade": 1100
+        },
+        {
+          "count": 1,
+          "decade": 1110
+        },
+        {
+          "count": 2,
+          "decade": 1120
+        },
+        {
+          "count": 4,
+          "decade": 1150
+        },
+        {
+          "count": 1,
+          "decade": 1160
+        },
+        {
+          "count": 1,
+          "decade": 1170
+        },
+        {
+          "count": 1,
+          "decade": 1190
+        },
+        {
+          "count": 25,
+          "decade": 1200
+        },
+        {
+          "count": 3,
+          "decade": 1210
+        },
+        {
+          "count": 4,
+          "decade": 1220
+        },
+        {
+          "count": 2,
+          "decade": 1230
+        },
+        {
+          "count": 1,
+          "decade": 1240
+        },
+        {
+          "count": 5,
+          "decade": 1250
+        },
+        {
+          "count": 1,
+          "decade": 1260
+        },
+        {
+          "count": 3,
+          "decade": 1270
+        },
+        {
+          "count": 1,
+          "decade": 1280
+        },
+        {
+          "count": 5,
+          "decade": 1300
+        },
+        {
+          "count": 5,
+          "decade": 1320
+        },
+        {
+          "count": 3,
+          "decade": 1330
+        },
+        {
+          "count": 4,
+          "decade": 1340
+        },
+        {
+          "count": 5,
+          "decade": 1350
+        },
+        {
+          "count": 7,
+          "decade": 1360
+        },
+        {
+          "count": 40,
+          "decade": 1370
+        },
+        {
+          "count": 20,
+          "decade": 1380
+        },
+        {
+          "count": 5,
+          "decade": 1390
+        },
+        {
+          "count": 31,
+          "decade": 1400
+        },
+        {
+          "count": 9,
+          "decade": 1410
+        },
+        {
+          "count": 36,
+          "decade": 1420
+        },
+        {
+          "count": 25,
+          "decade": 1430
+        },
+        {
+          "count": 69,
+          "decade": 1440
+        },
+        {
+          "count": 289,
+          "decade": 1450
+        },
+        {
+          "count": 399,
+          "decade": 1460
+        },
+        {
+          "count": 571,
+          "decade": 1470
+        },
+        {
+          "count": 486,
+          "decade": 1480
+        },
+        {
+          "count": 87,
+          "decade": 1490
+        },
+        {
+          "count": 151,
+          "decade": 1500
+        },
+        {
+          "count": 27,
+          "decade": 1510
+        },
+        {
+          "count": 27,
+          "decade": 1520
+        },
+        {
+          "count": 24,
+          "decade": 1530
+        },
+        {
+          "count": 37,
+          "decade": 1540
+        },
+        {
+          "count": 31,
+          "decade": 1550
+        },
+        {
+          "count": 12,
+          "decade": 1560
+        },
+        {
+          "count": 24,
+          "decade": 1570
+        },
+        {
+          "count": 27,
+          "decade": 1580
+        },
+        {
+          "count": 40,
+          "decade": 1590
+        },
+        {
+          "count": 326,
+          "decade": 1600
+        },
+        {
+          "count": 214,
+          "decade": 1610
+        },
+        {
+          "count": 602,
+          "decade": 1620
+        },
+        {
+          "count": 388,
+          "decade": 1630
+        },
+        {
+          "count": 110,
+          "decade": 1640
+        },
+        {
+          "count": 242,
+          "decade": 1650
+        },
+        {
+          "count": 133,
+          "decade": 1660
+        },
+        {
+          "count": 169,
+          "decade": 1670
+        },
+        {
+          "count": 261,
+          "decade": 1680
+        },
+        {
+          "count": 444,
+          "decade": 1690
+        },
+        {
+          "count": 361,
+          "decade": 1700
+        },
+        {
+          "count": 314,
+          "decade": 1710
+        },
+        {
+          "count": 208,
+          "decade": 1720
+        },
+        {
+          "count": 302,
+          "decade": 1730
+        },
+        {
+          "count": 133,
+          "decade": 1740
+        },
+        {
+          "count": 197,
+          "decade": 1750
+        },
+        {
+          "count": 309,
+          "decade": 1760
+        },
+        {
+          "count": 464,
+          "decade": 1770
+        },
+        {
+          "count": 445,
+          "decade": 1780
+        },
+        {
+          "count": 648,
+          "decade": 1790
+        },
+        {
+          "count": 1170,
+          "decade": 1800
+        },
+        {
+          "count": 1222,
+          "decade": 1810
+        },
+        {
+          "count": 1664,
+          "decade": 1820
+        },
+        {
+          "count": 1934,
+          "decade": 1830
+        },
+        {
+          "count": 2054,
+          "decade": 1840
+        },
+        {
+          "count": 2131,
+          "decade": 1850
+        },
+        {
+          "count": 2541,
+          "decade": 1860
+        },
+        {
+          "count": 1240,
+          "decade": 1870
+        },
+        {
+          "count": 1771,
+          "decade": 1880
+        },
+        {
+          "count": 1400,
+          "decade": 1890
+        },
+        {
+          "count": 2173,
+          "decade": 1900
+        },
+        {
+          "count": 1314,
+          "decade": 1910
+        },
+        {
+          "count": 868,
+          "decade": 1920
+        },
+        {
+          "count": 956,
+          "decade": 1930
+        },
+        {
+          "count": 1001,
+          "decade": 1940
+        },
+        {
+          "count": 1011,
+          "decade": 1950
+        },
+        {
+          "count": 1377,
+          "decade": 1960
+        },
+        {
+          "count": 1146,
+          "decade": 1970
+        },
+        {
+          "count": 1007,
+          "decade": 1980
+        },
+        {
+          "count": 2094,
+          "decade": 1990
+        },
+        {
+          "count": 5510,
+          "decade": 2000
+        },
+        {
+          "count": 1350,
+          "decade": 2010
+        },
+        {
+          "count": 410,
+          "decade": 2020
+        }
+      ]
+    },
+    {
+      "org": "harvard",
+      "values": [
+        {
+          "count": 8,
+          "decade": 100
+        },
+        {
+          "count": 2,
+          "decade": 120
+        },
+        {
+          "count": 1,
+          "decade": 130
+        },
+        {
+          "count": 1,
+          "decade": 140
+        },
+        {
+          "count": 3,
+          "decade": 150
+        },
+        {
+          "count": 1,
+          "decade": 160
+        },
+        {
+          "count": 7,
+          "decade": 170
+        },
+        {
+          "count": 1,
+          "decade": 190
+        },
+        {
+          "count": 2,
+          "decade": 200
+        },
+        {
+          "count": 1,
+          "decade": 250
+        },
+        {
+          "count": 1,
+          "decade": 270
+        },
+        {
+          "count": 2,
+          "decade": 300
+        },
+        {
+          "count": 1,
+          "decade": 330
+        },
+        {
+          "count": 1,
+          "decade": 400
+        },
+        {
+          "count": 1,
+          "decade": 610
+        },
+        {
+          "count": 1,
+          "decade": 650
+        },
+        {
+          "count": 2,
+          "decade": 660
+        },
+        {
+          "count": 2,
+          "decade": 700
+        },
+        {
+          "count": 2,
+          "decade": 720
+        },
+        {
+          "count": 2,
+          "decade": 730
+        },
+        {
+          "count": 1,
+          "decade": 740
+        },
+        {
+          "count": 3,
+          "decade": 750
+        },
+        {
+          "count": 1,
+          "decade": 760
+        },
+        {
+          "count": 10,
+          "decade": 800
+        },
+        {
+          "count": 1,
+          "decade": 820
+        },
+        {
+          "count": 1,
+          "decade": 830
+        },
+        {
+          "count": 1,
+          "decade": 840
+        },
+        {
+          "count": 2,
+          "decade": 850
+        },
+        {
+          "count": 1,
+          "decade": 870
+        },
+        {
+          "count": 1,
+          "decade": 880
+        },
+        {
+          "count": 8,
+          "decade": 900
+        },
+        {
+          "count": 2,
+          "decade": 930
+        },
+        {
+          "count": 5,
+          "decade": 950
+        },
+        {
+          "count": 2,
+          "decade": 970
+        },
+        {
+          "count": 2,
+          "decade": 990
+        },
+        {
+          "count": 24,
+          "decade": 1000
+        },
+        {
+          "count": 1,
+          "decade": 1020
+        },
+        {
+          "count": 1,
+          "decade": 1030
+        },
+        {
+          "count": 9,
+          "decade": 1050
+        },
+        {
+          "count": 7,
+          "decade": 1070
+        },
+        {
+          "count": 2,
+          "decade": 1080
+        },
+        {
+          "count": 1,
+          "decade": 1090
+        },
+        {
+          "count": 46,
+          "decade": 1100
+        },
+        {
+          "count": 2,
+          "decade": 1110
+        },
+        {
+          "count": 9,
+          "decade": 1120
+        },
+        {
+          "count": 1,
+          "decade": 1140
+        },
+        {
+          "count": 38,
+          "decade": 1150
+        },
+        {
+          "count": 2,
+          "decade": 1160
+        },
+        {
+          "count": 19,
+          "decade": 1170
+        },
+        {
+          "count": 5,
+          "decade": 1180
+        },
+        {
+          "count": 2,
+          "decade": 1190
+        },
+        {
+          "count": 36,
+          "decade": 1200
+        },
+        {
+          "count": 6,
+          "decade": 1210
+        },
+        {
+          "count": 12,
+          "decade": 1220
+        },
+        {
+          "count": 6,
+          "decade": 1230
+        },
+        {
+          "count": 10,
+          "decade": 1240
+        },
+        {
+          "count": 37,
+          "decade": 1250
+        },
+        {
+          "count": 13,
+          "decade": 1260
+        },
+        {
+          "count": 33,
+          "decade": 1270
+        },
+        {
+          "count": 21,
+          "decade": 1280
+        },
+        {
+          "count": 26,
+          "decade": 1290
+        },
+        {
+          "count": 86,
+          "decade": 1300
+        },
+        {
+          "count": 24,
+          "decade": 1310
+        },
+        {
+          "count": 32,
+          "decade": 1320
+        },
+        {
+          "count": 37,
+          "decade": 1330
+        },
+        {
+          "count": 28,
+          "decade": 1340
+        },
+        {
+          "count": 61,
+          "decade": 1350
+        },
+        {
+          "count": 36,
+          "decade": 1360
+        },
+        {
+          "count": 42,
+          "decade": 1370
+        },
+        {
+          "count": 32,
+          "decade": 1380
+        },
+        {
+          "count": 35,
+          "decade": 1390
+        },
+        {
+          "count": 176,
+          "decade": 1400
+        },
+        {
+          "count": 38,
+          "decade": 1410
+        },
+        {
+          "count": 64,
+          "decade": 1420
+        },
+        {
+          "count": 62,
+          "decade": 1430
+        },
+        {
+          "count": 47,
+          "decade": 1440
+        },
+        {
+          "count": 148,
+          "decade": 1450
+        },
+        {
+          "count": 89,
+          "decade": 1460
+        },
+        {
+          "count": 130,
+          "decade": 1470
+        },
+        {
+          "count": 81,
+          "decade": 1480
+        },
+        {
+          "count": 76,
+          "decade": 1490
+        },
+        {
+          "count": 242,
+          "decade": 1500
+        },
+        {
+          "count": 129,
+          "decade": 1510
+        },
+        {
+          "count": 117,
+          "decade": 1520
+        },
+        {
+          "count": 112,
+          "decade": 1530
+        },
+        {
+          "count": 134,
+          "decade": 1540
+        },
+        {
+          "count": 169,
+          "decade": 1550
+        },
+        {
+          "count": 133,
+          "decade": 1560
+        },
+        {
+          "count": 144,
+          "decade": 1570
+        },
+        {
+          "count": 161,
+          "decade": 1580
+        },
+        {
+          "count": 137,
+          "decade": 1590
+        },
+        {
+          "count": 319,
+          "decade": 1600
+        },
+        {
+          "count": 200,
+          "decade": 1610
+        },
+        {
+          "count": 265,
+          "decade": 1620
+        },
+        {
+          "count": 230,
+          "decade": 1630
+        },
+        {
+          "count": 330,
+          "decade": 1640
+        },
+        {
+          "count": 262,
+          "decade": 1650
+        },
+        {
+          "count": 252,
+          "decade": 1660
+        },
+        {
+          "count": 297,
+          "decade": 1670
+        },
+        {
+          "count": 357,
+          "decade": 1680
+        },
+        {
+          "count": 365,
+          "decade": 1690
+        },
+        {
+          "count": 659,
+          "decade": 1700
+        },
+        {
+          "count": 394,
+          "decade": 1710
+        },
+        {
+          "count": 690,
+          "decade": 1720
+        },
+        {
+          "count": 668,
+          "decade": 1730
+        },
+        {
+          "count": 771,
+          "decade": 1740
+        },
+        {
+          "count": 1105,
+          "decade": 1750
+        },
+        {
+          "count": 1103,
+          "decade": 1760
+        },
+        {
+          "count": 1244,
+          "decade": 1770
+        },
+        {
+          "count": 1400,
+          "decade": 1780
+        },
+        {
+          "count": 1484,
+          "decade": 1790
+        },
+        {
+          "count": 3235,
+          "decade": 1800
+        },
+        {
+          "count": 1804,
+          "decade": 1810
+        },
+        {
+          "count": 3510,
+          "decade": 1820
+        },
+        {
+          "count": 3734,
+          "decade": 1830
+        },
+        {
+          "count": 2832,
+          "decade": 1840
+        },
+        {
+          "count": 3794,
+          "decade": 1850
+        },
+        {
+          "count": 4332,
+          "decade": 1860
+        },
+        {
+          "count": 4723,
+          "decade": 1870
+        },
+        {
+          "count": 9452,
+          "decade": 1880
+        },
+        {
+          "count": 10652,
+          "decade": 1890
+        },
+        {
+          "count": 13907,
+          "decade": 1900
+        },
+        {
+          "count": 13006,
+          "decade": 1910
+        },
+        {
+          "count": 10139,
+          "decade": 1920
+        },
+        {
+          "count": 14130,
+          "decade": 1930
+        },
+        {
+          "count": 10087,
+          "decade": 1940
+        },
+        {
+          "count": 9273,
+          "decade": 1950
+        },
+        {
+          "count": 7049,
+          "decade": 1960
+        },
+        {
+          "count": 7008,
+          "decade": 1970
+        },
+        {
+          "count": 6944,
+          "decade": 1980
+        },
+        {
+          "count": 11445,
+          "decade": 1990
+        },
+        {
+          "count": 10573,
+          "decade": 2000
+        },
+        {
+          "count": 19340,
+          "decade": 2010
+        },
+        {
+          "count": 2730,
+          "decade": 2020
+        }
+      ]
+    },
+    {
+      "org": "penn",
+      "values": [
+        {
+          "count": 1,
+          "decade": 300
+        },
+        {
+          "count": 1,
+          "decade": 500
+        },
+        {
+          "count": 1,
+          "decade": 800
+        },
+        {
+          "count": 2,
+          "decade": 820
+        },
+        {
+          "count": 1,
+          "decade": 850
+        },
+        {
+          "count": 1,
+          "decade": 900
+        },
+        {
+          "count": 1,
+          "decade": 970
+        },
+        {
+          "count": 11,
+          "decade": 1000
+        },
+        {
+          "count": 1,
+          "decade": 1040
+        },
+        {
+          "count": 4,
+          "decade": 1050
+        },
+        {
+          "count": 4,
+          "decade": 1070
+        },
+        {
+          "count": 13,
+          "decade": 1100
+        },
+        {
+          "count": 1,
+          "decade": 1110
+        },
+        {
+          "count": 4,
+          "decade": 1120
+        },
+        {
+          "count": 1,
+          "decade": 1130
+        },
+        {
+          "count": 9,
+          "decade": 1150
+        },
+        {
+          "count": 3,
+          "decade": 1170
+        },
+        {
+          "count": 4,
+          "decade": 1190
+        },
+        {
+          "count": 38,
+          "decade": 1200
+        },
+        {
+          "count": 4,
+          "decade": 1210
+        },
+        {
+          "count": 10,
+          "decade": 1220
+        },
+        {
+          "count": 3,
+          "decade": 1230
+        },
+        {
+          "count": 8,
+          "decade": 1240
+        },
+        {
+          "count": 22,
+          "decade": 1250
+        },
+        {
+          "count": 4,
+          "decade": 1260
+        },
+        {
+          "count": 25,
+          "decade": 1270
+        },
+        {
+          "count": 1,
+          "decade": 1280
+        },
+        {
+          "count": 5,
+          "decade": 1290
+        },
+        {
+          "count": 60,
+          "decade": 1300
+        },
+        {
+          "count": 2,
+          "decade": 1310
+        },
+        {
+          "count": 15,
+          "decade": 1320
+        },
+        {
+          "count": 10,
+          "decade": 1330
+        },
+        {
+          "count": 17,
+          "decade": 1340
+        },
+        {
+          "count": 40,
+          "decade": 1350
+        },
+        {
+          "count": 12,
+          "decade": 1360
+        },
+        {
+          "count": 20,
+          "decade": 1370
+        },
+        {
+          "count": 18,
+          "decade": 1380
+        },
+        {
+          "count": 21,
+          "decade": 1390
+        },
+        {
+          "count": 148,
+          "decade": 1400
+        },
+        {
+          "count": 40,
+          "decade": 1410
+        },
+        {
+          "count": 73,
+          "decade": 1420
+        },
+        {
+          "count": 24,
+          "decade": 1430
+        },
+        {
+          "count": 29,
+          "decade": 1440
+        },
+        {
+          "count": 106,
+          "decade": 1450
+        },
+        {
+          "count": 53,
+          "decade": 1460
+        },
+        {
+          "count": 75,
+          "decade": 1470
+        },
+        {
+          "count": 47,
+          "decade": 1480
+        },
+        {
+          "count": 51,
+          "decade": 1490
+        },
+        {
+          "count": 141,
+          "decade": 1500
+        },
+        {
+          "count": 49,
+          "decade": 1510
+        },
+        {
+          "count": 61,
+          "decade": 1520
+        },
+        {
+          "count": 82,
+          "decade": 1530
+        },
+        {
+          "count": 79,
+          "decade": 1540
+        },
+        {
+          "count": 99,
+          "decade": 1550
+        },
+        {
+          "count": 67,
+          "decade": 1560
+        },
+        {
+          "count": 80,
+          "decade": 1570
+        },
+        {
+          "count": 79,
+          "decade": 1580
+        },
+        {
+          "count": 69,
+          "decade": 1590
+        },
+        {
+          "count": 352,
+          "decade": 1600
+        },
+        {
+          "count": 69,
+          "decade": 1610
+        },
+        {
+          "count": 62,
+          "decade": 1620
+        },
+        {
+          "count": 61,
+          "decade": 1630
+        },
+        {
+          "count": 57,
+          "decade": 1640
+        },
+        {
+          "count": 162,
+          "decade": 1650
+        },
+        {
+          "count": 81,
+          "decade": 1660
+        },
+        {
+          "count": 83,
+          "decade": 1670
+        },
+        {
+          "count": 122,
+          "decade": 1680
+        },
+        {
+          "count": 264,
+          "decade": 1690
+        },
+        {
+          "count": 2162,
+          "decade": 1700
+        },
+        {
+          "count": 151,
+          "decade": 1710
+        },
+        {
+          "count": 105,
+          "decade": 1720
+        },
+        {
+          "count": 130,
+          "decade": 1730
+        },
+        {
+          "count": 140,
+          "decade": 1740
+        },
+        {
+          "count": 440,
+          "decade": 1750
+        },
+        {
+          "count": 270,
+          "decade": 1760
+        },
+        {
+          "count": 253,
+          "decade": 1770
+        },
+        {
+          "count": 401,
+          "decade": 1780
+        },
+        {
+          "count": 358,
+          "decade": 1790
+        },
+        {
+          "count": 784,
+          "decade": 1800
+        },
+        {
+          "count": 714,
+          "decade": 1810
+        },
+        {
+          "count": 1640,
+          "decade": 1820
+        },
+        {
+          "count": 800,
+          "decade": 1830
+        },
+        {
+          "count": 910,
+          "decade": 1840
+        },
+        {
+          "count": 1888,
+          "decade": 1850
+        },
+        {
+          "count": 1401,
+          "decade": 1860
+        },
+        {
+          "count": 1139,
+          "decade": 1870
+        },
+        {
+          "count": 1418,
+          "decade": 1880
+        },
+        {
+          "count": 1998,
+          "decade": 1890
+        },
+        {
+          "count": 3641,
+          "decade": 1900
+        },
+        {
+          "count": 3893,
+          "decade": 1910
+        },
+        {
+          "count": 6270,
+          "decade": 1920
+        },
+        {
+          "count": 9076,
+          "decade": 1930
+        },
+        {
+          "count": 8368,
+          "decade": 1940
+        },
+        {
+          "count": 11630,
+          "decade": 1950
+        },
+        {
+          "count": 13624,
+          "decade": 1960
+        },
+        {
+          "count": 12004,
+          "decade": 1970
+        },
+        {
+          "count": 8970,
+          "decade": 1980
+        },
+        {
+          "count": 6963,
+          "decade": 1990
+        },
+        {
+          "count": 17089,
+          "decade": 2000
+        },
+        {
+          "count": 8847,
+          "decade": 2010
+        },
+        {
+          "count": 41814,
+          "decade": 2020
+        }
+      ]
+    },
+    {
+      "org": "princeton",
+      "values": [
+        {
+          "count": 40,
+          "decade": 100
+        },
+        {
+          "count": 1,
+          "decade": 160
+        },
+        {
+          "count": 2,
+          "decade": 170
+        },
+        {
+          "count": 1,
+          "decade": 190
+        },
+        {
+          "count": 53,
+          "decade": 200
+        },
+        {
+          "count": 4,
+          "decade": 210
+        },
+        {
+          "count": 1,
+          "decade": 230
+        },
+        {
+          "count": 2,
+          "decade": 250
+        },
+        {
+          "count": 3,
+          "decade": 260
+        },
+        {
+          "count": 1,
+          "decade": 270
+        },
+        {
+          "count": 23,
+          "decade": 300
+        },
+        {
+          "count": 1,
+          "decade": 320
+        },
+        {
+          "count": 1,
+          "decade": 380
+        },
+        {
+          "count": 16,
+          "decade": 400
+        },
+        {
+          "count": 1,
+          "decade": 480
+        },
+        {
+          "count": 1,
+          "decade": 490
+        },
+        {
+          "count": 24,
+          "decade": 500
+        },
+        {
+          "count": 20,
+          "decade": 600
+        },
+        {
+          "count": 1,
+          "decade": 630
+        },
+        {
+          "count": 1,
+          "decade": 660
+        },
+        {
+          "count": 28,
+          "decade": 700
+        },
+        {
+          "count": 42,
+          "decade": 800
+        },
+        {
+          "count": 2,
+          "decade": 840
+        },
+        {
+          "count": 1,
+          "decade": 880
+        },
+        {
+          "count": 25,
+          "decade": 900
+        },
+        {
+          "count": 1,
+          "decade": 960
+        },
+        {
+          "count": 2,
+          "decade": 970
+        },
+        {
+          "count": 1,
+          "decade": 990
+        },
+        {
+          "count": 76,
+          "decade": 1000
+        },
+        {
+          "count": 2,
+          "decade": 1020
+        },
+        {
+          "count": 3,
+          "decade": 1030
+        },
+        {
+          "count": 1,
+          "decade": 1040
+        },
+        {
+          "count": 3,
+          "decade": 1050
+        },
+        {
+          "count": 4,
+          "decade": 1070
+        },
+        {
+          "count": 4,
+          "decade": 1080
+        },
+        {
+          "count": 1,
+          "decade": 1090
+        },
+        {
+          "count": 90,
+          "decade": 1100
+        },
+        {
+          "count": 3,
+          "decade": 1120
+        },
+        {
+          "count": 4,
+          "decade": 1130
+        },
+        {
+          "count": 2,
+          "decade": 1140
+        },
+        {
+          "count": 9,
+          "decade": 1150
+        },
+        {
+          "count": 2,
+          "decade": 1160
+        },
+        {
+          "count": 9,
+          "decade": 1170
+        },
+        {
+          "count": 5,
+          "decade": 1180
+        },
+        {
+          "count": 7,
+          "decade": 1190
+        },
+        {
+          "count": 152,
+          "decade": 1200
+        },
+        {
+          "count": 4,
+          "decade": 1210
+        },
+        {
+          "count": 12,
+          "decade": 1220
+        },
+        {
+          "count": 7,
+          "decade": 1230
+        },
+        {
+          "count": 3,
+          "decade": 1240
+        },
+        {
+          "count": 16,
+          "decade": 1250
+        },
+        {
+          "count": 6,
+          "decade": 1260
+        },
+        {
+          "count": 18,
+          "decade": 1270
+        },
+        {
+          "count": 14,
+          "decade": 1280
+        },
+        {
+          "count": 8,
+          "decade": 1290
+        },
+        {
+          "count": 325,
+          "decade": 1300
+        },
+        {
+          "count": 22,
+          "decade": 1310
+        },
+        {
+          "count": 36,
+          "decade": 1320
+        },
+        {
+          "count": 30,
+          "decade": 1330
+        },
+        {
+          "count": 24,
+          "decade": 1340
+        },
+        {
+          "count": 34,
+          "decade": 1350
+        },
+        {
+          "count": 20,
+          "decade": 1360
+        },
+        {
+          "count": 23,
+          "decade": 1370
+        },
+        {
+          "count": 29,
+          "decade": 1380
+        },
+        {
+          "count": 23,
+          "decade": 1390
+        },
+        {
+          "count": 588,
+          "decade": 1400
+        },
+        {
+          "count": 34,
+          "decade": 1410
+        },
+        {
+          "count": 44,
+          "decade": 1420
+        },
+        {
+          "count": 54,
+          "decade": 1430
+        },
+        {
+          "count": 65,
+          "decade": 1440
+        },
+        {
+          "count": 103,
+          "decade": 1450
+        },
+        {
+          "count": 77,
+          "decade": 1460
+        },
+        {
+          "count": 116,
+          "decade": 1470
+        },
+        {
+          "count": 68,
+          "decade": 1480
+        },
+        {
+          "count": 44,
+          "decade": 1490
+        },
+        {
+          "count": 867,
+          "decade": 1500
+        },
+        {
+          "count": 57,
+          "decade": 1510
+        },
+        {
+          "count": 49,
+          "decade": 1520
+        },
+        {
+          "count": 50,
+          "decade": 1530
+        },
+        {
+          "count": 53,
+          "decade": 1540
+        },
+        {
+          "count": 114,
+          "decade": 1550
+        },
+        {
+          "count": 70,
+          "decade": 1560
+        },
+        {
+          "count": 60,
+          "decade": 1570
+        },
+        {
+          "count": 72,
+          "decade": 1580
+        },
+        {
+          "count": 74,
+          "decade": 1590
+        },
+        {
+          "count": 1576,
+          "decade": 1600
+        },
+        {
+          "count": 77,
+          "decade": 1610
+        },
+        {
+          "count": 84,
+          "decade": 1620
+        },
+        {
+          "count": 74,
+          "decade": 1630
+        },
+        {
+          "count": 113,
+          "decade": 1640
+        },
+        {
+          "count": 175,
+          "decade": 1650
+        },
+        {
+          "count": 154,
+          "decade": 1660
+        },
+        {
+          "count": 133,
+          "decade": 1670
+        },
+        {
+          "count": 180,
+          "decade": 1680
+        },
+        {
+          "count": 154,
+          "decade": 1690
+        },
+        {
+          "count": 1957,
+          "decade": 1700
+        },
+        {
+          "count": 131,
+          "decade": 1710
+        },
+        {
+          "count": 173,
+          "decade": 1720
+        },
+        {
+          "count": 141,
+          "decade": 1730
+        },
+        {
+          "count": 182,
+          "decade": 1740
+        },
+        {
+          "count": 298,
+          "decade": 1750
+        },
+        {
+          "count": 339,
+          "decade": 1760
+        },
+        {
+          "count": 476,
+          "decade": 1770
+        },
+        {
+          "count": 390,
+          "decade": 1780
+        },
+        {
+          "count": 418,
+          "decade": 1790
+        },
+        {
+          "count": 1863,
+          "decade": 1800
+        },
+        {
+          "count": 501,
+          "decade": 1810
+        },
+        {
+          "count": 630,
+          "decade": 1820
+        },
+        {
+          "count": 802,
+          "decade": 1830
+        },
+        {
+          "count": 667,
+          "decade": 1840
+        },
+        {
+          "count": 845,
+          "decade": 1850
+        },
+        {
+          "count": 695,
+          "decade": 1860
+        },
+        {
+          "count": 784,
+          "decade": 1870
+        },
+        {
+          "count": 803,
+          "decade": 1880
+        },
+        {
+          "count": 1028,
+          "decade": 1890
+        },
+        {
+          "count": 1265,
+          "decade": 1900
+        },
+        {
+          "count": 1186,
+          "decade": 1910
+        },
+        {
+          "count": 1195,
+          "decade": 1920
+        },
+        {
+          "count": 1246,
+          "decade": 1930
+        },
+        {
+          "count": 1152,
+          "decade": 1940
+        },
+        {
+          "count": 1311,
+          "decade": 1950
+        },
+        {
+          "count": 2520,
+          "decade": 1960
+        },
+        {
+          "count": 2664,
+          "decade": 1970
+        },
+        {
+          "count": 1742,
+          "decade": 1980
+        },
+        {
+          "count": 3069,
+          "decade": 1990
+        },
+        {
+          "count": 633,
+          "decade": 2000
+        },
+        {
+          "count": 458,
+          "decade": 2010
+        },
+        {
+          "count": 113,
+          "decade": 2020
+        }
+      ]
+    },
+    {
+      "org": "stanford",
+      "values": [
+        {
+          "count": 1,
+          "decade": 100
+        },
+        {
+          "count": 1,
+          "decade": 200
+        },
+        {
+          "count": 1,
+          "decade": 500
+        },
+        {
+          "count": 1,
+          "decade": 820
+        },
+        {
+          "count": 1,
+          "decade": 850
+        },
+        {
+          "count": 1,
+          "decade": 900
+        },
+        {
+          "count": 1,
+          "decade": 960
+        },
+        {
+          "count": 2,
+          "decade": 1000
+        },
+        {
+          "count": 1,
+          "decade": 1060
+        },
+        {
+          "count": 6,
+          "decade": 1100
+        },
+        {
+          "count": 1,
+          "decade": 1130
+        },
+        {
+          "count": 1,
+          "decade": 1150
+        },
+        {
+          "count": 2,
+          "decade": 1160
+        },
+        {
+          "count": 2,
+          "decade": 1170
+        },
+        {
+          "count": 1,
+          "decade": 1180
+        },
+        {
+          "count": 1,
+          "decade": 1190
+        },
+        {
+          "count": 10,
+          "decade": 1200
+        },
+        {
+          "count": 1,
+          "decade": 1210
+        },
+        {
+          "count": 1,
+          "decade": 1220
+        },
+        {
+          "count": 1,
+          "decade": 1240
+        },
+        {
+          "count": 7,
+          "decade": 1250
+        },
+        {
+          "count": 3,
+          "decade": 1260
+        },
+        {
+          "count": 4,
+          "decade": 1270
+        },
+        {
+          "count": 4,
+          "decade": 1280
+        },
+        {
+          "count": 7,
+          "decade": 1290
+        },
+        {
+          "count": 11,
+          "decade": 1300
+        },
+        {
+          "count": 2,
+          "decade": 1310
+        },
+        {
+          "count": 5,
+          "decade": 1320
+        },
+        {
+          "count": 4,
+          "decade": 1330
+        },
+        {
+          "count": 4,
+          "decade": 1340
+        },
+        {
+          "count": 7,
+          "decade": 1350
+        },
+        {
+          "count": 2,
+          "decade": 1360
+        },
+        {
+          "count": 4,
+          "decade": 1370
+        },
+        {
+          "count": 4,
+          "decade": 1380
+        },
+        {
+          "count": 1,
+          "decade": 1390
+        },
+        {
+          "count": 20,
+          "decade": 1400
+        },
+        {
+          "count": 5,
+          "decade": 1410
+        },
+        {
+          "count": 2,
+          "decade": 1420
+        },
+        {
+          "count": 6,
+          "decade": 1430
+        },
+        {
+          "count": 3,
+          "decade": 1440
+        },
+        {
+          "count": 20,
+          "decade": 1450
+        },
+        {
+          "count": 9,
+          "decade": 1460
+        },
+        {
+          "count": 8,
+          "decade": 1470
+        },
+        {
+          "count": 7,
+          "decade": 1480
+        },
+        {
+          "count": 8,
+          "decade": 1490
+        },
+        {
+          "count": 17,
+          "decade": 1500
+        },
+        {
+          "count": 6,
+          "decade": 1510
+        },
+        {
+          "count": 14,
+          "decade": 1520
+        },
+        {
+          "count": 11,
+          "decade": 1530
+        },
+        {
+          "count": 10,
+          "decade": 1540
+        },
+        {
+          "count": 14,
+          "decade": 1550
+        },
+        {
+          "count": 16,
+          "decade": 1560
+        },
+        {
+          "count": 17,
+          "decade": 1570
+        },
+        {
+          "count": 13,
+          "decade": 1580
+        },
+        {
+          "count": 25,
+          "decade": 1590
+        },
+        {
+          "count": 41,
+          "decade": 1600
+        },
+        {
+          "count": 16,
+          "decade": 1610
+        },
+        {
+          "count": 15,
+          "decade": 1620
+        },
+        {
+          "count": 12,
+          "decade": 1630
+        },
+        {
+          "count": 25,
+          "decade": 1640
+        },
+        {
+          "count": 18,
+          "decade": 1650
+        },
+        {
+          "count": 23,
+          "decade": 1660
+        },
+        {
+          "count": 26,
+          "decade": 1670
+        },
+        {
+          "count": 44,
+          "decade": 1680
+        },
+        {
+          "count": 28,
+          "decade": 1690
+        },
+        {
+          "count": 61,
+          "decade": 1700
+        },
+        {
+          "count": 22,
+          "decade": 1710
+        },
+        {
+          "count": 29,
+          "decade": 1720
+        },
+        {
+          "count": 30,
+          "decade": 1730
+        },
+        {
+          "count": 50,
+          "decade": 1740
+        },
+        {
+          "count": 80,
+          "decade": 1750
+        },
+        {
+          "count": 63,
+          "decade": 1760
+        },
+        {
+          "count": 86,
+          "decade": 1770
+        },
+        {
+          "count": 111,
+          "decade": 1780
+        },
+        {
+          "count": 94,
+          "decade": 1790
+        },
+        {
+          "count": 112,
+          "decade": 1800
+        },
+        {
+          "count": 130,
+          "decade": 1810
+        },
+        {
+          "count": 176,
+          "decade": 1820
+        },
+        {
+          "count": 177,
+          "decade": 1830
+        },
+        {
+          "count": 213,
+          "decade": 1840
+        },
+        {
+          "count": 261,
+          "decade": 1850
+        },
+        {
+          "count": 324,
+          "decade": 1860
+        },
+        {
+          "count": 333,
+          "decade": 1870
+        },
+        {
+          "count": 458,
+          "decade": 1880
+        },
+        {
+          "count": 839,
+          "decade": 1890
+        },
+        {
+          "count": 1100,
+          "decade": 1900
+        },
+        {
+          "count": 1982,
+          "decade": 1910
+        },
+        {
+          "count": 2245,
+          "decade": 1920
+        },
+        {
+          "count": 2600,
+          "decade": 1930
+        },
+        {
+          "count": 2126,
+          "decade": 1940
+        },
+        {
+          "count": 1750,
+          "decade": 1950
+        },
+        {
+          "count": 3316,
+          "decade": 1960
+        },
+        {
+          "count": 3499,
+          "decade": 1970
+        },
+        {
+          "count": 2915,
+          "decade": 1980
+        },
+        {
+          "count": 6555,
+          "decade": 1990
+        },
+        {
+          "count": 12718,
+          "decade": 2000
+        },
+        {
+          "count": 2528,
+          "decade": 2010
+        },
+        {
+          "count": 6303,
+          "decade": 2020
+        }
+      ]
+    }
+  ]
+}

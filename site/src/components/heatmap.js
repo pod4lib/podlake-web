@@ -77,3 +77,47 @@ export function shareHeatmap(
     ],
   });
 }
+
+// Count heatmap (category × institution) colored by raw count on a sqrt scale, so
+// large and small institutions are both legible — for views where absolute scale
+// is the point (e.g. archival material by type). Takes a single dimension object
+// ({categories, institutions, matrix}), not the whole comparison. Suppressed cells
+// (null) render as a faint tint.
+export function countHeatmap(dimension, label, {marginLeft = 155, colorLabel = "records"} = {}) {
+  const {categories, institutions, matrix} = dimension;
+  const cats = categories.map(label);
+  const rows = [];
+  for (const o of institutions)
+    for (const c of categories) rows.push({org: o, category: label(c), count: matrix[o][c]});
+  const maxCount = d3.max(rows, (d) => d.count ?? 0);
+  return Plot.plot({
+    marginLeft,
+    marginBottom: 60,
+    height: 55 + categories.length * 34,
+    x: {label: null, domain: institutions, tickRotate: -30},
+    y: {label: null, domain: cats},
+    color: {
+      scheme: "blues",
+      legend: true,
+      label: colorLabel,
+      type: "sqrt",
+      domain: [0, maxCount],
+      unknown: "color-mix(in srgb, var(--theme-foreground) 12%, transparent)",
+    },
+    marks: [
+      Plot.cell(rows, {
+        x: "org",
+        y: "category",
+        fill: "count",
+        tip: {format: {fill: (d) => d3.format(",")(d)}},
+      }),
+      Plot.text(rows, {
+        x: "org",
+        y: "category",
+        text: (d) => (d.count == null ? "" : d3.format("~s")(d.count)),
+        fill: (d) => (d.count > maxCount * 0.5 ? "white" : "black"),
+        fontSize: 11,
+      }),
+    ],
+  });
+}

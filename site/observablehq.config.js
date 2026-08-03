@@ -10,6 +10,7 @@ export default {
     {name: "Format", path: "/format"},
     {name: "LC classification", path: "/lc-classification"},
     {name: "Serials", path: "/serials"},
+    {name: "Archives & manuscripts", path: "/archives"},
     {name: "Completeness", path: "/completeness"},
     {name: "About the data", path: "/data"},
   ],

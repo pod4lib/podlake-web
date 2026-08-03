@@ -70,6 +70,11 @@ ARTIFACTS = [
         queries.serials_succession,
     ),
     (
+        "archives.json",
+        "Per-institution archives & manuscripts: material type, genre/form, vintage, finding-aid links.",
+        queries.archives,
+    ),
+    (
         "coverage.json",
         "Per-institution share of records carrying selected MARC fields.",
         queries.coverage,
