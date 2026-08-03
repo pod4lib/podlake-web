@@ -19,7 +19,26 @@ export default {
   // the root <svg>) for more legible axis, tick, and legend text everywhere.
   // Plain rule beats the presentation attribute; marks with an explicit
   // fontSize (e.g. heatmap cell labels) keep their own size.
-  head: '<style>svg[class^="plot-"] { font-size: 13px; }</style>',
+  // Global CSS: bump Plot's default label size, and style the alpha-preview
+  // banner that the script below inserts into the sidebar.
+  head:
+    "<style>" +
+    'svg[class^="plot-"] { font-size: 13px; }' +
+    "#observablehq-sidebar .alpha-banner {" +
+    " margin: 0.5rem 0.75rem 0.75rem; padding: 0.5rem 0.6rem;" +
+    " background: #b45309; color: #fff; border-radius: 6px;" +
+    " font-size: 0.75rem; line-height: 1.4;" +
+    " }" +
+    "#observablehq-sidebar .alpha-banner strong { text-transform: uppercase; letter-spacing: 0.05em; }" +
+    "</style>" +
+    "<script>addEventListener('DOMContentLoaded',()=>{" +
+    "const nav=document.querySelector('#observablehq-sidebar');" +
+    "if(!nav||nav.querySelector('.alpha-banner'))return;" +
+    "const d=document.createElement('div');d.className='alpha-banner';" +
+    "d.innerHTML='<strong>Alpha preview</strong> — podlake is under active development; the data and visualizations here are exploratory and may change.';" +
+    "const firstOl=nav.querySelector('ol');" +
+    "firstOl.insertAdjacentElement('afterend', d);" +
+    "});</script>",
   header: "podlake — consortial collection analytics",
   footer:
     'Built from <a href="https://pod.stanford.edu/">POD</a> MARC data with ' +
