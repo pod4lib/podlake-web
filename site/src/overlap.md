@@ -22,6 +22,7 @@ a print book and its e-book edition count as two distinct titles.
 
 ```js
 import {provenance} from "./components/provenance.js";
+import {orgLabel} from "./components/marc.js";
 const histogramFile = FileAttachment("./data/overlap_histogram.json");
 const histogram = histogramFile.json();
 const uniquenessFile = FileAttachment("./data/uniqueness.json");
@@ -64,7 +65,7 @@ Plot.plot({
   x: {label: "uniquely-held titles", grid: true, tickFormat: "~s"},
   y: {label: null},
   marks: [
-    Plot.barX(uniqueness.per_org, {x: "unique_titles", y: "org", fill: "var(--theme-foreground-focus)", sort: {y: "-x"}, tip: true}),
+    Plot.barX(uniqueness.per_org.map((o) => ({...o, org: orgLabel(o.org)})), {x: "unique_titles", y: "org", fill: "var(--theme-foreground-focus)", sort: {y: "-x"}, tip: true}),
     Plot.ruleX([0]),
   ],
 })
@@ -89,7 +90,7 @@ const cells = (() => {
     for (const b of insts) {
       if (a === b) continue; // diagonal is the org's own total — a different scale
       const key = a < b ? `${a}|${b}` : `${b}|${a}`;
-      out.push({a, b, value: shared.get(key) ?? 0});
+      out.push({a: orgLabel(a), b: orgLabel(b), value: shared.get(key) ?? 0});
     }
   return out;
 })();

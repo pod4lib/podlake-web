@@ -25,6 +25,7 @@ licensed databases.
 const electronicFile = FileAttachment("./data/electronic.json");
 const electronic = electronicFile.json();
 import {provenance} from "./components/provenance.js";
+import {orgLabel} from "./components/marc.js";
 ```
 
 ## Top link hosts by institution
@@ -34,7 +35,7 @@ const hostPanels = electronic.hosts.map((o) => {
   const rows = o.values.map((v) => ({host: v.host, count: v.count}));
   return html`<figure style="margin: 0 0 0.5rem 0; max-width: 520px">
     <figcaption style="font-weight: 600; margin-bottom: 0.25rem">
-      ${o.org} <span style="font-weight: 400; color: var(--theme-foreground-muted)">· ${d3.format(",")(o.total)} links</span>
+      ${orgLabel(o.org)} <span style="font-weight: 400; color: var(--theme-foreground-muted)">· ${d3.format(",")(o.total)} links</span>
     </figcaption>
     ${Plot.plot({
       marginLeft: 230,

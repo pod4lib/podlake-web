@@ -7,6 +7,7 @@ complete but inaccurate, or sparse but perfectly fit for its material.
 
 ```js
 import {provenance} from "./components/provenance.js";
+import {orgLabel} from "./components/marc.js";
 const coverageFile = FileAttachment("./data/coverage.json");
 const coverage = coverageFile.json();
 ```
@@ -22,7 +23,7 @@ const fieldLabels = {
 };
 const covRows = coverage.per_org.flatMap((o) =>
   coverage.fields.map((f) => ({
-    org: o.org,
+    org: orgLabel(o.org),
     field: fieldLabels[f] ?? f,
     coverage: o.coverage[f],
     count: Math.round(o.coverage[f] * o.records),

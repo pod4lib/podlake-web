@@ -242,6 +242,14 @@ const SUCCESSION_TYPE = {
 const labeler = (table) => (code) =>
   table[String(code).toLowerCase()] ?? code;
 
+// Institution code → display name. Institution codes are stored lowercase (they
+// identify the org in the lake); this capitalizes them for display, with room to
+// override any name that isn't a simple capitalization (e.g. an acronym).
+const ORG_NAMES = {};
+export const orgLabel = (org) =>
+  ORG_NAMES[org] ??
+  (org ? String(org).charAt(0).toUpperCase() + String(org).slice(1) : org);
+
 export const recordTypeLabel = labeler(RECORD_TYPE);
 export const languageLabel = labeler(LANGUAGE);
 export const placeLabel = labeler(PLACE);

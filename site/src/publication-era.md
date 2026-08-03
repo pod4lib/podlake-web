@@ -6,13 +6,14 @@ years (1450–2030) are counted.
 
 ```js
 import {provenance} from "./components/provenance.js";
+import {orgLabel} from "./components/marc.js";
 const decadeFile = FileAttachment("./data/publication_decade.json");
 const decadeData = decadeFile.json();
 ```
 
 ```js
 const orgs = decadeData.per_org.map((r) => r.org).sort();
-const org = view(Inputs.select(orgs, {label: "Institution", value: orgs[0]}));
+const org = view(Inputs.select(orgs, {label: "Institution", value: orgs[0], format: orgLabel}));
 ```
 
 ```js

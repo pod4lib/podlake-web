@@ -7,7 +7,7 @@ each collection *different* — how current it is, how far back it reaches, and
 what its serials are about.
 
 ```js
-import {lcClassLabel, serialStatusLabel, successionLinkLabel, successionTypeLabel} from "./components/marc.js";
+import {lcClassLabel, serialStatusLabel, successionLinkLabel, successionTypeLabel, orgLabel} from "./components/marc.js";
 import {shareHeatmap} from "./components/heatmap.js";
 import {provenance} from "./components/provenance.js";
 const comparisonFile = FileAttachment("./data/comparison.json");
@@ -31,7 +31,7 @@ institutions — the sections below are where they diverge.
 
 ```js
 const serialOrgs = timeline.active.map((r) => r.org).sort();
-const serialOrg = view(Inputs.select(serialOrgs, {label: "Institution", value: serialOrgs[0]}));
+const serialOrg = view(Inputs.select(serialOrgs, {label: "Institution", value: serialOrgs[0], format: orgLabel}));
 ```
 
 ```js
@@ -98,7 +98,7 @@ counted.
 ```js
 const vintage = timeline.start_decade.flatMap((o) => {
   const total = d3.sum(o.values, (d) => d.count);
-  return o.values.map((d) => ({org: o.org, decade: d.decade, share: total ? d.count / total : 0}));
+  return o.values.map((d) => ({org: orgLabel(o.org), decade: d.decade, share: total ? d.count / total : 0}));
 });
 ```
 

@@ -14,7 +14,7 @@ findable* rather than LC class. As with electronic resources, several of these
 signals reflect **cataloging practice** as much as what an institution holds.
 
 ```js
-import {recordTypeLabel} from "./components/marc.js";
+import {recordTypeLabel, orgLabel} from "./components/marc.js";
 import {shareHeatmap, countHeatmap} from "./components/heatmap.js";
 import {provenance} from "./components/provenance.js";
 const archivesFile = FileAttachment("./data/archives.json");
@@ -56,7 +56,7 @@ const genrePanels = archives.genre.map((o) => {
   const rows = o.values.map((v) => ({term: cap(v.term), count: v.count}));
   return html`<figure style="margin: 0 0 0.5rem 0; max-width: 460px">
     <figcaption style="font-weight: 600; margin-bottom: 0.25rem">
-      ${o.org} <span style="font-weight: 400; color: var(--theme-foreground-muted)">· ${d3.format(",")(o.total)} archival records</span>
+      ${orgLabel(o.org)} <span style="font-weight: 400; color: var(--theme-foreground-muted)">· ${d3.format(",")(o.total)} archival records</span>
     </figcaption>
     ${Plot.plot({
       marginLeft: 185,
@@ -96,7 +96,7 @@ can't record BC dates, so ~100 AD is the practical floor.)
 ```js
 const archVintage = archives.start_decade.flatMap((o) => {
   const total = d3.sum(o.values, (d) => d.count);
-  return o.values.map((d) => ({org: o.org, decade: d.decade, share: total ? d.count / total : 0}));
+  return o.values.map((d) => ({org: orgLabel(o.org), decade: d.decade, share: total ? d.count / total : 0}));
 });
 ```
 
@@ -138,7 +138,7 @@ institution's archival records carry any online link (`856`):
 
 ```js
 const linkShare = archives.online_link
-  .map((o) => ({org: o.org, share: o.total ? o.count / o.total : 0, count: o.count}))
+  .map((o) => ({org: orgLabel(o.org), share: o.total ? o.count / o.total : 0, count: o.count}))
   .sort((a, b) => b.share - a.share);
 ```
 

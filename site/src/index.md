@@ -13,6 +13,7 @@ lake, which POD members have full access to.
 
 ```js
 import {provenance} from "./components/provenance.js";
+import {orgLabel} from "./components/marc.js";
 const overviewFile = FileAttachment("./data/overview.json");
 const overview = overviewFile.json();
 ```
@@ -44,7 +45,7 @@ Plot.plot({
   x: {label: "records", grid: true, tickFormat: "~s"},
   y: {label: null},
   marks: [
-    Plot.barX(overview.per_org, {
+    Plot.barX(overview.per_org.map((o) => ({...o, org: orgLabel(o.org)})), {
       x: "records",
       y: "org",
       fill: "var(--theme-foreground-focus)",
@@ -59,7 +60,7 @@ Plot.plot({
 ```js
 Inputs.table(
   overview.per_org.map((o) => ({
-    institution: o.org,
+    institution: orgLabel(o.org),
     records: o.records,
     titles: o.titles,
     "last synced": o.last_sync ? o.last_sync.slice(0, 10) : "—",

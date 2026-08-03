@@ -5,6 +5,7 @@
 
 import * as Plot from "npm:@observablehq/plot";
 import * as d3 from "npm:d3";
+import {orgLabel} from "./marc.js";
 
 // {org, category (labeled), share, count} rows for a comparison dimension.
 // `exclude` drops those raw category codes from the display; shares still divide
@@ -19,10 +20,10 @@ export function compareRows(comparison, dim, label, exclude = []) {
   for (const o of d.institutions)
     for (const c of categories) {
       const n = d.matrix[o][c];
-      rows.push({org: o, category: label(c), share: n == null ? null : n / d.totals[o], count: n});
+      rows.push({org: orgLabel(o), category: label(c), share: n == null ? null : n / d.totals[o], count: n});
     }
   // categories arrive sorted by consortium total (largest first → top of the y axis)
-  return {rows, categories: categories.map(label), institutions: d.institutions};
+  return {rows, categories: categories.map(label), institutions: d.institutions.map(orgLabel)};
 }
 
 // Share heatmap (category × institution) for a comparison dimension. Suppressed
@@ -86,15 +87,16 @@ export function shareHeatmap(
 export function countHeatmap(dimension, label, {marginLeft = 155, colorLabel = "records"} = {}) {
   const {categories, institutions, matrix} = dimension;
   const cats = categories.map(label);
+  const insts = institutions.map(orgLabel);
   const rows = [];
   for (const o of institutions)
-    for (const c of categories) rows.push({org: o, category: label(c), count: matrix[o][c]});
+    for (const c of categories) rows.push({org: orgLabel(o), category: label(c), count: matrix[o][c]});
   const maxCount = d3.max(rows, (d) => d.count ?? 0);
   return Plot.plot({
     marginLeft,
     marginBottom: 60,
     height: 55 + categories.length * 34,
-    x: {label: null, domain: institutions, tickRotate: -30},
+    x: {label: null, domain: insts, tickRotate: -30},
     y: {label: null, domain: cats},
     color: {
       scheme: "blues",
