@@ -235,25 +235,45 @@ _LC_CALLNUM = (
     + f") AND {_LC_SHAPE}"
 )
 
-Q_COVERAGE = f"""\
-WITH present AS (
-  SELECT org, pod_record_id,
-         max(field_tag = '020')                AS isbn,
-         max(field_tag LIKE '6%')              AS subjects,
-         max(field_tag IN ('100','110','111')) AS author,
-         max(field_tag = '856')                AS online,
-         max(field_tag = '300')                AS phys_desc,
-         max({_LC_CALLNUM}) AS lc_classification
-  FROM records
-  GROUP BY org, pod_record_id
+# Field tags the coverage query needs (besides the LIKE '6%' subjects). Derived
+# from _LC_LOCATIONS so the pre-filter can't drift from the LC-classification set.
+_COVERAGE_TAGS = ", ".join(
+    f"'{t}'"
+    for t in sorted(
+        {"020", "100", "110", "111", "856", "300"} | {f for f, _s, _e in _LC_LOCATIONS}
+    )
 )
-SELECT org, count(*) AS records,
-       sum(isbn) AS isbn, sum(subjects) AS subjects, sum(author) AS author,
-       sum(online) AS online, sum(phys_desc) AS phys_desc,
-       sum(lc_classification) AS lc_classification
-FROM present
-GROUP BY org
-ORDER BY org"""
+
+# Per-institution field coverage: for each field, the number of records that
+# carry it, counted directly per org. The WHERE keeps the scan to the handful of
+# relevant field tags; counting DISTINCT records per org avoids collapsing the
+# whole (billions-of-rows) table into one group per record first. Denominators
+# come from record_meta (one row per record).
+Q_COVERAGE = f"""\
+WITH totals AS (
+  SELECT org, count(*) AS records FROM record_meta GROUP BY org
+),
+present AS (
+  SELECT org,
+    count(DISTINCT pod_record_id) FILTER (WHERE field_tag = '020')                AS isbn,
+    count(DISTINCT pod_record_id) FILTER (WHERE field_tag LIKE '6%')              AS subjects,
+    count(DISTINCT pod_record_id) FILTER (WHERE field_tag IN ('100','110','111')) AS author,
+    count(DISTINCT pod_record_id) FILTER (WHERE field_tag = '856')                AS online,
+    count(DISTINCT pod_record_id) FILTER (WHERE field_tag = '300')                AS phys_desc,
+    count(DISTINCT pod_record_id) FILTER (WHERE {_LC_CALLNUM}) AS lc_classification
+  FROM records
+  WHERE field_tag LIKE '6%' OR field_tag IN ({_COVERAGE_TAGS})
+  GROUP BY org
+)
+SELECT t.org, t.records,
+       coalesce(p.isbn, 0)              AS isbn,
+       coalesce(p.subjects, 0)          AS subjects,
+       coalesce(p.author, 0)            AS author,
+       coalesce(p.online, 0)            AS online,
+       coalesce(p.phys_desc, 0)         AS phys_desc,
+       coalesce(p.lc_classification, 0) AS lc_classification
+FROM totals t LEFT JOIN present p USING (org)
+ORDER BY t.org"""
 
 
 # --- query functions ---------------------------------------------------------
