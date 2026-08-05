@@ -15,7 +15,7 @@ from podlake_web import queries, record, suppress
 
 def _dev_config(tmp_path: Path) -> Config:
     return Config(
-        env="development",
+        profile="file",
         data_path=str(tmp_path / "data") + "/",
         catalog_uri=str(tmp_path / "podlake.ducklake"),
     )

@@ -89,7 +89,7 @@ def test_attach_sql_escapes_embedded_quotes():
 def _build_min_lake(catalog: Path, data_path: Path) -> None:
     """Create a tiny writable lake with a single record_meta row."""
     cfg = Config(
-        env="development",
+        profile="file",
         data_path=str(data_path) + "/",
         catalog_uri=str(catalog),
     )
