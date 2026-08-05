@@ -13,6 +13,8 @@ export default {
     {name: "Archives & manuscripts", path: "/archives"},
     {name: "Electronic resources", path: "/electronic"},
     {name: "Completeness", path: "/completeness"},
+    {name: "Source of cataloging", path: "/cataloging-source"},
+    {name: "How records arrived", path: "/record-channels"},
     {name: "About the data", path: "/data"},
   ],
   // Bump Observable Plot's default label size (10px presentation attribute on

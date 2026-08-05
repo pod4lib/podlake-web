@@ -138,7 +138,8 @@ How MARC maps onto this layout:
 
 A short field cheat-sheet: `245` title, `1xx` author/creator, `6xx` subjects,
 `050` / `090` LC call number, `008` the fixed field above, `856 $u`
-electronic-access link.
+electronic-access link, `040 $a` original cataloging agency and `040 $d` each
+modifying agency, `035 $a` system control numbers written `(ORGCODE)number`.
 
 ### Record-level examples
 

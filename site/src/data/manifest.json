@@ -21,15 +21,39 @@
       "file": "publication_decade.json"
     },
     {
+      "description": "Per-institution count of serials actively published in each year.",
+      "file": "serials_timeline.json"
+    },
+    {
+      "description": "Per-institution serial succession: lineage links and transition types.",
+      "file": "serials_succession.json"
+    },
+    {
+      "description": "Per-institution archives & manuscripts: material type, genre/form, vintage, finding-aid links.",
+      "file": "archives.json"
+    },
+    {
+      "description": "Per-institution top hosts linked from 856 fields.",
+      "file": "electronic.json"
+    },
+    {
       "description": "Per-institution share of records carrying selected MARC fields.",
       "file": "coverage.json"
+    },
+    {
+      "description": "Per-institution source of cataloging (MARC 040): provenance mix, intra-consortium flow, and modification depth.",
+      "file": "cataloging_source.json"
+    },
+    {
+      "description": "Per-institution distribution channels from MARC 035 system control numbers: OCLC, RLIN, Alma Community Zone, local and vendor namespaces.",
+      "file": "record_channels.json"
     },
     {
       "description": "Cross-institution matrices: language, place, format, LC classification.",
       "file": "comparison.json"
     }
   ],
-  "generated_at": "2026-08-01T10:28:34.728357+00:00",
+  "generated_at": "2026-08-05T01:13:19.375822+00:00",
   "suppression": {
     "threshold": 10
   }

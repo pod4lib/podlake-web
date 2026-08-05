@@ -1,0 +1,672 @@
+{
+  "buckets": [
+    "lc",
+    "self",
+    "self_inferred",
+    "pod",
+    "other",
+    "none"
+  ],
+  "dimensions": {
+    "agency": {
+      "categories": [
+        "DLC",
+        "HLS",
+        "GPO",
+        "CST",
+        "UKMBAM-D",
+        "NJP",
+        "VAALASP",
+        "PU",
+        "OHX",
+        "MIAAPQ",
+        "ITFIC",
+        "YDX",
+        "STF",
+        "UKM",
+        "ISJEAIW",
+        "LEXISNEXIS",
+        "NDD",
+        "UMI",
+        "UK-ES",
+        "PUL",
+        "MWA",
+        "NAXOS",
+        "UK-CBPIL",
+        "MIGCL",
+        "HVL",
+        "C3L",
+        "CU-RIVES",
+        "HUL",
+        "RBN",
+        "BTCTA",
+        "N$T",
+        "GMOME",
+        "DLC-R",
+        "CST-H",
+        "UKMGB",
+        "HMS",
+        "RPB",
+        "EAA",
+        "NYNYMAR",
+        "HHG",
+        "AGL",
+        "NJHACI",
+        "HMM",
+        "RPJCB"
+      ],
+      "institutions": [
+        "brown",
+        "duke",
+        "harvard",
+        "penn",
+        "princeton",
+        "stanford"
+      ],
+      "matrix": {
+        "brown": {
+          "AGL": 296,
+          "BTCTA": 15987,
+          "C3L": 13625,
+          "CST": 4324,
+          "CST-H": 574,
+          "CU-RIVES": 2643,
+          "DLC": 879181,
+          "DLC-R": 4222,
+          "EAA": 22756,
+          "GMOME": 0,
+          "GPO": 11324,
+          "HHG": 269,
+          "HLS": 9461,
+          "HMM": 15432,
+          "HMS": 16,
+          "HUL": 1726,
+          "HVL": 152,
+          "ISJEAIW": 130,
+          "ITFIC": 13945,
+          "LEXISNEXIS": 0,
+          "MIAAPQ": 42,
+          "MIGCL": null,
+          "MWA": 44106,
+          "N$T": null,
+          "NAXOS": null,
+          "NDD": 3393,
+          "NJHACI": null,
+          "NJP": 4817,
+          "NYNYMAR": null,
+          "OHX": 17662,
+          "PU": 3253,
+          "PUL": 7101,
+          "RBN": 155313,
+          "RPB": 116549,
+          "RPJCB": 17928,
+          "STF": 3769,
+          "UK-CBPIL": 0,
+          "UK-ES": 3872,
+          "UKM": 22664,
+          "UKMBAM-D": null,
+          "UKMGB": 5900,
+          "UMI": 4469,
+          "VAALASP": null,
+          "YDX": 16749
+        },
+        "duke": {
+          "AGL": 85836,
+          "BTCTA": 24963,
+          "C3L": 23249,
+          "CST": 5514,
+          "CST-H": 214,
+          "CU-RIVES": 113205,
+          "DLC": 1685878,
+          "DLC-R": 8911,
+          "EAA": 44712,
+          "GMOME": 114354,
+          "GPO": 167878,
+          "HHG": 298,
+          "HLS": 30746,
+          "HMM": 46,
+          "HMS": 96,
+          "HUL": 8808,
+          "HVL": 1005,
+          "ISJEAIW": 74,
+          "ITFIC": 7399,
+          "LEXISNEXIS": 0,
+          "MIAAPQ": 449623,
+          "MIGCL": 82829,
+          "MWA": 20814,
+          "N$T": 400,
+          "NAXOS": 1107,
+          "NDD": 279360,
+          "NJHACI": 85203,
+          "NJP": 2004,
+          "NYNYMAR": 68,
+          "OHX": 53584,
+          "PU": 378,
+          "PUL": 14116,
+          "RBN": 7444,
+          "RPB": 167,
+          "RPJCB": 166,
+          "STF": 13570,
+          "UK-CBPIL": 83247,
+          "UK-ES": 146992,
+          "UKM": 62371,
+          "UKMBAM-D": 315211,
+          "UKMGB": 15605,
+          "UMI": 70607,
+          "VAALASP": 351924,
+          "YDX": 37194
+        },
+        "harvard": {
+          "AGL": 5962,
+          "BTCTA": 41186,
+          "C3L": 141307,
+          "CST": 43991,
+          "CST-H": 1711,
+          "CU-RIVES": 1997,
+          "DLC": 3584109,
+          "DLC-R": 44523,
+          "EAA": 23286,
+          "GMOME": 100,
+          "GPO": 57729,
+          "HHG": 121735,
+          "HLS": 714411,
+          "HMM": 17663,
+          "HMS": 137406,
+          "HUL": 168465,
+          "HVL": 269965,
+          "ISJEAIW": 348523,
+          "ITFIC": 143215,
+          "LEXISNEXIS": 0,
+          "MIAAPQ": 159,
+          "MIGCL": 2504,
+          "MWA": 45847,
+          "N$T": 140,
+          "NAXOS": 11,
+          "NDD": 29872,
+          "NJHACI": null,
+          "NJP": 24467,
+          "NYNYMAR": 129066,
+          "OHX": 142876,
+          "PU": 4468,
+          "PUL": 62114,
+          "RBN": 22908,
+          "RPB": 1899,
+          "RPJCB": 79,
+          "STF": 53885,
+          "UK-CBPIL": 0,
+          "UK-ES": 704,
+          "UKM": 133271,
+          "UKMBAM-D": 11,
+          "UKMGB": 36690,
+          "UMI": 5501,
+          "VAALASP": 0,
+          "YDX": 65308
+        },
+        "penn": {
+          "AGL": 1460,
+          "BTCTA": 31785,
+          "C3L": 21178,
+          "CST": 86880,
+          "CST-H": 3004,
+          "CU-RIVES": 143155,
+          "DLC": 1180131,
+          "DLC-R": 24388,
+          "EAA": 42849,
+          "GMOME": 59285,
+          "GPO": 177242,
+          "HHG": 344,
+          "HLS": 26071,
+          "HMM": 126,
+          "HMS": 33,
+          "HUL": 11292,
+          "HVL": 1205,
+          "ISJEAIW": 683,
+          "ITFIC": 51870,
+          "LEXISNEXIS": 343596,
+          "MIAAPQ": 3451,
+          "MIGCL": 114454,
+          "MWA": 116652,
+          "N$T": 3780,
+          "NAXOS": 159555,
+          "NDD": 5557,
+          "NJHACI": 103,
+          "NJP": 23298,
+          "NYNYMAR": 33,
+          "OHX": 76904,
+          "PU": 490166,
+          "PUL": 13358,
+          "RBN": 3354,
+          "RPB": 7444,
+          "RPJCB": 345,
+          "STF": 13742,
+          "UK-CBPIL": 207768,
+          "UK-ES": 177230,
+          "UKM": 48125,
+          "UKMBAM-D": 194433,
+          "UKMGB": 20469,
+          "UMI": 222088,
+          "VAALASP": 106268,
+          "YDX": 60476
+        },
+        "princeton": {
+          "AGL": 890,
+          "BTCTA": 39460,
+          "C3L": 42657,
+          "CST": 22187,
+          "CST-H": 8047,
+          "CU-RIVES": 237,
+          "DLC": 1709719,
+          "DLC-R": 45294,
+          "EAA": 75,
+          "GMOME": 0,
+          "GPO": 31933,
+          "HHG": 644,
+          "HLS": 51363,
+          "HMM": 25,
+          "HMS": 18,
+          "HUL": 20644,
+          "HVL": 2552,
+          "ISJEAIW": 757,
+          "ITFIC": 150901,
+          "LEXISNEXIS": 0,
+          "MIAAPQ": 2571,
+          "MIGCL": 124,
+          "MWA": 1183,
+          "N$T": 57,
+          "NAXOS": null,
+          "NDD": 10016,
+          "NJHACI": null,
+          "NJP": 533316,
+          "NYNYMAR": 1508,
+          "OHX": 122812,
+          "PU": 12535,
+          "PUL": 204675,
+          "RBN": 9607,
+          "RPB": 5156,
+          "RPJCB": 251,
+          "STF": 67281,
+          "UK-CBPIL": 0,
+          "UK-ES": 115,
+          "UKM": 51343,
+          "UKMBAM-D": 0,
+          "UKMGB": 40479,
+          "UMI": 10995,
+          "VAALASP": 159,
+          "YDX": 99483
+        },
+        "stanford": {
+          "AGL": 6523,
+          "BTCTA": 28356,
+          "C3L": 19623,
+          "CST": 717896,
+          "CST-H": 147907,
+          "CU-RIVES": 80,
+          "DLC": 1520820,
+          "DLC-R": 40917,
+          "EAA": null,
+          "GMOME": 137,
+          "GPO": 435109,
+          "HHG": 254,
+          "HLS": 59967,
+          "HMM": 299,
+          "HMS": 16,
+          "HUL": 20330,
+          "HVL": 2275,
+          "ISJEAIW": 1071,
+          "ITFIC": 120548,
+          "LEXISNEXIS": 0,
+          "MIAAPQ": 33675,
+          "MIGCL": 98981,
+          "MWA": 82581,
+          "N$T": 171345,
+          "NAXOS": 146813,
+          "NDD": 12082,
+          "NJHACI": 0,
+          "NJP": 24031,
+          "NYNYMAR": 1445,
+          "OHX": 87172,
+          "PU": 11629,
+          "PUL": 18512,
+          "RBN": 5445,
+          "RPB": 5199,
+          "RPJCB": 237,
+          "STF": 223696,
+          "UK-CBPIL": 15912,
+          "UK-ES": 92,
+          "UKM": 49518,
+          "UKMBAM-D": 140149,
+          "UKMGB": 31381,
+          "UMI": 26268,
+          "VAALASP": 73945,
+          "YDX": 110628
+        }
+      },
+      "sql": [
+        {
+          "label": "Per-record 040 summary, materialized once",
+          "sql": "CREATE OR REPLACE TEMP TABLE cataloging_source AS\nWITH f AS (\n  SELECT org, pod_record_id, subfield_code, field_seq, subfield_seq,\n         upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160))) AS code\n  FROM records\n  WHERE field_tag = '040'\n),\npresent AS (\n  SELECT DISTINCT org, pod_record_id FROM f\n),\norig AS (\n  SELECT org, pod_record_id, code\n  FROM f\n  WHERE subfield_code = 'a' AND code <> ''\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq, subfield_seq) = 1\n),\nmods AS (\n  SELECT org, pod_record_id, count(DISTINCT code) AS mod_agencies\n  FROM f\n  WHERE subfield_code = 'd' AND code <> ''\n  GROUP BY org, pod_record_id\n),\njoined AS (\n  SELECT m.org,\n         o.code AS source_code,\n         CASE\n         WHEN o.code = 'RPB'\n              OR o.code LIKE 'RPB-%'\n              OR o.code = 'RBN'\n              OR o.code = 'RPJCB'\n              THEN 'brown'\n         WHEN o.code = 'NCD'\n              OR o.code LIKE 'NCD-%'\n              OR o.code = 'NDD'\n              THEN 'duke'\n         WHEN o.code = 'MH'\n              OR o.code LIKE 'MH-%'\n              OR o.code = 'HLS'\n              OR o.code = 'HUL'\n              OR o.code = 'HMS'\n              OR o.code = 'HBS'\n              OR o.code = 'DDO'\n              OR o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL'\n              THEN 'harvard'\n         WHEN o.code = 'PU'\n              OR o.code LIKE 'PU-%'\n              OR o.code = 'PAU'\n              THEN 'penn'\n         WHEN o.code = 'NJP'\n              OR o.code LIKE 'NJP-%'\n              OR o.code = 'PUL'\n              OR o.code = 'PULEA'\n              THEN 'princeton'\n         WHEN o.code = 'CST'\n              OR o.code LIKE 'CST-%'\n              OR o.code = 'STF'\n              THEN 'stanford'\n         END AS source_org,\n         o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL' AS inferred_self,\n         coalesce(d.mod_agencies, 0) AS mod_agencies,\n         p.pod_record_id IS NOT NULL AS has_040\n  FROM record_meta m\n  LEFT JOIN present p USING (org, pod_record_id)\n  LEFT JOIN orig o USING (org, pod_record_id)\n  LEFT JOIN mods d USING (org, pod_record_id)\n)\nSELECT org, source_code, source_org,\n       CASE\n         WHEN source_code IS NULL                            THEN 'none'\n         WHEN source_code = 'DLC' OR source_code LIKE 'DLC-%' THEN 'lc'\n         -- No 'oclc' bucket: OCoLC appears as the *original* agency on only 27k\n         -- of 48m records (0.06%), because 040 credits the library that made the\n         -- description, not the utility the record travelled through. Reporting a\n         -- 0% OCLC bucket would imply OCLC plays no role here, when in fact\n         -- 66-98% of these records carry an (OCoLC) number in 035. That channel\n         -- signal belongs to 035, not 040, so OCoLC-in-$a falls to 'other'.\n         WHEN source_org = org AND inferred_self             THEN 'self_inferred'\n         WHEN source_org = org                               THEN 'self'\n         WHEN source_org IS NOT NULL                         THEN 'pod'\n         ELSE 'other'\n       END AS bucket,\n       -- \"no 040 at all\" is a different fact from \"an 040 that names no\n       -- modifying agency\", and the gap is large (182k-933k records per\n       -- institution carry an 040 with no $a), so they get separate buckets.\n       CASE\n         WHEN NOT has_040        THEN 'no_040'\n         WHEN mod_agencies >= 10 THEN '10+'\n         WHEN mod_agencies >= 5  THEN '5-9'\n         WHEN mod_agencies >= 3  THEN '3-4'\n         ELSE CAST(mod_agencies AS VARCHAR)\n       END AS mod_depth,\n       count(*) AS n\nFROM joined\nGROUP BY ALL"
+        },
+        {
+          "label": "Cataloging agencies (040 $a): each institution's own top 12, unioned",
+          "sql": "WITH per AS (\n  SELECT org, source_code, sum(n) AS n\n  FROM cataloging_source\n  WHERE source_code IS NOT NULL\n  GROUP BY org, source_code\n),\npicked AS (\n  SELECT DISTINCT source_code\n  FROM per\n  QUALIFY row_number() OVER (\n    PARTITION BY org ORDER BY n DESC, source_code) <= 12\n)\nSELECT p.org, p.source_code AS category, p.n\nFROM per p\nWHERE p.source_code IN (SELECT source_code FROM picked)"
+        },
+        {
+          "label": "Share denominator: records carrying an 040 $a",
+          "sql": "SELECT org, sum(n) AS n\nFROM cataloging_source\nWHERE source_code IS NOT NULL\nGROUP BY org"
+        }
+      ],
+      "totals": {
+        "brown": 2269946,
+        "duke": 7063270,
+        "harvard": 12045940,
+        "penn": 6621598,
+        "princeton": 5655898,
+        "stanford": 7879373
+      }
+    },
+    "flow": {
+      "categories": [
+        "brown",
+        "duke",
+        "harvard",
+        "penn",
+        "princeton",
+        "stanford"
+      ],
+      "institutions": [
+        "brown",
+        "duke",
+        "harvard",
+        "penn",
+        "princeton",
+        "stanford"
+      ],
+      "matrix": {
+        "brown": {
+          "brown": 294814,
+          "duke": 3872,
+          "harvard": 16976,
+          "penn": 6173,
+          "princeton": 12353,
+          "stanford": 8924
+        },
+        "duke": {
+          "brown": 7777,
+          "duke": 281098,
+          "harvard": 50403,
+          "penn": 7208,
+          "princeton": 16425,
+          "stanford": 19331
+        },
+        "harvard": {
+          "brown": 24886,
+          "duke": 31630,
+          "harvard": 2050029,
+          "penn": 25856,
+          "princeton": 87831,
+          "stanford": 100778
+        },
+        "penn": {
+          "brown": 11143,
+          "duke": 7987,
+          "harvard": 72237,
+          "penn": 600184,
+          "princeton": 38589,
+          "stanford": 105356
+        },
+        "princeton": {
+          "brown": 15014,
+          "duke": 11858,
+          "harvard": 122709,
+          "penn": 23522,
+          "princeton": 787699,
+          "stanford": 98700
+        },
+        "stanford": {
+          "brown": 10881,
+          "duke": 15048,
+          "harvard": 138040,
+          "penn": 21334,
+          "princeton": 46309,
+          "stanford": 1132332
+        }
+      },
+      "sql": [
+        {
+          "label": "Per-record 040 summary, materialized once",
+          "sql": "CREATE OR REPLACE TEMP TABLE cataloging_source AS\nWITH f AS (\n  SELECT org, pod_record_id, subfield_code, field_seq, subfield_seq,\n         upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160))) AS code\n  FROM records\n  WHERE field_tag = '040'\n),\npresent AS (\n  SELECT DISTINCT org, pod_record_id FROM f\n),\norig AS (\n  SELECT org, pod_record_id, code\n  FROM f\n  WHERE subfield_code = 'a' AND code <> ''\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq, subfield_seq) = 1\n),\nmods AS (\n  SELECT org, pod_record_id, count(DISTINCT code) AS mod_agencies\n  FROM f\n  WHERE subfield_code = 'd' AND code <> ''\n  GROUP BY org, pod_record_id\n),\njoined AS (\n  SELECT m.org,\n         o.code AS source_code,\n         CASE\n         WHEN o.code = 'RPB'\n              OR o.code LIKE 'RPB-%'\n              OR o.code = 'RBN'\n              OR o.code = 'RPJCB'\n              THEN 'brown'\n         WHEN o.code = 'NCD'\n              OR o.code LIKE 'NCD-%'\n              OR o.code = 'NDD'\n              THEN 'duke'\n         WHEN o.code = 'MH'\n              OR o.code LIKE 'MH-%'\n              OR o.code = 'HLS'\n              OR o.code = 'HUL'\n              OR o.code = 'HMS'\n              OR o.code = 'HBS'\n              OR o.code = 'DDO'\n              OR o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL'\n              THEN 'harvard'\n         WHEN o.code = 'PU'\n              OR o.code LIKE 'PU-%'\n              OR o.code = 'PAU'\n              THEN 'penn'\n         WHEN o.code = 'NJP'\n              OR o.code LIKE 'NJP-%'\n              OR o.code = 'PUL'\n              OR o.code = 'PULEA'\n              THEN 'princeton'\n         WHEN o.code = 'CST'\n              OR o.code LIKE 'CST-%'\n              OR o.code = 'STF'\n              THEN 'stanford'\n         END AS source_org,\n         o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL' AS inferred_self,\n         coalesce(d.mod_agencies, 0) AS mod_agencies,\n         p.pod_record_id IS NOT NULL AS has_040\n  FROM record_meta m\n  LEFT JOIN present p USING (org, pod_record_id)\n  LEFT JOIN orig o USING (org, pod_record_id)\n  LEFT JOIN mods d USING (org, pod_record_id)\n)\nSELECT org, source_code, source_org,\n       CASE\n         WHEN source_code IS NULL                            THEN 'none'\n         WHEN source_code = 'DLC' OR source_code LIKE 'DLC-%' THEN 'lc'\n         -- No 'oclc' bucket: OCoLC appears as the *original* agency on only 27k\n         -- of 48m records (0.06%), because 040 credits the library that made the\n         -- description, not the utility the record travelled through. Reporting a\n         -- 0% OCLC bucket would imply OCLC plays no role here, when in fact\n         -- 66-98% of these records carry an (OCoLC) number in 035. That channel\n         -- signal belongs to 035, not 040, so OCoLC-in-$a falls to 'other'.\n         WHEN source_org = org AND inferred_self             THEN 'self_inferred'\n         WHEN source_org = org                               THEN 'self'\n         WHEN source_org IS NOT NULL                         THEN 'pod'\n         ELSE 'other'\n       END AS bucket,\n       -- \"no 040 at all\" is a different fact from \"an 040 that names no\n       -- modifying agency\", and the gap is large (182k-933k records per\n       -- institution carry an 040 with no $a), so they get separate buckets.\n       CASE\n         WHEN NOT has_040        THEN 'no_040'\n         WHEN mod_agencies >= 10 THEN '10+'\n         WHEN mod_agencies >= 5  THEN '5-9'\n         WHEN mod_agencies >= 3  THEN '3-4'\n         ELSE CAST(mod_agencies AS VARCHAR)\n       END AS mod_depth,\n       count(*) AS n\nFROM joined\nGROUP BY ALL"
+        },
+        {
+          "label": "Cataloging attributed to each POD member, by holding institution",
+          "sql": "SELECT org, source_org AS category, sum(n) AS n\nFROM cataloging_source\nWHERE source_org IS NOT NULL\nGROUP BY org, source_org"
+        }
+      ]
+    },
+    "mod_depth": {
+      "categories": [
+        "no_040",
+        "0",
+        "1",
+        "2",
+        "3-4",
+        "5-9",
+        "10+"
+      ],
+      "institutions": [
+        "brown",
+        "duke",
+        "harvard",
+        "penn",
+        "princeton",
+        "stanford"
+      ],
+      "matrix": {
+        "brown": {
+          "0": 411459,
+          "1": 641761,
+          "10+": 177527,
+          "2": 589353,
+          "3-4": 418783,
+          "5-9": 267852,
+          "no_040": 75087
+        },
+        "duke": {
+          "0": 2427322,
+          "1": 2119965,
+          "10+": 194257,
+          "2": 1125154,
+          "3-4": 863047,
+          "5-9": 515560,
+          "no_040": 1383371
+        },
+        "harvard": {
+          "0": 4335135,
+          "1": 3624551,
+          "10+": 251113,
+          "2": 1901540,
+          "3-4": 1269400,
+          "5-9": 986753,
+          "no_040": 1601189
+        },
+        "penn": {
+          "0": 3084504,
+          "1": 1580015,
+          "10+": 185086,
+          "2": 889409,
+          "3-4": 900708,
+          "5-9": 661583,
+          "no_040": 335573
+        },
+        "princeton": {
+          "0": 1510443,
+          "1": 1853257,
+          "10+": 110805,
+          "2": 1098227,
+          "3-4": 945598,
+          "5-9": 633177,
+          "no_040": 105161
+        },
+        "stanford": {
+          "0": 915191,
+          "1": 2679842,
+          "10+": 597028,
+          "2": 2193492,
+          "3-4": 1511307,
+          "5-9": 916375,
+          "no_040": 146258
+        }
+      },
+      "sql": [
+        {
+          "label": "Per-record 040 summary, materialized once",
+          "sql": "CREATE OR REPLACE TEMP TABLE cataloging_source AS\nWITH f AS (\n  SELECT org, pod_record_id, subfield_code, field_seq, subfield_seq,\n         upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160))) AS code\n  FROM records\n  WHERE field_tag = '040'\n),\npresent AS (\n  SELECT DISTINCT org, pod_record_id FROM f\n),\norig AS (\n  SELECT org, pod_record_id, code\n  FROM f\n  WHERE subfield_code = 'a' AND code <> ''\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq, subfield_seq) = 1\n),\nmods AS (\n  SELECT org, pod_record_id, count(DISTINCT code) AS mod_agencies\n  FROM f\n  WHERE subfield_code = 'd' AND code <> ''\n  GROUP BY org, pod_record_id\n),\njoined AS (\n  SELECT m.org,\n         o.code AS source_code,\n         CASE\n         WHEN o.code = 'RPB'\n              OR o.code LIKE 'RPB-%'\n              OR o.code = 'RBN'\n              OR o.code = 'RPJCB'\n              THEN 'brown'\n         WHEN o.code = 'NCD'\n              OR o.code LIKE 'NCD-%'\n              OR o.code = 'NDD'\n              THEN 'duke'\n         WHEN o.code = 'MH'\n              OR o.code LIKE 'MH-%'\n              OR o.code = 'HLS'\n              OR o.code = 'HUL'\n              OR o.code = 'HMS'\n              OR o.code = 'HBS'\n              OR o.code = 'DDO'\n              OR o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL'\n              THEN 'harvard'\n         WHEN o.code = 'PU'\n              OR o.code LIKE 'PU-%'\n              OR o.code = 'PAU'\n              THEN 'penn'\n         WHEN o.code = 'NJP'\n              OR o.code LIKE 'NJP-%'\n              OR o.code = 'PUL'\n              OR o.code = 'PULEA'\n              THEN 'princeton'\n         WHEN o.code = 'CST'\n              OR o.code LIKE 'CST-%'\n              OR o.code = 'STF'\n              THEN 'stanford'\n         END AS source_org,\n         o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL' AS inferred_self,\n         coalesce(d.mod_agencies, 0) AS mod_agencies,\n         p.pod_record_id IS NOT NULL AS has_040\n  FROM record_meta m\n  LEFT JOIN present p USING (org, pod_record_id)\n  LEFT JOIN orig o USING (org, pod_record_id)\n  LEFT JOIN mods d USING (org, pod_record_id)\n)\nSELECT org, source_code, source_org,\n       CASE\n         WHEN source_code IS NULL                            THEN 'none'\n         WHEN source_code = 'DLC' OR source_code LIKE 'DLC-%' THEN 'lc'\n         -- No 'oclc' bucket: OCoLC appears as the *original* agency on only 27k\n         -- of 48m records (0.06%), because 040 credits the library that made the\n         -- description, not the utility the record travelled through. Reporting a\n         -- 0% OCLC bucket would imply OCLC plays no role here, when in fact\n         -- 66-98% of these records carry an (OCoLC) number in 035. That channel\n         -- signal belongs to 035, not 040, so OCoLC-in-$a falls to 'other'.\n         WHEN source_org = org AND inferred_self             THEN 'self_inferred'\n         WHEN source_org = org                               THEN 'self'\n         WHEN source_org IS NOT NULL                         THEN 'pod'\n         ELSE 'other'\n       END AS bucket,\n       -- \"no 040 at all\" is a different fact from \"an 040 that names no\n       -- modifying agency\", and the gap is large (182k-933k records per\n       -- institution carry an 040 with no $a), so they get separate buckets.\n       CASE\n         WHEN NOT has_040        THEN 'no_040'\n         WHEN mod_agencies >= 10 THEN '10+'\n         WHEN mod_agencies >= 5  THEN '5-9'\n         WHEN mod_agencies >= 3  THEN '3-4'\n         ELSE CAST(mod_agencies AS VARCHAR)\n       END AS mod_depth,\n       count(*) AS n\nFROM joined\nGROUP BY ALL"
+        },
+        {
+          "label": "Distinct modifying agencies (040 $d) per record",
+          "sql": "SELECT org, mod_depth AS category, sum(n) AS n\nFROM cataloging_source\nGROUP BY org, mod_depth"
+        }
+      ],
+      "totals": {
+        "brown": 2581822,
+        "duke": 8628676,
+        "harvard": 13969681,
+        "penn": 7636878,
+        "princeton": 6256668,
+        "stanford": 8959493
+      }
+    }
+  },
+  "generated_at": "2026-08-05T01:13:19.375822+00:00",
+  "per_org": [
+    {
+      "counts": {
+        "lc": 883423,
+        "none": 311876,
+        "other": 1043411,
+        "pod": 48298,
+        "self": 294814,
+        "self_inferred": 0
+      },
+      "mix": {
+        "lc": 0.3422,
+        "none": 0.1208,
+        "other": 0.4041,
+        "pod": 0.0187,
+        "self": 0.1142,
+        "self_inferred": 0.0
+      },
+      "org": "brown",
+      "records": 2581822
+    },
+    {
+      "counts": {
+        "lc": 1694797,
+        "none": 1565406,
+        "other": 4986231,
+        "pod": 101144,
+        "self": 281098,
+        "self_inferred": 0
+      },
+      "mix": {
+        "lc": 0.1964,
+        "none": 0.1814,
+        "other": 0.5779,
+        "pod": 0.0117,
+        "self": 0.0326,
+        "self_inferred": 0.0
+      },
+      "org": "duke",
+      "records": 8628676
+    },
+    {
+      "counts": {
+        "lc": 3628659,
+        "none": 1923741,
+        "other": 6096271,
+        "pod": 270981,
+        "self": 1356901,
+        "self_inferred": 693128
+      },
+      "mix": {
+        "lc": 0.2598,
+        "none": 0.1377,
+        "other": 0.4364,
+        "pod": 0.0194,
+        "self": 0.0971,
+        "self_inferred": 0.0496
+      },
+      "org": "harvard",
+      "records": 13969681
+    },
+    {
+      "counts": {
+        "lc": 1204561,
+        "none": 1015280,
+        "other": 4581541,
+        "pod": 235312,
+        "self": 600184,
+        "self_inferred": 0
+      },
+      "mix": {
+        "lc": 0.1577,
+        "none": 0.1329,
+        "other": 0.5999,
+        "pod": 0.0308,
+        "self": 0.0786,
+        "self_inferred": 0.0
+      },
+      "org": "penn",
+      "records": 7636878
+    },
+    {
+      "counts": {
+        "lc": 1755148,
+        "none": 600770,
+        "other": 2841248,
+        "pod": 271803,
+        "self": 787699,
+        "self_inferred": 0
+      },
+      "mix": {
+        "lc": 0.2805,
+        "none": 0.096,
+        "other": 0.4541,
+        "pod": 0.0434,
+        "self": 0.1259,
+        "self_inferred": 0.0
+      },
+      "org": "princeton",
+      "records": 6256668
+    },
+    {
+      "counts": {
+        "lc": 1562004,
+        "none": 1080120,
+        "other": 4953425,
+        "pod": 231612,
+        "self": 1132332,
+        "self_inferred": 0
+      },
+      "mix": {
+        "lc": 0.1743,
+        "none": 0.1206,
+        "other": 0.5529,
+        "pod": 0.0259,
+        "self": 0.1264,
+        "self_inferred": 0.0
+      },
+      "org": "stanford",
+      "records": 8959493
+    }
+  ],
+  "sql": [
+    {
+      "label": "Per-record 040 summary, materialized once",
+      "sql": "CREATE OR REPLACE TEMP TABLE cataloging_source AS\nWITH f AS (\n  SELECT org, pod_record_id, subfield_code, field_seq, subfield_seq,\n         upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160))) AS code\n  FROM records\n  WHERE field_tag = '040'\n),\npresent AS (\n  SELECT DISTINCT org, pod_record_id FROM f\n),\norig AS (\n  SELECT org, pod_record_id, code\n  FROM f\n  WHERE subfield_code = 'a' AND code <> ''\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq, subfield_seq) = 1\n),\nmods AS (\n  SELECT org, pod_record_id, count(DISTINCT code) AS mod_agencies\n  FROM f\n  WHERE subfield_code = 'd' AND code <> ''\n  GROUP BY org, pod_record_id\n),\njoined AS (\n  SELECT m.org,\n         o.code AS source_code,\n         CASE\n         WHEN o.code = 'RPB'\n              OR o.code LIKE 'RPB-%'\n              OR o.code = 'RBN'\n              OR o.code = 'RPJCB'\n              THEN 'brown'\n         WHEN o.code = 'NCD'\n              OR o.code LIKE 'NCD-%'\n              OR o.code = 'NDD'\n              THEN 'duke'\n         WHEN o.code = 'MH'\n              OR o.code LIKE 'MH-%'\n              OR o.code = 'HLS'\n              OR o.code = 'HUL'\n              OR o.code = 'HMS'\n              OR o.code = 'HBS'\n              OR o.code = 'DDO'\n              OR o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL'\n              THEN 'harvard'\n         WHEN o.code = 'PU'\n              OR o.code LIKE 'PU-%'\n              OR o.code = 'PAU'\n              THEN 'penn'\n         WHEN o.code = 'NJP'\n              OR o.code LIKE 'NJP-%'\n              OR o.code = 'PUL'\n              OR o.code = 'PULEA'\n              THEN 'princeton'\n         WHEN o.code = 'CST'\n              OR o.code LIKE 'CST-%'\n              OR o.code = 'STF'\n              THEN 'stanford'\n         END AS source_org,\n         o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL' AS inferred_self,\n         coalesce(d.mod_agencies, 0) AS mod_agencies,\n         p.pod_record_id IS NOT NULL AS has_040\n  FROM record_meta m\n  LEFT JOIN present p USING (org, pod_record_id)\n  LEFT JOIN orig o USING (org, pod_record_id)\n  LEFT JOIN mods d USING (org, pod_record_id)\n)\nSELECT org, source_code, source_org,\n       CASE\n         WHEN source_code IS NULL                            THEN 'none'\n         WHEN source_code = 'DLC' OR source_code LIKE 'DLC-%' THEN 'lc'\n         -- No 'oclc' bucket: OCoLC appears as the *original* agency on only 27k\n         -- of 48m records (0.06%), because 040 credits the library that made the\n         -- description, not the utility the record travelled through. Reporting a\n         -- 0% OCLC bucket would imply OCLC plays no role here, when in fact\n         -- 66-98% of these records carry an (OCoLC) number in 035. That channel\n         -- signal belongs to 035, not 040, so OCoLC-in-$a falls to 'other'.\n         WHEN source_org = org AND inferred_self             THEN 'self_inferred'\n         WHEN source_org = org                               THEN 'self'\n         WHEN source_org IS NOT NULL                         THEN 'pod'\n         ELSE 'other'\n       END AS bucket,\n       -- \"no 040 at all\" is a different fact from \"an 040 that names no\n       -- modifying agency\", and the gap is large (182k-933k records per\n       -- institution carry an 040 with no $a), so they get separate buckets.\n       CASE\n         WHEN NOT has_040        THEN 'no_040'\n         WHEN mod_agencies >= 10 THEN '10+'\n         WHEN mod_agencies >= 5  THEN '5-9'\n         WHEN mod_agencies >= 3  THEN '3-4'\n         ELSE CAST(mod_agencies AS VARCHAR)\n       END AS mod_depth,\n       count(*) AS n\nFROM joined\nGROUP BY ALL"
+    },
+    {
+      "label": "Provenance mix by institution",
+      "sql": "SELECT org, bucket AS category, sum(n) AS n\nFROM cataloging_source\nGROUP BY org, bucket"
+    }
+  ]
+}
