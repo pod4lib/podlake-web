@@ -15,7 +15,7 @@ from podlake_web import queries, record, suppress
 
 def _dev_config(tmp_path: Path) -> Config:
     return Config(
-        env="development",
+        profile="file",
         data_path=str(tmp_path / "data") + "/",
         catalog_uri=str(tmp_path / "podlake.ducklake"),
     )
@@ -445,7 +445,345 @@ def test_bucket_top_n_folds_tail_and_small_cells():
     assert suppress.small_cells(out, threshold=10) == []
 
 
-def test_artifacts_expose_runnable_sql(con):
+def test_self_codes_are_unambiguous():
+    # No lake needed: a code must not be claimed by two members, and one member's
+    # 'BASE-*' rule must not swallow another's exact code (the PU / PUL hazard).
+    # This is the guard for when POD adds an institution.
+    # a code must also not be both confirmed and inferred
+    for org, inferred in queries._SELF_CODES_INFERRED.items():
+        overlap = set(inferred) & set(queries._SELF_CODES.get(org, ()))
+        assert not overlap, f"{org} lists {overlap} as both confirmed and inferred"
+
+    exact: dict[str, str] = {}
+    for org, codes in queries._ALL_SELF_CODES.items():
+        for code in codes:
+            if not code.endswith("-*"):
+                assert code not in exact, (
+                    f"{code} claimed by {exact.get(code)} and {org}"
+                )
+                exact[code] = org
+    for org, codes in queries._ALL_SELF_CODES.items():
+        for prefix in (c[:-1] for c in codes if c.endswith("-*")):
+            for code, owner in exact.items():
+                if owner != org:
+                    assert not code.startswith(prefix), (
+                        f"{org}'s {prefix}* pattern also matches {owner}'s {code}"
+                    )
+
+
+def test_cataloging_source(tmp_path):
+    # 040 $a is the original cataloging agency, $d each modifying agency. Uses real
+    # org names because the self/pod buckets key off queries._SELF_CODES.
+    def rec(org, rid, source=None, mods=(), extra_a=(), second_040=None):
+        pid = f"{org}:{rid}"
+        rows = [(org, pid, "LDR", 0, None, None, None, None, LEADER)]
+        seq = 1
+        if source is not None:
+            rows.append((org, pid, "040", seq, " ", " ", "a", 0, source))
+            # a second $a in the same field: later subfield_seq, must lose
+            for i, extra in enumerate(extra_a, start=1):
+                rows.append((org, pid, "040", seq, " ", " ", "a", i, extra))
+            for i, mod in enumerate(mods):
+                rows.append((org, pid, "040", seq, " ", " ", "d", i + 10, mod))
+            seq += 1
+        if second_040 is not None:  # a whole second 040 field, later field_seq
+            rows.append((org, pid, "040", seq, " ", " ", "a", 0, second_040))
+        return rows, (org, pid, rid)
+
+    records = {
+        "stanford": [
+            rec("stanford", "s1", "DLC"),  # lc
+            rec("stanford", "s2", "DLC-R"),  # lc (retrospective conversion)
+            rec("stanford", "s3", "OCoLC"),  # other -- no dedicated oclc bucket
+            rec("stanford", "s4", "CSt"),  # self
+            rec("stanford", "s5", "CSt-H"),  # self, via the sub-unit rule
+            rec("stanford", "s6", "stf"),  # self, case-normalized OCLC symbol
+            rec("stanford", "s7", "NjP"),  # pod (Princeton)
+            rec("stanford", "s8", "UkOxU"),  # other
+            rec("stanford", "s9"),  # none — no 040 at all
+            rec("stanford", "s10", "DLC.", extra_a=("CSt",)),  # trailing dot; 1st wins
+            # 3 distinct modifying agencies (one repeated, one case variant)
+            rec("stanford", "s11", "DLC", mods=("CSt", "cst", "NjP", "OCoLC")),
+            rec("stanford", "s12", "DLC", mods=("CSt",)),  # 1 modifying agency
+            # the real shape of a repeated $a: a mangled delimiter glued $d on
+            rec("stanford", "s13", "DLC", extra_a=("dOCLCO",)),
+            # asterisk-wrapped codes normalize to the bare code, in $a and $d alike
+            rec("stanford", "s14", "*YNH*", mods=("*OCLCQ*", "OCLCQ")),
+            # a second whole 040 field loses to the first by field_seq
+            rec("stanford", "s15", "CSt", second_040="DLC"),
+        ],
+        "princeton": [
+            rec("princeton", "p1", "NjP"),  # self
+            rec("princeton", "p2", "CSt"),  # pod (Stanford)
+            rec("princeton", "p3", "DLC"),  # lc
+        ],
+        # PUL is Princeton's OCLC symbol, so at Penn it must read as 'pod' — the
+        # exact case a careless PU prefix rule would misfile as 'self'
+        "penn": [rec("penn", "e1", "PUL"), rec("penn", "e2", "PU")],
+        # HVL is an *inferred* Harvard symbol: at Harvard it must land in
+        # self_inferred, not self; held elsewhere it still reads as 'pod'
+        "harvard": [
+            rec("harvard", "h1", "MH"),  # self (confirmed)
+            rec("harvard", "h2", "HVL"),  # self_inferred
+            rec("harvard", "h3", "HLS"),  # self (confirmed)
+        ],
+    }
+    config = _build_lake(tmp_path, records)
+    connection = lake.connect(read_only=True, config=config)
+    try:
+        out = queries.cataloging_source(connection, threshold=1)
+    finally:
+        connection.close()
+
+    by_org = {o["org"]: o for o in out["per_org"]}
+    assert by_org["stanford"]["records"] == 15
+    counts = by_org["stanford"]["counts"]
+    # s1, s2, s10, s11, s12, s13 -> lc; s4/s5/s6/s15 -> self; s7 -> pod;
+    # s8, s14 -> other; s9 -> none; s3 -> oclc
+    # s3's $a OCoLC is no longer its own bucket -- 040 records authorship, not
+    # distribution channel -- so it falls to 'other' alongside s8 and s14
+    assert counts == {
+        "lc": 6,
+        "self": 4,
+        "self_inferred": 0,
+        "pod": 1,
+        "other": 3,
+        "none": 1,
+    }
+    mix = by_org["stanford"]["mix"]
+    assert mix["lc"] == round(6 / 15, 4)
+    assert sum(mix.values()) == pytest.approx(1.0, abs=1e-3)
+
+    # every bucket is published in a fixed order, even when a share is 0
+    assert list(mix) == list(queries._CAT_BUCKETS)
+
+    # one member's OCLC symbol seen at another member reads as 'pod', not 'self'
+    assert by_org["penn"]["counts"] == {
+        "lc": 0,
+        "self": 1,  # e2, PU
+        "self_inferred": 0,
+        "pod": 1,  # e1, PUL -> Princeton
+        "other": 0,
+        "none": 0,
+    }
+    # an inferred symbol is reported apart from confirmed self-attribution, so the
+    # unratified part of the figure stays visible instead of being folded in
+    harvard = by_org["harvard"]["counts"]
+    assert harvard["self"] == 2 and harvard["self_inferred"] == 1  # MH+HLS, HVL
+    # but flow counts both together — it measures direction, not certainty
+    assert out["dimensions"]["flow"]["matrix"]["harvard"]["harvard"] == 3
+
+    # flow is asymmetric: the diagonal is self-cataloging, off-diagonal is copy
+    flow = out["dimensions"]["flow"]
+    assert flow["categories"] == sorted(queries._SELF_CODES)  # full member roster
+    assert flow["matrix"]["stanford"]["stanford"] == 4  # s4, s5, s6, s15
+    assert flow["matrix"]["stanford"]["princeton"] == 1  # s7
+    assert flow["matrix"]["princeton"]["stanford"] == 1  # p2
+    assert flow["matrix"]["princeton"]["princeton"] == 1  # p1
+    # totals are withheld: categories exhaust the total, so publishing them would
+    # make a suppressed cell recoverable by subtraction
+    assert "totals" not in flow
+
+    # top agencies keeps the raw normalized code, ranked by consortium total
+    agency = out["dimensions"]["agency"]
+    assert agency["categories"][0] == "DLC"
+    assert agency["matrix"]["stanford"]["DLC"] == 5  # s1, s10, s11, s12, s13
+    assert "STF" in agency["categories"]  # normalized from "stf"
+    assert "DOCLCO" not in agency["categories"]  # the mangled repeat never wins
+    assert "YNH" in agency["categories"]  # '*YNH*' normalized to the bare code
+    assert "*YNH*" not in agency["categories"]
+    # the shared axis is the union of each institution's own top agencies, so a
+    # code carried only by one (small) institution still gets a row, and its
+    # counts at the *other* institutions come through rather than reading as zero
+    assert "PUL" in agency["categories"]  # only penn has it, 1 record
+    assert agency["matrix"]["harvard"]["HVL"] == 1  # harvard's, and only harvard's
+    assert agency["matrix"]["stanford"]["HVL"] == 0  # a real zero, not a gap
+    # the share denominator is every record carrying an $a, not just the displayed
+    # codes — otherwise selecting fewer rows would silently inflate the rest
+    assert agency["totals"]["stanford"] == 14  # 15 records, s9 has no 040 at all
+    assert agency["totals"]["harvard"] == 3
+
+    # modification depth: distinct $d agencies, with "no 040 at all" kept apart
+    depth = out["dimensions"]["mod_depth"]
+    assert depth["categories"] == list(queries._MOD_DEPTH_BUCKETS)
+    assert depth["matrix"]["stanford"]["3-4"] == 1  # s11: CSt/cst dedupe -> 3
+    assert depth["matrix"]["stanford"]["1"] == 2  # s12, and s14 after * normalizing
+    assert depth["matrix"]["stanford"]["no_040"] == 1  # s9 only
+    assert depth["matrix"]["stanford"]["0"] == 11  # has an 040, but no $d
+    assert depth["matrix"]["stanford"]["10+"] == 0  # empty bucket kept, not dropped
+
+
+def test_cataloging_source_agency_axis_represents_every_institution(tmp_path):
+    # The point of unioning per-institution top-N instead of ranking globally: a
+    # small library's own principal agency must survive even when a large library's
+    # middling agencies all outrank it consortium-wide.
+    def rec(org, rid, source):
+        pid = f"{org}:{rid}"
+        return (
+            [
+                (org, pid, "LDR", 0, None, None, None, None, LEADER),
+                (org, pid, "040", 1, " ", " ", "a", 0, source),
+            ],
+            (org, pid, rid),
+        )
+
+    # harvard has 15 distinct agencies of 40 records each; brown has one agency of
+    # 25. A global top-12 would be all harvard's and would drop brown's entirely.
+    records = {
+        "harvard": [
+            rec("harvard", f"h{i}-{j}", f"BIG{i:02d}")
+            for i in range(15)
+            for j in range(40)
+        ],
+        "brown": [rec("brown", f"b{j}", "SMALLONE") for j in range(25)],
+    }
+    config = _build_lake(tmp_path, records)
+    connection = lake.connect(read_only=True, config=config)
+    try:
+        out = queries.cataloging_source(connection, threshold=10)
+    finally:
+        connection.close()
+
+    cats = out["dimensions"]["agency"]["categories"]
+    assert "SMALLONE" in cats, "brown's only agency was ranked off the shared axis"
+    # brown contributes 1 row, harvard its own top 12 of 15 -> 13 rows total
+    assert len(cats) == queries._CAT_AGENCY_PER_ORG + 1
+    # and every institution has at least one non-zero cell on the axis
+    for org, row in out["dimensions"]["agency"]["matrix"].items():
+        assert any(v for v in row.values()), f"{org} has no agency represented"
+
+
+def test_cataloging_source_suppresses_small_cells(tmp_path):
+    # A lone off-diagonal flow cell ("brown holds 1 record cataloged by X") is
+    # exactly the small cell disclosure control has to hide.
+    def rec(org, rid, source):
+        pid = f"{org}:{rid}"
+        return (
+            [
+                (org, pid, "LDR", 0, None, None, None, None, LEADER),
+                (org, pid, "040", 1, " ", " ", "a", 0, source),
+            ],
+            (org, pid, rid),
+        )
+
+    records = {
+        "brown": [rec("brown", f"b{i}", "RPB") for i in range(20)]
+        + [rec("brown", "b99", "CSt")]  # a single Stanford-cataloged record
+    }
+    config = _build_lake(tmp_path, records)
+    connection = lake.connect(read_only=True, config=config)
+    try:
+        out = queries.cataloging_source(connection, threshold=10)
+    finally:
+        connection.close()
+
+    flow = out["dimensions"]["flow"]
+    assert flow["matrix"]["brown"]["brown"] == 20  # above threshold, published
+    assert flow["matrix"]["brown"]["stanford"] is None  # 1 record -> suppressed
+    # the mix folds that record into 'other' rather than publishing a 1-record
+    # bucket, so the bar still sums to 1.0 and the count isn't recoverable
+    brown = {o["org"]: o for o in out["per_org"]}["brown"]
+    assert brown["counts"]["pod"] == 0
+    assert brown["counts"]["other"] == 1
+    assert list(brown["counts"]) == list(queries._CAT_BUCKETS)
+    assert sum(brown["counts"].values()) == brown["records"] == 21
+    assert (
+        suppress.small_cells(
+            [{"category": k, "count": v} for k, v in brown["counts"].items()],
+            threshold=10,
+            other_label="other",
+        )
+        == []
+    )
+
+
+def test_record_channels(tmp_path):
+    # 035 $a is "(ORGCODE)number" — the system the number belongs to. Channels
+    # overlap by design (a post-merger record carries both OCLC and RLIN numbers).
+    def rec(org, rid, *namespaces):
+        pid = f"{org}:{rid}"
+        rows = [(org, pid, "LDR", 0, None, None, None, None, LEADER)]
+        for i, ns in enumerate(namespaces, start=1):
+            rows.append((org, pid, "035", i, " ", " ", "a", 0, ns))
+        return rows, (org, pid, rid)
+
+    records = {
+        "stanford": [
+            rec("stanford", "s1", "(OCoLC)12345"),
+            # the Symphony-era variants must count as OCLC, not as separate systems
+            rec("stanford", "s2", "(OCoLC-M)999"),
+            rec("stanford", "s3", "(OCoLC-I)888"),
+            # both OCLC and RLIN on one record: overlapping channels, not a split
+            rec("stanford", "s4", "(OCoLC)7", "(CStRLIN)CSTX123"),
+            rec("stanford", "s5", "(CSt)local-1"),  # own system
+            rec("stanford", "s6", "(NjP)princeton-1"),  # another member's system
+            rec("stanford", "s7", "(SIRSI)a123"),  # generic local ILS namespace
+            rec("stanford", "s8"),  # no 035 at all
+            rec("stanford", "s9", "no-parenthetical-prefix"),  # unparseable
+        ],
+        "duke": [
+            rec("duke", "d1", "(EXLCZ)99123"),  # Alma Community Zone
+            rec("duke", "d2", "(CKB)456"),  # ... and its knowledge base
+            rec("duke", "d3", "(OCoLC)321"),
+        ],
+    }
+    config = _build_lake(tmp_path, records)
+    connection = lake.connect(read_only=True, config=config)
+    try:
+        out = queries.record_channels(connection, threshold=1)
+    finally:
+        connection.close()
+
+    by_org = {o["org"]: o for o in out["per_org"]}
+    st = by_org["stanford"]
+    assert st["records"] == 9
+    cov = st["coverage"]
+    # s1, s2, s3, s4 -> OCLC (the -M/-I variants must not be missed)
+    assert cov["oclc"] == round(4 / 9, 4)
+    assert cov["rlin"] == round(1 / 9, 4)  # s4 only
+    # s5 (its own code) and s7 (a generic local-ILS namespace) both count as local
+    assert cov["local_system"] == round(2 / 9, 4)
+    assert cov["pod_system"] == round(1 / 9, 4)  # s6
+    # s8 has no 035, s9's value has no (namespace) to parse
+    assert cov["any_system"] == round(7 / 9, 4)
+    # channels overlap rather than partition, so they may sum past 1
+    assert sum(cov.values()) > 1
+
+    dk = by_org["duke"]["coverage"]
+    assert dk["alma_cz"] == round(2 / 3, 4)  # EXLCZ + CKB
+    assert dk["oclc"] == round(1 / 3, 4)
+
+    # overlapping channels have no "other" bucket to fold a small count into, so a
+    # sub-threshold cell is nulled rather than zeroed
+    connection = lake.connect(read_only=True, config=config)
+    try:
+        strict = queries.record_channels(connection, threshold=10)
+    finally:
+        connection.close()
+    strict_st = {o["org"]: o for o in strict["per_org"]}["stanford"]
+    # this lake is tiny, so at threshold=10 every non-zero count is suppressed --
+    # nulled, not zeroed, so the chart can tell "too few to report" from "none"
+    assert strict_st["counts"]["rlin"] is None  # 1 record
+    assert strict_st["coverage"]["rlin"] is None
+    assert strict_st["counts"]["oclc"] is None  # 4 records
+    assert strict_st["counts"]["any_system"] is None  # 7 records
+    # a genuine zero survives as 0 rather than being confused with suppression
+    assert {o["org"]: o for o in strict["per_org"]}["duke"]["counts"]["rlin"] == 0
+
+    ns = out["dimensions"]["namespace"]
+    # namespaces are the raw prefixes, uppercased, variants kept distinct here
+    assert "OCOLC-M" in ns["categories"] and "SIRSI" in ns["categories"]
+    # the denominator is every record, including the two with no usable 035
+    assert ns["totals"]["stanford"] == 9
+    assert ns["matrix"]["stanford"]["OCOLC"] == 2  # s1, s4
+    assert ns["matrix"]["duke"]["OCOLC"] == 1
+    assert ns["matrix"]["duke"]["SIRSI"] == 0  # a real zero, not a gap
+
+
+def test_artifacts_expose_runnable_sql(con, tmp_path):
+    # the `con` fixture built its lake under this same tmp_path, so _dev_config
+    # re-derives the config needed to open a second, independent connection
+    con_config = _dev_config(tmp_path)
     # Every published artifact embeds the SQL that produced it, and that SQL
     # actually executes against the lake (so the per-chart "behind this chart"
     # panels stay honest).
@@ -473,6 +811,26 @@ def test_artifacts_expose_runnable_sql(con):
     # electronic likewise
     for q in queries.electronic(con, threshold=1)["sql"]:
         con.execute(q["sql"])
+    # cataloging_source's queries read a temp table, so each embedded sql list has
+    # to carry the DDL in front of it or the panel shows something unrunnable.
+    # Execute on a *fresh* connection to prove that, rather than accidentally
+    # relying on the table cataloging_source() just created.
+    cat = queries.cataloging_source(con, threshold=1)
+    assert cat["sql"]
+    # record_channels needs no temp table, so its queries stand alone already
+    chan = queries.record_channels(con, threshold=1)
+    assert chan["sql"]
+    for q in chan["sql"] + chan["dimensions"]["namespace"]["sql"]:
+        con.execute(q["sql"])
+
+    for step_list in [cat["sql"], *(d["sql"] for d in cat["dimensions"].values())]:
+        assert step_list, "cataloging_source exposes an empty sql list"
+        fresh = lake.connect(read_only=True, config=con_config)
+        try:
+            for q in step_list:
+                fresh.execute(q["sql"])
+        finally:
+            fresh.close()
 
 
 def test_fold_small_keeps_all_above_threshold():

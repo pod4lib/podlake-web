@@ -85,6 +85,22 @@ ARTIFACTS = [
         queries.coverage,
     ),
     (
+        "cataloging_source.json",
+        (
+            "Per-institution source of cataloging (MARC 040): provenance mix, "
+            "intra-consortium flow, and modification depth."
+        ),
+        queries.cataloging_source,
+    ),
+    (
+        "record_channels.json",
+        (
+            "Per-institution distribution channels from MARC 035 system control "
+            "numbers: OCLC, RLIN, Alma Community Zone, local and vendor namespaces."
+        ),
+        queries.record_channels,
+    ),
+    (
         "comparison.json",
         "Cross-institution matrices: language, place, format, LC classification.",
         queries.comparison,

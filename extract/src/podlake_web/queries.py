@@ -651,6 +651,604 @@ def electronic(con: Connection, *, threshold: int = 10, **_: object) -> dict:
     }
 
 
+# --- source of cataloging (MARC 040) -----------------------------------------
+
+# 040 $a is the *original* cataloging agency, $d each *modifying* agency. Which
+# codes mean "this POD member cataloged it" is not derivable from the data:
+# members self-attribute with a mix of MARC Organization Codes (CSt, NjP, PU, RPB,
+# MH, NcD) and OCLC symbols (STF, PUL, PAU, RBN, HLS, NDD), and some run a symbol
+# per library (Harvard especially — its MH family accounts for only ~250k of its
+# ~1.9m self-attributed records). Sub-unit codes are base + '-' + suffix (CSt-H,
+# MH-L, NjP-G, PU-MED, RPB-JH), which the '-*' entries below cover.
+#
+# Trailing counts are $a occurrences at that institution in the 2026-08 lake, so
+# the table can be reviewed against the data. Entries marked "?" are inferred from
+# the symbol family plus near-exclusive use at that institution and are *not*
+# confirmed by the institution — POD should ratify this mapping before these
+# figures are treated as authoritative. A prefix rule would be wrong: H** is not
+# exclusively Harvard (HMM is Brown's), so this is an explicit list.
+#
+# The '-*' sub-unit rule is safe by construction, not by luck: MARC Organization
+# Codes are hierarchical on '-', so every 'BASE-…' code belongs to BASE's
+# institution. Verified against the lake — RPB-JH, MH-L/HY/MU/FA/AR, NJP-G,
+# PU-MED/L/CJS, CST-H/LAW/ES are all genuine sub-units, and 'PU-%' does not match
+# 'PUL' (Princeton's symbol, claimed by its own exact entry).
+#
+# Left in "other" as too uncertain to attribute, listed so a reviewer can promote
+# them: FLL 94k, BOH 84k, BHA 41k, TOZ 16k, SLR 11k, MCS 8k (Harvard); NDL 12k,
+# NCS 14k (Duke); QQR 19k, PAULM 13k, PPA 11k (Penn); RIBRL 8k (Brown); HMM
+# (harvard 18k / brown 15k — split too evenly to attribute either way). 'YNH'
+# (144k at Harvard, half of it written '*YNH*') is *Yale's* symbol — a
+# copy-cataloging signal, not self-attribution — and correctly stays in "other".
+# Codes we can name with confidence: a member's MARC Organization Code (and its
+# '-' sub-units) plus OCLC symbols whose owner is unambiguous from the name.
+_SELF_CODES: dict[str, tuple[str, ...]] = {
+    "brown": ("RPB", "RPB-*", "RBN", "RPJCB"),  # 117k, 5k, 155k, 18k
+    "duke": ("NCD", "NCD-*", "NDD"),  # 2k, —, 279k
+    "harvard": (
+        "MH",  # 56k (+ MH-*: MH-L 79k, MH-HY 48k, MH-MU 28k, MH-FA 19k, MH-H 19k)
+        "MH-*",
+        "HLS",  # 714k Harvard Law School
+        "HUL",  # 168k Harvard University Library
+        "HMS",  # 137k Harvard Medical School
+        "HBS",  # 38k Harvard Business School
+        "DDO",  # 17k Dumbarton Oaks
+    ),
+    "penn": ("PU", "PU-*", "PAU"),  # 490k, 3k, 105k
+    "princeton": ("NJP", "NJP-*", "PUL", "PULEA"),  # 533k, 29k, 205k, 20k
+    "stanford": ("CST", "CST-*", "STF"),  # 718k, 190k, 224k
+}
+
+# Codes we *infer* belong to a member — they follow that institution's symbol
+# family and are used almost exclusively there, but nobody has confirmed them.
+# Reported as a separate `self_inferred` bucket rather than merged into `self`,
+# because the difference is material: these move Harvard's self-cataloged share
+# from 8.3% to 14.5%, and that figure invites comparison against peers. If POD
+# ratifies them, move them into _SELF_CODES above; if POD rejects any, delete it.
+_SELF_CODES_INFERRED: dict[str, tuple[str, ...]] = {
+    "harvard": (
+        "HVL",  # 270k
+        "HHG",  # 122k
+        "HMY",  # 121k
+        "HMZ",  # 59k
+        "HMG",  # 32k
+        "HTV",  # 31k
+        "HMU",  # 30k
+        "HFL",  # 27k
+    ),
+}
+
+# Merged view, for "which member is this code's?" — used by the `pod` bucket and
+# the flow matrix, both of which care about attribution direction rather than how
+# certain the attribution is.
+_ALL_SELF_CODES: dict[str, tuple[str, ...]] = {
+    org: codes + _SELF_CODES_INFERRED.get(org, ()) for org, codes in _SELF_CODES.items()
+}
+
+# Agency codes arrive noisy: ~1.2m of 155m values carry a trailing period, and
+# 513k are wrapped in asterisks (the NOTIS-era '*YNH*' convention) — which, left
+# alone, splits one agency into two categories and double-counts it as two
+# distinct modifying agencies in $d. `trim(str, chars)` strips both ends, so this
+# one expression subsumes whitespace, punctuation, asterisks, and a stray NBSP.
+_CODE_NORM = "upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160)))"
+
+
+def _code_match_sql(column: str, codes: tuple[str, ...], indent: str) -> str:
+    """OR-ed tests matching a code against exact entries and ``BASE-*`` families."""
+    tests = [
+        f"{column} LIKE '{code[:-1]}%'"
+        if code.endswith("-*")
+        else f"{column} = '{code}'"
+        for code in codes
+    ]
+    return f"\n{indent}OR ".join(tests)
+
+
+def _self_org_sql(column: str) -> str:
+    """A CASE mapping a normalized 040 agency code to the POD org that owns it."""
+    whens = [
+        f"         WHEN {_code_match_sql(column, codes, ' ' * 14)}\n"
+        f"              THEN '{org}'"
+        for org, codes in _ALL_SELF_CODES.items()
+    ]
+    return "CASE\n" + "\n".join(whens) + "\n         END"
+
+
+def _self_inferred_sql(column: str) -> str:
+    """True when the code is one of the *unconfirmed* member attributions."""
+    codes = tuple(c for codes in _SELF_CODES_INFERRED.values() for c in codes)
+    if not codes:
+        return "false"
+    return _code_match_sql(column, codes, " " * 14)
+
+
+# One pass over the 040 slice, materialized so the four views below are cheap
+# group-bys instead of four scans of the billions-of-rows EAV table (measured:
+# ~45s + 4×0.1s here, versus ~150s for four self-contained queries; folding it all
+# into one grouped mega-query is far worse — over 8 minutes). Rolled up to
+# (org, code, org, bucket, depth) counts rather than one row per record, which is
+# ~230k rows instead of 48m and drops pod_record_id entirely.
+#
+# $a is nominally non-repeatable, but ~7.4k records carry more than one — almost
+# always a mangled subfield delimiter that glued $c/$d onto the end, e.g. one
+# Harvard record's 040 reads $a='OL' $a='cOL' $a='dDLC'. The true value is always
+# the lowest (field_seq, subfield_seq), which is what this picks. $d *is*
+# repeatable and is counted as distinct agencies.
+Q_CAT_SOURCE_TABLE = f"""\
+CREATE OR REPLACE TEMP TABLE cataloging_source AS
+WITH f AS (
+  SELECT org, pod_record_id, subfield_code, field_seq, subfield_seq,
+         {_CODE_NORM} AS code
+  FROM records
+  WHERE field_tag = '040'
+),
+present AS (
+  SELECT DISTINCT org, pod_record_id FROM f
+),
+orig AS (
+  SELECT org, pod_record_id, code
+  FROM f
+  WHERE subfield_code = 'a' AND code <> ''
+  QUALIFY row_number() OVER (
+    PARTITION BY org, pod_record_id ORDER BY field_seq, subfield_seq) = 1
+),
+mods AS (
+  SELECT org, pod_record_id, count(DISTINCT code) AS mod_agencies
+  FROM f
+  WHERE subfield_code = 'd' AND code <> ''
+  GROUP BY org, pod_record_id
+),
+joined AS (
+  SELECT m.org,
+         o.code AS source_code,
+         {_self_org_sql("o.code")} AS source_org,
+         {_self_inferred_sql("o.code")} AS inferred_self,
+         coalesce(d.mod_agencies, 0) AS mod_agencies,
+         p.pod_record_id IS NOT NULL AS has_040
+  FROM record_meta m
+  LEFT JOIN present p USING (org, pod_record_id)
+  LEFT JOIN orig o USING (org, pod_record_id)
+  LEFT JOIN mods d USING (org, pod_record_id)
+)
+SELECT org, source_code, source_org,
+       CASE
+         WHEN source_code IS NULL                            THEN 'none'
+         WHEN source_code = 'DLC' OR source_code LIKE 'DLC-%' THEN 'lc'
+         -- No 'oclc' bucket: OCoLC appears as the *original* agency on only 27k
+         -- of 48m records (0.06%), because 040 credits the library that made the
+         -- description, not the utility the record travelled through. Reporting a
+         -- 0% OCLC bucket would imply OCLC plays no role here, when in fact
+         -- 66-98% of these records carry an (OCoLC) number in 035. That channel
+         -- signal belongs to 035, not 040, so OCoLC-in-$a falls to 'other'.
+         WHEN source_org = org AND inferred_self             THEN 'self_inferred'
+         WHEN source_org = org                               THEN 'self'
+         WHEN source_org IS NOT NULL                         THEN 'pod'
+         ELSE 'other'
+       END AS bucket,
+       -- "no 040 at all" is a different fact from "an 040 that names no
+       -- modifying agency", and the gap is large (182k-933k records per
+       -- institution carry an 040 with no $a), so they get separate buckets.
+       CASE
+         WHEN NOT has_040        THEN 'no_040'
+         WHEN mod_agencies >= 10 THEN '10+'
+         WHEN mod_agencies >= 5  THEN '5-9'
+         WHEN mod_agencies >= 3  THEN '3-4'
+         ELSE CAST(mod_agencies AS VARCHAR)
+       END AS mod_depth,
+       count(*) AS n
+FROM joined
+GROUP BY ALL"""
+
+Q_CAT_MIX = """\
+SELECT org, bucket AS category, sum(n) AS n
+FROM cataloging_source
+GROUP BY org, bucket"""
+
+# How many of its *own* top agencies each institution contributes to the shared
+# axis. The union of these, rather than a consortium-wide top-N, because ranking
+# globally silently drops a small library's principal agencies: Brown's own RBN
+# (6.8% of its records) and RPB (5.1%) are its #2 and #3 agencies but miss a global
+# top-20 entirely, as do Harvard's HVL (270k) and HUL (168k). Adding institutions
+# makes a global ranking worse — each new member dilutes it — whereas this scales,
+# since every member brings its own rows. 12 each gives ~44 rows at current
+# membership, about the same height as a global top-40 and the same ~59% coverage,
+# but with every library actually represented.
+_CAT_AGENCY_PER_ORG = 12
+
+# Note the semi-join: `picked` chooses the codes, but the counts returned cover
+# *every* institution for those codes — otherwise a code that is one library's top
+# agency would read as zero everywhere else instead of showing its real spread.
+Q_CAT_AGENCY = f"""\
+WITH per AS (
+  SELECT org, source_code, sum(n) AS n
+  FROM cataloging_source
+  WHERE source_code IS NOT NULL
+  GROUP BY org, source_code
+),
+picked AS (
+  SELECT DISTINCT source_code
+  FROM per
+  QUALIFY row_number() OVER (
+    PARTITION BY org ORDER BY n DESC, source_code) <= {_CAT_AGENCY_PER_ORG}
+)
+SELECT p.org, p.source_code AS category, p.n
+FROM per p
+WHERE p.source_code IN (SELECT source_code FROM picked)"""
+
+# The share denominator. Needed separately because Q_CAT_AGENCY deliberately
+# returns only the displayed codes, and `_comparison_matrix` derives `totals` by
+# summing the rows it is handed — which would make each cell a share of the
+# selection rather than of everything the institution catalogs. Matching how
+# heatmap.js treats `exclude`: dropping rows must not inflate the rest.
+Q_CAT_AGENCY_TOTAL = """\
+SELECT org, sum(n) AS n
+FROM cataloging_source
+WHERE source_code IS NOT NULL
+GROUP BY org"""
+
+# Asymmetric by design: rows are the institution *holding* the record, categories
+# the POD member credited with cataloging it. Includes the diagonal (self).
+Q_CAT_FLOW = """\
+SELECT org, source_org AS category, sum(n) AS n
+FROM cataloging_source
+WHERE source_org IS NOT NULL
+GROUP BY org, source_org"""
+
+Q_CAT_MOD_DEPTH = """\
+SELECT org, mod_depth AS category, sum(n) AS n
+FROM cataloging_source
+GROUP BY org, mod_depth"""
+
+# Render order for the two fixed vocabularies (neither is worth ranking by count).
+_CAT_BUCKETS = ("lc", "self", "self_inferred", "pod", "other", "none")
+_MOD_DEPTH_BUCKETS = ("no_040", "0", "1", "2", "3-4", "5-9", "10+")
+
+
+def cataloging_source(con: Connection, *, threshold: int = 10, **_: object) -> dict:
+    """
+    Source of cataloging, from MARC 040 — who made the metadata, rather than what
+    the collections contain (the POD "040 analysis" ask).
+
+    - ``per_org[].mix`` / ``.counts``: share and count of the institution's records
+      by origin bucket — ``lc`` (DLC), ``self``, ``self_inferred``, ``pod``
+      (another member), ``other``, ``none`` (an 040 with no $a, or no 040 at all).
+      Denominator is every record the institution holds, so the shares sum to ~1.
+    - ``dimensions.agency``: the union of each institution's own top
+      ``_CAT_AGENCY_PER_ORG`` $a codes, on a shared axis.
+    - ``dimensions.flow``: POD member credited × institution holding — asymmetric,
+      and the diagonal is the self-cataloged count.
+    - ``dimensions.mod_depth``: distinct 040 $d modifying agencies per record,
+      keeping "no 040 field" separate from "040 naming no modifying agency".
+
+    ``self`` depends on ``_SELF_CODES``, a curated mapping of agency codes to
+    members; read it as "attributed to us," not "we did the original work". Codes
+    that follow a member's symbol family but that nobody has confirmed live in
+    ``_SELF_CODES_INFERRED`` and are reported separately as ``self_inferred``, so
+    the uncertainty is visible in the chart rather than only in the prose. Members
+    largely self-attribute with their OCLC symbol rather than their MARC
+    Organization Code. There is deliberately no ``oclc`` bucket — see the CASE in
+    ``Q_CAT_SOURCE_TABLE``; 040 records authorship, not distribution channel.
+
+    ``flow`` and ``pod`` count confirmed and inferred attributions together: they
+    describe the *direction* of copy cataloging, where excluding a probably-correct
+    attribution would understate a member's outflow. So ``flow``'s diagonal equals
+    ``self`` + ``self_inferred``, not ``self`` alone.
+
+    Disclosure control: sub-``threshold`` mix buckets are folded into ``other``
+    (never published as their own share), and matrix cells in ``1..threshold-1``
+    are nulled. ``flow`` omits ``totals`` deliberately — its categories exhaust the
+    total, so publishing both would let a suppressed cell be recovered by
+    subtraction.
+    """
+    con.execute(Q_CAT_SOURCE_TABLE)
+
+    mix = {(org, cat): n for org, cat, n in con.execute(Q_CAT_MIX).fetchall()}
+    records: dict[str, int] = {}
+    for (org, _cat), n in mix.items():
+        records[org] = records.get(org, 0) + n
+
+    def bucket_counts(org: str) -> dict[str, int]:
+        """Counts per bucket, with sub-threshold buckets folded into ``other``."""
+        counts = {b: mix.get((org, b), 0) for b in _CAT_BUCKETS}
+        for bucket, count in counts.items():
+            if bucket != "other" and 0 < count < threshold:
+                counts["other"] += count
+                counts[bucket] = 0
+        return counts
+
+    per_org = []
+    for org in sorted(records):
+        counts = bucket_counts(org)
+        total = records[org]
+        per_org.append(
+            {
+                "org": org,
+                "records": total,
+                "counts": counts,
+                "mix": {
+                    b: (round(n / total, 4) if total else 0.0)
+                    for b, n in counts.items()
+                },
+            }
+        )
+
+    # Each dimension's SQL needs the materialization step in front of it, or the
+    # query shown under the chart isn't runnable on its own — which is the whole
+    # point of embedding it.
+    ddl = {
+        "label": "Per-record 040 summary, materialized once",
+        "sql": Q_CAT_SOURCE_TABLE,
+    }
+
+    def dimension(
+        sql: str,
+        label: str,
+        *,
+        top_k: int | None = None,
+        categories: list[str] | None = None,
+    ) -> dict:
+        dim = _comparison_matrix(
+            con, sql, threshold=threshold, top_k=top_k, categories=categories
+        )
+        dim["sql"] = [ddl, {"label": label, "sql": sql}]
+        return dim
+
+    # top_k=None: the SQL already bounded the set to the union of each institution's
+    # own top agencies, so Python only orders it (by consortium total, largest at
+    # the top of the axis). The denominator then has to be restored, because
+    # _comparison_matrix summed only the displayed codes.
+    agency = dimension(
+        Q_CAT_AGENCY,
+        "Cataloging agencies (040 $a): each institution's own top "
+        f"{_CAT_AGENCY_PER_ORG}, unioned",
+        top_k=None,
+    )
+    agency["totals"] = dict(con.execute(Q_CAT_AGENCY_TOTAL).fetchall())
+    agency["sql"].append(
+        {
+            "label": "Share denominator: records carrying an 040 $a",
+            "sql": Q_CAT_AGENCY_TOTAL,
+        }
+    )
+
+    flow = dimension(
+        Q_CAT_FLOW,
+        "Cataloging attributed to each POD member, by holding institution",
+        # the full member roster, not just the orgs in this lake, so a member
+        # credited as a cataloging source still gets a column if its own
+        # records aren't loaded (and every member keeps a row of real zeros)
+        categories=sorted(_ALL_SELF_CODES),
+    )
+    del flow["totals"]  # see the disclosure note above
+
+    return {
+        "buckets": list(_CAT_BUCKETS),
+        "per_org": per_org,
+        "dimensions": {
+            "agency": agency,
+            "flow": flow,
+            "mod_depth": dimension(
+                Q_CAT_MOD_DEPTH,
+                "Distinct modifying agencies (040 $d) per record",
+                categories=list(_MOD_DEPTH_BUCKETS),
+            ),
+        },
+        "sql": [ddl, {"label": "Provenance mix by institution", "sql": Q_CAT_MIX}],
+    }
+
+
+# --- how records arrived (MARC 035 system control numbers) --------------------
+
+# 035 $a is written "(ORGCODE)number": the number, and the *system it belongs to*.
+# That makes it a record's travel history — which utilities, knowledge bases and
+# vendor platforms it has passed through — which is a different question from 040's
+# "who wrote the description". It is also far better populated: 99.3-100% of records
+# carry an 035, against 86% with an 040 $a.
+_NS_PREFIX = "upper(trim(regexp_extract(value, '^\\s*\\(([^)]{1,24})\\)', 1)))"
+
+# Namespaces that denote a local integrated library system rather than a shared
+# utility. Deliberately generic — these identify the *product*, not the library, so
+# they are counted as "local" for whichever institution carries them rather than
+# being mapped to an owner.
+_LOCAL_ILS_NS = ("SIRSI", "PUVOYAGERBIBID")
+
+# A deliberately small taxonomy of channels we can identify with confidence, rather
+# than a hand-classification of all ~25k observed namespaces. The long tail is left
+# to the raw-namespace heatmap below, which needs no curation to be honest.
+#
+# Channels are NOT mutually exclusive — a record routinely carries both an OCLC and
+# an RLIN number (the RLG merger in 2006 gave RLIN records OCLC numbers), so these
+# are coverage shares, not a partition, and they do not sum to 1.
+#
+# 'OCOLC%' matters: Stanford writes (OCoLC-M) and (OCoLC-I) from its Symphony era,
+# 13.8m occurrences between them. Matching only the bare '(OCoLC)' reads Stanford as
+# 10.7% OCLC when the real figure is 97.8%.
+_CHANNEL_TESTS = {
+    # the utility: (OCoLC), plus the OCoLC-M / -I / -P variants
+    "oclc": "prefix LIKE 'OCOLC%'",
+    # RLIN, the RLG-era union catalogue, whose org code is CStRLIN (RLG was
+    # headquartered at Stanford). Kept separate from OCLC despite the 2006 merger —
+    # a visible historical layer is the interesting part.
+    "rlin": "prefix = 'CSTRLIN'",
+    # Ex Libris' Alma Community Zone / Central KnowledgeBase — the modern
+    # alternative route for electronic records, bypassing WorldCat entirely
+    "alma_cz": "prefix IN ('EXLCZ', 'CKB')",
+    # A number from a local ILS rather than a shared utility. Two forms: the
+    # institution's own MARC/OCLC code as a namespace, or a generic ILS-product
+    # namespace. The generic ones are NOT attributed to an institution — (SIRSI) is
+    # what any Sirsi/Symphony library writes, and it is only unambiguous here
+    # because Stanford is the sole Symphony site in this lake. Counting it as
+    # "local" for whichever institution carries it stays correct as membership
+    # grows, where attributing it to Stanford would not. Without this, Stanford
+    # reads 3% local when its real local namespace, (SIRSI), covers 91%.
+    "local_system": (f"{_self_org_sql('prefix')} = org OR prefix IN {_LOCAL_ILS_NS}"),
+    # a number in *another* POD member's namespace — evidence of record sharing
+    "pod_system": (
+        f"{_self_org_sql('prefix')} IS NOT NULL AND {_self_org_sql('prefix')} <> org"
+    ),
+    # baseline: carries any parseable "(namespace)number" at all
+    "any_system": "prefix <> ''",
+}
+
+_CHANNELS = tuple(_CHANNEL_TESTS)
+
+
+def _channel_coverage_sql() -> str:
+    """Per-institution count of records carrying each channel's system number."""
+    flags = ",\n".join(
+        f"         bool_or({test}) AS {name}" for name, test in _CHANNEL_TESTS.items()
+    )
+    counts = ",\n".join(
+        f"         count(*) FILTER (WHERE {name}) AS {name}" for name in _CHANNEL_TESTS
+    )
+    picks = ",\n".join(
+        f"       coalesce(c.{name}, 0) AS {name}" for name in _CHANNEL_TESTS
+    )
+    return (
+        "WITH ns AS (\n"
+        f"  SELECT org, pod_record_id, {_NS_PREFIX} AS prefix\n"
+        "  FROM records\n"
+        "  WHERE field_tag = '035' AND subfield_code = 'a'\n"
+        "),\n"
+        "flagged AS (\n"
+        "  SELECT org, pod_record_id,\n"
+        f"{flags}\n"
+        "  FROM ns\n"
+        "  GROUP BY org, pod_record_id\n"
+        "),\n"
+        "counted AS (\n"
+        "  SELECT org,\n"
+        f"{counts}\n"
+        "  FROM flagged GROUP BY org\n"
+        "),\n"
+        "totals AS (SELECT org, count(*) AS records FROM record_meta GROUP BY org)\n"
+        "SELECT t.org, t.records,\n"
+        f"{picks}\n"
+        "FROM totals t LEFT JOIN counted c USING (org)\n"
+        "ORDER BY t.org"
+    )
+
+
+Q_CHANNEL_COVERAGE = _channel_coverage_sql()
+
+# How many of its own top namespaces each institution contributes to the shared
+# axis — same union-not-global-ranking reasoning as the 040 agency chart, and for
+# the same reason: several namespaces are one library's alone (SIRSI at Stanford,
+# PUVoyagerBibID at Penn) and a consortium-wide ranking would bury the smallest
+# members' local systems.
+_CHANNEL_NS_PER_ORG = 12
+
+# A namespace also has to reach this share of an institution's records to earn a row.
+# Without it the axis fills with rows that are visually blank: institutions with few
+# distinct namespaces (Brown has a handful) contribute a "top 12" whose tail is a few
+# hundred records — above the suppression threshold, but 0.006% of the collection.
+_CHANNEL_NS_MIN_SHARE = 0.001
+
+Q_CHANNEL_NAMESPACE = f"""\
+WITH ns AS (
+  SELECT org, pod_record_id, {_NS_PREFIX} AS prefix
+  FROM records
+  WHERE field_tag = '035' AND subfield_code = 'a'
+),
+per AS (
+  SELECT org, prefix, count(DISTINCT pod_record_id) AS n
+  FROM ns
+  WHERE prefix <> ''
+  GROUP BY org, prefix
+),
+sized AS (
+  SELECT p.*, r.records
+  FROM per p
+  JOIN (SELECT org, count(*) AS records FROM record_meta GROUP BY org) r USING (org)
+),
+picked AS (
+  SELECT DISTINCT prefix
+  FROM sized
+  WHERE n >= records * {_CHANNEL_NS_MIN_SHARE}
+  QUALIFY row_number() OVER (
+    PARTITION BY org ORDER BY n DESC, prefix) <= {_CHANNEL_NS_PER_ORG}
+)
+SELECT p.org, p.prefix AS category, p.n
+FROM per p
+WHERE p.prefix IN (SELECT prefix FROM picked)"""
+
+# Share denominator: every record, including those with no 035 at all. Kept
+# separate for the same reason as the 040 agency chart — `_comparison_matrix` would
+# otherwise total only the displayed namespaces and inflate every cell.
+Q_CHANNEL_TOTAL = """\
+SELECT org, count(*) AS n FROM record_meta GROUP BY org"""
+
+
+def record_channels(con: Connection, *, threshold: int = 10, **_: object) -> dict:
+    """
+    How records reached each institution, from the MARC 035 system control number —
+    the record's distribution history rather than its authorship (which is
+    :func:`cataloging_source`).
+
+    - ``per_org[].coverage``: share of the institution's records carrying a system
+      number from each channel in ``_CHANNELS``. **Not a partition** — a record
+      commonly carries several, so these overlap and do not sum to 1.
+    - ``dimensions.namespace``: the union of each institution's own top
+      ``_CHANNEL_NS_PER_ORG`` raw 035 namespaces, as a share of all its records.
+
+    Denominators are every record the institution holds (millions), so the coverage
+    shares need no suppression; the namespace matrix nulls cells below ``threshold``.
+    """
+    channel_rows = con.execute(Q_CHANNEL_COVERAGE).fetchall()
+
+    def cell(count: int, records: int) -> tuple[int | None, float | None]:
+        """(count, share), or (None, None) when the count is too small to report.
+
+        These channels overlap rather than partition, so there is no ``other``
+        bucket to fold a small count into the way the 040 mix does — null is the
+        only honest option, and it matches the repo's null-means-suppressed rule.
+        A genuine zero stays 0. Real counts here run to millions, but a small
+        member's ``pod_system`` can be a handful (Brown's is 13 today).
+        """
+        if 0 < count < threshold:
+            return None, None
+        return count, (round(count / records, 4) if records else 0.0)
+
+    per_org = []
+    for org, records, *counts in channel_rows:
+        cells = {c: cell(n, records) for c, n in zip(_CHANNELS, counts)}
+        per_org.append(
+            {
+                "org": org,
+                "records": records,
+                # counts alongside shares so the page never has to reconstruct them
+                # by multiplying a 4-dp share back out
+                "counts": {c: v[0] for c, v in cells.items()},
+                "coverage": {c: v[1] for c, v in cells.items()},
+            }
+        )
+
+    namespace = _comparison_matrix(
+        con, Q_CHANNEL_NAMESPACE, threshold=threshold, top_k=None
+    )
+    namespace["totals"] = dict(con.execute(Q_CHANNEL_TOTAL).fetchall())
+    namespace["sql"] = [
+        {
+            "label": "035 namespaces: each institution's own top "
+            f"{_CHANNEL_NS_PER_ORG}, unioned",
+            "sql": Q_CHANNEL_NAMESPACE,
+        },
+        {"label": "Share denominator: all records", "sql": Q_CHANNEL_TOTAL},
+    ]
+
+    return {
+        "channels": list(_CHANNELS),
+        "per_org": per_org,
+        "dimensions": {"namespace": namespace},
+        "sql": [
+            {
+                "label": "Records carrying each channel's system number",
+                "sql": Q_CHANNEL_COVERAGE,
+            }
+        ],
+    }
+
+
 def coverage(con: Connection, **_: object) -> dict:
     """
     Per-institution metadata completeness: share of records carrying selected
@@ -908,8 +1506,20 @@ _COMPARE_ALL_CATEGORIES = frozenset({"classification", "serial_classification"})
 
 
 def _comparison_matrix(
-    con: Connection, sql: str, *, threshold: int, top_k: int | None = _COMPARE_TOP_K
+    con: Connection,
+    sql: str,
+    *,
+    threshold: int,
+    top_k: int | None = _COMPARE_TOP_K,
+    categories: list[str] | None = None,
 ) -> dict:
+    """
+    Shape flat ``(org, category, n)`` rows into the heatmap matrix. Categories are
+    ranked by consortium total and capped at ``top_k`` unless ``categories`` pins an
+    explicit set and order — for fixed vocabularies (an ordered bucket scale, a
+    square institution × institution matrix) where ranking would scramble the axis
+    and a category absent from the rows still needs its row.
+    """
     rows = con.execute(sql).fetchall()
 
     orgs = sorted({org for org, _cat, _n in rows})
@@ -921,10 +1531,11 @@ def _comparison_matrix(
         cat_totals[cat] = cat_totals.get(cat, 0) + n
         counts[(org, cat)] = n
 
-    ranked = [
-        cat for cat, _ in sorted(cat_totals.items(), key=lambda kv: (-kv[1], kv[0]))
-    ]
-    categories = ranked if top_k is None else ranked[:top_k]
+    if categories is None:
+        ranked = [
+            cat for cat, _ in sorted(cat_totals.items(), key=lambda kv: (-kv[1], kv[0]))
+        ]
+        categories = ranked if top_k is None else ranked[:top_k]
 
     def cell(org: str, cat: str) -> int | None:
         n = counts.get((org, cat), 0)
