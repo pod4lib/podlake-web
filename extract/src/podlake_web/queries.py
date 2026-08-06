@@ -733,6 +733,51 @@ _ALL_SELF_CODES: dict[str, tuple[str, ...]] = {
 _CODE_NORM = "upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160)))"
 
 
+# The probe that built _SELF_CODES in the first place, quoted in the guard's error
+# so whoever hits it can act on it instead of rediscovering the technique. Note
+# concentration alone is not sufficient to identify a member's own codes — it also
+# surfaces single-subscriber vendor namespaces (LexisNexis at Penn, MiAaPQ at Duke),
+# so the result needs a human, and ideally the member's own confirmation.
+_SELF_CODE_PROBE = """\
+SELECT org, upper(trim(value)) AS code, count(*) AS n
+FROM records
+WHERE field_tag = '040' AND subfield_code = 'a'
+GROUP BY org, code
+QUALIFY row_number() OVER (PARTITION BY org ORDER BY n DESC) <= 15
+ORDER BY org, n DESC"""
+
+
+def _assert_orgs_mapped(con: Connection) -> None:
+    """
+    Refuse to build if the lake holds an org that ``_SELF_CODES`` doesn't know.
+
+    An unmapped org does not error on its own — it quietly reads as 0%
+    self-cataloged, contributes nothing to ``pod``, and gets a row but no column in
+    the flow matrix. That is a publishable-looking claim that a member does no
+    original cataloging and shares nothing with the consortium, which is worse than
+    a failed build: the extract is a manual offline job, so whoever runs it is
+    whoever can fix the mapping.
+    """
+    rows = con.execute("SELECT DISTINCT org FROM record_meta").fetchall()
+    orgs = {org for (org,) in rows}
+    missing = sorted(orgs - set(_ALL_SELF_CODES))
+    if not missing:
+        return
+    raise ValueError(
+        "no cataloging-agency codes are mapped for: "
+        + ", ".join(missing)
+        + ".\nThese institutions would publish 0% self-cataloged, no "
+        "intra-consortium\nflow, and no local-system coverage. Add them to "
+        "queries._SELF_CODES (codes\nyou can confirm) or "
+        "queries._SELF_CODES_INFERRED (codes you can only infer),\nthen re-run. "
+        "To find the candidates:\n\n"
+        + "\n".join(f"    {line}" for line in _SELF_CODE_PROBE.splitlines())
+        + "\n\nMembers often self-attribute with an OCLC symbol rather than their "
+        "MARC\nOrganization Code, so expect both (Duke's NcD appears on ~1.7k "
+        "records,\nits NDD on 279k)."
+    )
+
+
 def _code_match_sql(column: str, codes: tuple[str, ...], indent: str) -> str:
     """OR-ed tests matching a code against exact entries and ``BASE-*`` families."""
     tests = [
@@ -940,6 +985,7 @@ def cataloging_source(con: Connection, *, threshold: int = 10, **_: object) -> d
     total, so publishing both would let a suppressed cell be recovered by
     subtraction.
     """
+    _assert_orgs_mapped(con)
     con.execute(Q_CAT_SOURCE_TABLE)
 
     mix = {(org, cat): n for org, cat, n in con.execute(Q_CAT_MIX).fetchall()}
@@ -1014,10 +1060,12 @@ def cataloging_source(con: Connection, *, threshold: int = 10, **_: object) -> d
     flow = dimension(
         Q_CAT_FLOW,
         "Cataloging attributed to each POD member, by holding institution",
-        # the full member roster, not just the orgs in this lake, so a member
-        # credited as a cataloging source still gets a column if its own
-        # records aren't loaded (and every member keeps a row of real zeros)
-        categories=sorted(_ALL_SELF_CODES),
+        # The full member roster *union* the orgs actually in this lake. The
+        # roster alone covers a member credited as a source whose own records
+        # aren't loaded; the union guarantees no org can get a row without a
+        # column, so the matrix stays square even if _assert_orgs_mapped is
+        # ever bypassed.
+        categories=sorted(set(_ALL_SELF_CODES) | set(records)),
     )
     del flow["totals"]  # see the disclosure note above
 
@@ -1194,6 +1242,10 @@ def record_channels(con: Connection, *, threshold: int = 10, **_: object) -> dic
     Denominators are every record the institution holds (millions), so the coverage
     shares need no suppression; the namespace matrix nulls cells below ``threshold``.
     """
+    # local_system / pod_system read the same agency-code mapping, so an unmapped
+    # org would understate both here too
+    _assert_orgs_mapped(con)
+
     channel_rows = con.execute(Q_CHANNEL_COVERAGE).fetchall()
 
     def cell(count: int, records: int) -> tuple[int | None, float | None]:

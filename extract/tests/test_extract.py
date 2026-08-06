@@ -697,6 +697,52 @@ def test_cataloging_source_suppresses_small_cells(tmp_path):
     )
 
 
+def test_unmapped_org_is_refused(tmp_path):
+    # An org missing from _SELF_CODES used to degrade silently: 0% self-cataloged,
+    # nothing in `pod`, and a flow row with no column — a publishable-looking claim
+    # that a member does no original cataloging. Both 040 and 035 views must refuse
+    # to build instead, since they share the mapping.
+    def rec(org, rid, source):
+        pid = f"{org}:{rid}"
+        return (
+            [
+                (org, pid, "LDR", 0, None, None, None, None, LEADER),
+                (org, pid, "040", 1, " ", " ", "a", 0, source),
+                (org, pid, "035", 2, " ", " ", "a", 0, f"({source})1"),
+            ],
+            (org, pid, rid),
+        )
+
+    records = {
+        "stanford": [rec("stanford", "s1", "CSt")],
+        # a new member POD hasn't been mapped yet, using its own unknown code
+        "yale": [rec("yale", f"y{i}", "YUS") for i in range(30)],
+    }
+    config = _build_lake(tmp_path, records)
+    connection = lake.connect(read_only=True, config=config)
+    try:
+        for fn in (queries.cataloging_source, queries.record_channels):
+            with pytest.raises(ValueError) as excinfo:
+                fn(connection, threshold=1)
+            message = str(excinfo.value)
+            assert "yale" in message, f"{fn.__name__} didn't name the missing org"
+            assert "stanford" not in message  # mapped orgs aren't reported
+            # the error has to be actionable: name the dicts and show the probe
+            assert "_SELF_CODES" in message
+            assert "field_tag = '040'" in message
+    finally:
+        connection.close()
+
+
+def test_flow_matrix_is_square(con):
+    # Every institution in the matrix needs both a row and a column, or "who holds
+    # X's cataloging" silently has no answer for X.
+    flow = queries.cataloging_source(con, threshold=1)["dimensions"]["flow"]
+    assert set(flow["institutions"]) <= set(flow["categories"])
+    for org in flow["institutions"]:
+        assert set(flow["matrix"][org]) == set(flow["categories"])
+
+
 def test_record_channels(tmp_path):
     # 035 $a is "(ORGCODE)number" — the system the number belongs to. Channels
     # overlap by design (a post-merger record carries both OCLC and RLIN numbers).
