@@ -2070,6 +2070,10 @@
         {
           "count": 22291,
           "year": 2025
+        },
+        {
+          "count": 22291,
+          "year": 2026
         }
       ]
     },
@@ -4179,6 +4183,10 @@
         {
           "count": 121849,
           "year": 2025
+        },
+        {
+          "count": 121761,
+          "year": 2026
         }
       ]
     },
@@ -6288,6 +6296,10 @@
         {
           "count": 176199,
           "year": 2025
+        },
+        {
+          "count": 176194,
+          "year": 2026
         }
       ]
     },
@@ -8361,6 +8373,10 @@
         {
           "count": 57404,
           "year": 2025
+        },
+        {
+          "count": 57405,
+          "year": 2026
         }
       ]
     },
@@ -10418,6 +10434,10 @@
         {
           "count": 53649,
           "year": 2025
+        },
+        {
+          "count": 53643,
+          "year": 2026
         }
       ]
     },
@@ -12491,16 +12511,20 @@
         {
           "count": 99840,
           "year": 2025
+        },
+        {
+          "count": 99816,
+          "year": 2026
         }
       ]
     }
   ],
-  "generated_at": "2026-08-05T01:13:19.375822+00:00",
-  "now_year": 2025,
+  "generated_at": "2026-08-11T03:00:55.266835+00:00",
+  "now_year": 2026,
   "sql": [
     {
       "label": "Active serials per year",
-      "sql": "WITH serial AS (\n  SELECT DISTINCT org, pod_record_id FROM records\n  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'\n),\ndated AS (\n  SELECT s.org,\n         substr(r.value, 7, 1) AS date_type,\n         CAST(substr(r.value, 8, 4) AS INTEGER) AS y1,\n         substr(r.value, 12, 4) AS d2\n  FROM serial s JOIN records r USING (org, pod_record_id)\n  WHERE r.field_tag = '008' AND length(r.value) >= 15\n    AND regexp_matches(substr(r.value, 8, 4), '^[0-9]{4}$')\n    AND CAST(substr(r.value, 8, 4) AS INTEGER) BETWEEN 1500 AND 2025\n),\nspan AS (\n  SELECT org, y1,\n         CASE\n           WHEN d2 = '9999' THEN 2025\n           WHEN date_type = 'c' THEN 2025\n           WHEN date_type = 'd' AND regexp_matches(d2, '^[0-9]{4}$')\n                THEN CAST(d2 AS INTEGER)\n         END AS y2\n  FROM dated\n),\nactive AS (\n  SELECT org, y1, y2 FROM span\n  WHERE y2 IS NOT NULL AND y2 >= y1 AND y2 <= 2025\n)\nSELECT org, yr AS year, count(*) AS records\nFROM active, unnest(generate_series(y1, y2)) AS g(yr)\nGROUP BY org, yr\nORDER BY org, yr"
+      "sql": "WITH serial AS (\n  SELECT DISTINCT org, pod_record_id FROM records\n  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'\n),\ndated AS (\n  SELECT s.org,\n         substr(r.value, 7, 1) AS date_type,\n         CAST(substr(r.value, 8, 4) AS INTEGER) AS y1,\n         substr(r.value, 12, 4) AS d2\n  FROM serial s JOIN records r USING (org, pod_record_id)\n  WHERE r.field_tag = '008' AND length(r.value) >= 15\n    AND regexp_matches(substr(r.value, 8, 4), '^[0-9]{4}$')\n    AND CAST(substr(r.value, 8, 4) AS INTEGER) BETWEEN 1500 AND 2026\n),\nspan AS (\n  SELECT org, y1,\n         CASE\n           WHEN d2 = '9999' THEN 2026\n           WHEN date_type = 'c' THEN 2026\n           WHEN date_type = 'd' AND regexp_matches(d2, '^[0-9]{4}$')\n                THEN CAST(d2 AS INTEGER)\n         END AS y2\n  FROM dated\n),\nactive AS (\n  SELECT org, y1, y2 FROM span\n  WHERE y2 IS NOT NULL AND y2 >= y1 AND y2 <= 2026\n)\nSELECT org, yr AS year, count(*) AS records\nFROM active, unnest(generate_series(y1, y2)) AS g(yr)\nGROUP BY org, yr\nORDER BY org, yr"
     },
     {
       "label": "Serials by decade of first publication",

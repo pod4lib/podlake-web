@@ -13,10 +13,10 @@ matter before anything below means much:
   about 1,700 of its records while its OCLC symbol `NDD` appears on 279,000, and
   Harvard spreads its work across a dozen per-library symbols (`HLS`, `HVL`,
   `HUL`, `HMS`…) plus the `MH` family. The mapping from codes to members is
-  **curated by hand and has not yet been ratified by POD** — see `_SELF_CODES` in
-  `queries.py`, which lists the codes we attribute, the ones we only *infer*
-  (reported separately as "inferred" everywhere below), and the ones we judged too
-  uncertain to attribute at all.
+  **curated by hand and has not yet been ratified by POD** — see
+  [the institution code mapping](./data#the-institution-code-mapping) for the codes
+  we attribute, the ones we only *infer* (reported separately as "inferred"
+  everywhere below), and the ones we judged too uncertain to attribute at all.
 - **This field says nothing about how a record was *distributed*.** `OCoLC` appears
   as the original agency on 26,780 records out of 48 million (0.06%), so there is no
   "OCLC" category below — a record that came through WorldCat is credited to the
@@ -114,6 +114,108 @@ Plot.plot({
 
 ```js
 provenance({sql: cat.sql, dataUrl: await catFile.url(), dataName: "cataloging_source.json"})
+```
+
+## How that mix has changed
+
+The bar above is the whole of each collection at once. Cutting it by the year each
+record entered the catalog (`008/00-05`) shows the mix moving. Panels keep their own
+vertical scale, so a panel's height is that library's intake curve and the bands are
+its composition.
+
+<div class="note">
+
+**The Library of Congress band is not a picture of LC's cataloging.** The horizontal
+axis dates the record in the *holding* library's system, so an LC record cataloged in
+1975 and loaded by Penn in 1986 sits in 1986. Read the blue band as "LC copy arriving
+here", never as "LC's output that year" — this data has no clock for that. (The one
+that would is `010 $a`: an LCCN encodes the year LC assigned it. Different field,
+different chart.) The same caveat applies to the "another POD member" band.
+
+</div>
+
+```js
+import {html} from "npm:htl";
+const lastFullYear = cat.timeline.partial_year - 1;
+const mixOrgs = cat.timeline.per_org.map((o) => orgLabel(o.org));
+const mixCols = mixOrgs.length <= 6 ? 2 : mixOrgs.length <= 12 ? 3 : 4;
+const mixYearRows = d3.group(
+  cat.timeline.per_org.flatMap((o) =>
+    o.values
+      // the snapshot year is only partly harvested, so its drop is an artifact
+      .filter((v) => v.year <= lastFullYear)
+      .flatMap((v) =>
+        cat.buckets.map((b) => ({
+          org: orgLabel(o.org),
+          year: v.year,
+          bucket: sourceBucketLabel(b),
+          n: v.counts[b],
+        }))
+      )
+  ),
+  (d) => d.org
+);
+const mixYearColor = {
+  domain: cat.buckets.map(sourceBucketLabel),
+  range: cat.buckets.map((b) => BUCKET_COLOR[b]),
+};
+```
+
+```js
+Plot.legend({color: mixYearColor})
+```
+
+```js
+html`<div class=${`grid grid-cols-${mixCols}`}>${mixOrgs.map(
+  (org) => html`<div class="card">${Plot.plot({
+    title: org,
+    width: Math.max(230, Math.floor(width / mixCols) - 60),
+    height: 170,
+    marginLeft: 52,
+    x: {label: null, tickFormat: "d", grid: true, domain: [1966, lastFullYear]},
+    y: {label: null, grid: true, tickFormat: "~s"},
+    color: mixYearColor,
+    marks: [
+      Plot.areaY(mixYearRows.get(org), {
+        x: "year",
+        y: "n",
+        fill: "bucket",
+        // stack in the published bucket order rather than by magnitude, so the
+        // bands sit in the same position in every panel and can be compared
+        order: cat.buckets.map(sourceBucketLabel),
+        tip: {format: {x: "d", y: ",", fill: true, org: false}},
+      }),
+      Plot.ruleY([0]),
+    ],
+  })}</div>`
+)}</div>`
+```
+
+The LC band is the one trend all six libraries share: **the Library of Congress
+supplied between a third and two-thirds of everything these catalogs took in during
+the 1970s, and between 2% and 14% of what they took in since 2020.**
+
+| Share of intake credited to LC | 1970s | 1990s | 2020–25 |
+| --- | --- | --- | --- |
+| Brown | 62% | 35% | 14% |
+| Duke | 56% | 30% | 2% |
+| Harvard | 59% | 18% | 13% |
+| Penn | 38% | 25% | 8% |
+| Princeton | 67% | 32% | 13% |
+| Stanford | 34% | 24% | 9% |
+
+The amber band takes up the slack almost exactly: "some other agency" runs 21–37% of
+intake in the 1970s and 50–80% since 2020 — the shift from a catalog built on a single
+national backbone to one assembled from many suppliers. Again, that is a statement
+about **what these libraries loaded**, not about how much cataloging LC did.
+
+The grey band moves for a different reason: records carrying no `040 $a` at all. It is
+erratic rather than trending — Stanford's runs 37% in the 1970s and effectively 0%
+since 2010, while Duke's goes the other way, 3% in the 1980s to 44% since 2020, the
+signature of large vendor loads with no cataloging-source field.
+
+```js
+provenance({sql: cat.timeline.sql, dataUrl: await catFile.url(), dataName: "cataloging_source.json"})
 ```
 
 ## Which agencies those are
@@ -260,6 +362,12 @@ Plot.plot({
 ```js
 provenance({sql: cat.dimensions.flow.sql, dataUrl: await catFile.url(), dataName: "cataloging_source.json"})
 ```
+
+## When that cataloging happened
+
+Crossing `040 $a` with the record's creation date (`008/00-05`) dates each library's
+own cataloging, and shows how much of it is really a conversion project stamped with
+one year. That has its own page: **[Original cataloging over time](./original-cataloging)**.
 
 ## How many hands have touched each record
 

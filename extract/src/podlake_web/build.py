@@ -88,7 +88,8 @@ ARTIFACTS = [
         "cataloging_source.json",
         (
             "Per-institution source of cataloging (MARC 040): provenance mix, "
-            "intra-consortium flow, and modification depth."
+            "intra-consortium flow, modification depth, and the mix by year the "
+            "record entered the catalog (MARC 008/00-05)."
         ),
         queries.cataloging_source,
     ),

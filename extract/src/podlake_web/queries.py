@@ -98,8 +98,11 @@ ORDER BY org, decade"""
 
 # Treat "still published" (008/06='c') and the 9999 open-ended marker as running
 # to this year — the snapshot's notion of "present". Records dated past it are
-# clamped out; bump when the lake is refreshed well beyond it.
-NOW_YEAR = 2025
+# clamped out; bump when the lake is refreshed well beyond it. Also the century
+# pivot for two-digit dates entered (see ``_ENTERED_YEAR``), so leaving it behind
+# the lake is not merely conservative — it would read this year's records as
+# having been cataloged a hundred years ago.
+NOW_YEAR = 2026
 
 # Serials active per year: a serial (leader/07='s') is "active" in every year its
 # publication run covers. Start = 008 date1; end = 008 date2, except 'c' (still
@@ -807,12 +810,40 @@ def _self_inferred_sql(column: str) -> str:
     return _code_match_sql(column, codes, " " * 14)
 
 
-# One pass over the 040 slice, materialized so the four views below are cheap
-# group-bys instead of four scans of the billions-of-rows EAV table (measured:
-# ~45s + 4×0.1s here, versus ~150s for four self-contained queries; folding it all
-# into one grouped mega-query is far worse — over 8 minutes). Rolled up to
-# (org, code, org, bucket, depth) counts rather than one row per record, which is
-# ~230k rows instead of 48m and drops pod_record_id entirely.
+# MARC 008/00-05 is "date entered on file" — when the record was created in the
+# holding institution's system, written yymmdd, so the century has to be inferred.
+# Two facts pin the pivot: machine-readable cataloging starts in the mid-1960s, and
+# a lake cannot hold a record entered after its own snapshot. So a two-digit year at
+# or below NOW_YEAR's is this century and anything above it is the last one.
+#
+# '000000' is a placeholder, not the year 2000. 141k records carry it — 53k at Duke,
+# 57k at Stanford — and treated as a date it would inflate Duke's 2000 by 37%.
+#
+# Built by concatenation, not an f-string, so the regexp's {6} quantifier survives.
+# Indented to sit at column 9, where it is interpolated into the SELECT below.
+_ENTERED_YEAR = (
+    "CASE WHEN regexp_matches(substr(value, 1, 6), '^[0-9]{6}$')\n"
+    "              AND substr(value, 1, 6) <> '000000'\n"
+    "              THEN CASE WHEN CAST(substr(value, 1, 2) AS INTEGER) <= "
+    + str(NOW_YEAR % 100)
+    + " THEN 2000\n"
+    "                        ELSE 1900 END + CAST(substr(value, 1, 2) AS INTEGER)\n"
+    "         END"
+)
+
+# The first year a date entered on file can plausibly mean anything: MARC's pilot
+# ran from 1966. Earlier values (~2.5k records, scattered singly across 1927-1965)
+# are keying errors, not history.
+_ENTERED_MIN_YEAR = 1966
+
+
+# One pass over the 040 slice, materialized so the five views below are cheap
+# group-bys instead of five scans of the billions-of-rows EAV table (measured:
+# ~139s + 5×0.05s here, versus well over 200s for self-contained queries; folding it
+# all into one grouped mega-query is far worse — over 8 minutes). Rolled up to
+# (org, year, code, org, bucket, depth) counts rather than one row per record, which
+# is ~1.3m rows instead of 48m and drops pod_record_id entirely. The year is what
+# costs: without it the table is ~224k rows and ~77s.
 #
 # $a is nominally non-repeatable, but ~7.4k records carry more than one — almost
 # always a mangled subfield delimiter that glued $c/$d onto the end, e.g. one
@@ -843,8 +874,20 @@ mods AS (
   WHERE subfield_code = 'd' AND code <> ''
   GROUP BY org, pod_record_id
 ),
+-- When the record entered this institution's system. ~2.5k records carry two 008
+-- fields; the first by field_seq is the record's own, so QUALIFY keeps the join
+-- one-to-one rather than silently double-counting them.
+entered AS (
+  SELECT org, pod_record_id,
+         {_ENTERED_YEAR} AS entered_year
+  FROM records
+  WHERE field_tag = '008'
+  QUALIFY row_number() OVER (
+    PARTITION BY org, pod_record_id ORDER BY field_seq) = 1
+),
 joined AS (
   SELECT m.org,
+         e.entered_year,
          o.code AS source_code,
          {_self_org_sql("o.code")} AS source_org,
          {_self_inferred_sql("o.code")} AS inferred_self,
@@ -854,8 +897,9 @@ joined AS (
   LEFT JOIN present p USING (org, pod_record_id)
   LEFT JOIN orig o USING (org, pod_record_id)
   LEFT JOIN mods d USING (org, pod_record_id)
+  LEFT JOIN entered e USING (org, pod_record_id)
 )
-SELECT org, source_code, source_org,
+SELECT org, entered_year, source_code, source_org,
        CASE
          WHEN source_code IS NULL                            THEN 'none'
          WHEN source_code = 'DLC' OR source_code LIKE 'DLC-%' THEN 'lc'
@@ -944,6 +988,14 @@ SELECT org, mod_depth AS category, sum(n) AS n
 FROM cataloging_source
 GROUP BY org, mod_depth"""
 
+# The same provenance mix, cut by the year the record entered the institution's
+# system. Rows with a NULL year come back too — they are reported as `unplaced`
+# rather than dropped, so the timeline visibly accounts for every record.
+Q_CAT_TIMELINE = """\
+SELECT org, entered_year AS year, bucket, sum(n) AS n
+FROM cataloging_source
+GROUP BY org, entered_year, bucket"""
+
 # Render order for the two fixed vocabularies (neither is worth ranking by count).
 _CAT_BUCKETS = ("lc", "self", "self_inferred", "pod", "other", "none")
 _MOD_DEPTH_BUCKETS = ("no_040", "0", "1", "2", "3-4", "5-9", "10+")
@@ -964,6 +1016,8 @@ def cataloging_source(con: Connection, *, threshold: int = 10, **_: object) -> d
       and the diagonal is the self-cataloged count.
     - ``dimensions.mod_depth``: distinct 040 $d modifying agencies per record,
       keeping "no 040 field" separate from "040 naming no modifying agency".
+    - ``timeline``: the same mix again, cut by the year the record entered the
+      institution's system (008/00-05) — see :func:`_cataloging_timeline`.
 
     ``self`` depends on ``_SELF_CODES``, a curated mapping of agency codes to
     members; read it as "attributed to us," not "we did the original work". Codes
@@ -1069,6 +1123,12 @@ def cataloging_source(con: Connection, *, threshold: int = 10, **_: object) -> d
     )
     del flow["totals"]  # see the disclosure note above
 
+    timeline = _cataloging_timeline(con, threshold=threshold, totals=records)
+    timeline["sql"] = [
+        ddl,
+        {"label": "Provenance mix by year entered on file", "sql": Q_CAT_TIMELINE},
+    ]
+
     return {
         "buckets": list(_CAT_BUCKETS),
         "per_org": per_org,
@@ -1081,7 +1141,82 @@ def cataloging_source(con: Connection, *, threshold: int = 10, **_: object) -> d
                 categories=list(_MOD_DEPTH_BUCKETS),
             ),
         },
+        "timeline": timeline,
         "sql": [ddl, {"label": "Provenance mix by institution", "sql": Q_CAT_MIX}],
+    }
+
+
+def _cataloging_timeline(
+    con: Connection, *, threshold: int, totals: dict[str, int]
+) -> dict:
+    """
+    Provenance mix per institution per year, keyed on 008/00-05 — the year the
+    record entered that institution's system.
+
+    This is a record-arrival clock, not a cataloging clock; the two only coincide
+    for the ``self``/``self_inferred`` buckets, where "the record appeared in our
+    system" and "we cataloged it" are the same event. Even then the date survives
+    only until the next migration: a reload restamps everything it touches, so a
+    year holding several times its neighbours' volume is a load event and its shape
+    says nothing about that year's cataloging. Publishing each year's *total*
+    alongside the buckets is what makes those legible rather than invisible.
+
+    Every record is accounted for. Those that cannot be placed on the timeline —
+    no 008, an unparseable or placeholder date, a year outside
+    ``_ENTERED_MIN_YEAR..NOW_YEAR``, or a year holding too few records to publish —
+    are summed into ``unplaced``, so ``sum(year totals) + unplaced`` equals the
+    institution's record count. Folding suppressed years in there rather than
+    reporting them separately is deliberate: a published count of dropped years
+    would let each one be recovered by subtraction.
+    """
+    rows = con.execute(Q_CAT_TIMELINE).fetchall()
+
+    def in_range(year: int | None) -> bool:
+        return year is not None and _ENTERED_MIN_YEAR <= year <= NOW_YEAR
+
+    by_org: dict[str, dict[int | None, dict[str, int]]] = {}
+    for org, year, bucket, n in rows:
+        placed = year if in_range(year) else None
+        counts = by_org.setdefault(org, {}).setdefault(
+            placed, dict.fromkeys(_CAT_BUCKETS, 0)
+        )
+        counts[bucket] += n
+
+    per_org = []
+    for org in sorted(by_org):
+        years = by_org[org]
+        unplaced = sum(years.pop(None, {}).values())
+        values: list[dict] = []
+        placed_total = 0
+        for year in sorted(y for y in years if y is not None):
+            counts = years[year]
+            total = sum(counts.values())
+            if total < threshold:  # too thin to publish; see the docstring
+                unplaced += total
+                continue
+            for bucket, n in list(counts.items()):
+                if bucket != "other" and 0 < n < threshold:
+                    counts["other"] += n
+                    counts[bucket] = 0
+            placed_total += total
+            values.append({"year": year, "total": total, "counts": counts})
+        per_org.append({"org": org, "unplaced": unplaced, "values": values})
+
+        # Not a formality: the 008 join is the one place a record can be counted
+        # twice (two 008 fields), and a duplicated record would inflate a year's
+        # bar with nothing else to give it away.
+        if placed_total + unplaced != totals.get(org, 0):
+            raise ValueError(
+                f"timeline for {org} covers {placed_total + unplaced} records but "
+                f"the institution holds {totals.get(org, 0)} — the 008 join is "
+                "duplicating or dropping records"
+            )
+
+    return {
+        # The snapshot's own year is incomplete by construction — the lake is
+        # harvested part-way through it — so the last point is not a real decline.
+        "partial_year": NOW_YEAR,
+        "per_org": per_org,
     }
 
 
