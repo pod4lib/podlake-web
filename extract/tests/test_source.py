@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import duckdb
@@ -128,9 +129,25 @@ def test_connect_read_only_rejects_writes(tmp_path: Path):
 # --- CLI guard for the Postgres case -----------------------------------------
 
 
+def _plain(output: str) -> str:
+    """
+    Typer renders errors through Rich, which wraps them in a box at the terminal's
+    width and colours them. Both are environment-dependent — a wide local terminal
+    keeps the message on one line, while CI's 80 columns break it across two with
+    box borders and ANSI codes in between — so a substring test against the raw
+    output passes locally and fails in CI. Strip the presentation and match on the
+    text.
+    """
+    no_ansi = re.sub(r"\x1b\[[0-9;]*m", "", output)
+    no_box = re.sub(r"[│┃╭╮╰╯─━┌┐└┘]", " ", no_ansi)
+    return " ".join(no_box.split())
+
+
 def test_extract_requires_data_path_for_postgres_catalog():
     result = CliRunner().invoke(
         app, ["extract", "--catalog", "postgres:host=x dbname=y"]
     )
     assert result.exit_code != 0
-    assert "--data-path is required" in result.output
+    assert "--data-path is required when --catalog is a Postgres DSN" in _plain(
+        result.output
+    )

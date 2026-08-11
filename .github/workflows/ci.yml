@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A superseded run on the same branch has nothing left to tell us.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Lint, type-check, and test the extract step. Never touches the private lake:
+  # the tests build their own small DuckLakes in a tmpdir.
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      # The two repos have to land as siblings. extract/pyproject.toml points at
+      # podlake via `path = "../../podlake"`, which resolves relative to that file
+      # — so podlake-web/extract/../../podlake means a checkout next to this repo,
+      # not inside it.
+      - uses: actions/checkout@v4
+        with:
+          path: podlake-web
+      # podlake is public, so this needs no token. It tracks main deliberately:
+      # this repo consumes podlake's lake.connect / lake.load_pair, and a
+      # breaking change there should redden CI here rather than wait to be
+      # discovered during a manual `make extract`. Pin `ref:` if that becomes
+      # more noise than signal.
+      - uses: actions/checkout@v4
+        with:
+          repository: sul-dlss/podlake
+          path: podlake
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: podlake-web/extract/uv.lock
+
+      # ruff format --check, ruff check, ty, pytest — the same target used locally,
+      # so there is one definition of "passing" rather than two that can drift.
+      # The tests exercise real DuckLake attaches, so DuckDB downloads the ducklake
+      # extension here; that is the one network dependency in this job.
+      - run: make check
+        working-directory: podlake-web
+
+  # The site build gates what actually ships. deploy.yml runs the same build on
+  # main, but only after a merge — by which point a broken page means the deploy
+  # fails and the live site quietly stays on its previous version.
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+      # Builds from the committed aggregate snapshot in site/src/data; the lake is
+      # never reachable from CI. Also validates every internal link on the site.
+      - run: npm run build
