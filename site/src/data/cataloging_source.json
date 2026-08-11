@@ -344,7 +344,7 @@
       "sql": [
         {
           "label": "Per-record 040 summary, materialized once",
-          "sql": "CREATE OR REPLACE TEMP TABLE cataloging_source AS\nWITH f AS (\n  SELECT org, pod_record_id, subfield_code, field_seq, subfield_seq,\n         upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160))) AS code\n  FROM records\n  WHERE field_tag = '040'\n),\npresent AS (\n  SELECT DISTINCT org, pod_record_id FROM f\n),\norig AS (\n  SELECT org, pod_record_id, code\n  FROM f\n  WHERE subfield_code = 'a' AND code <> ''\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq, subfield_seq) = 1\n),\nmods AS (\n  SELECT org, pod_record_id, count(DISTINCT code) AS mod_agencies\n  FROM f\n  WHERE subfield_code = 'd' AND code <> ''\n  GROUP BY org, pod_record_id\n),\njoined AS (\n  SELECT m.org,\n         o.code AS source_code,\n         CASE\n         WHEN o.code = 'RPB'\n              OR o.code LIKE 'RPB-%'\n              OR o.code = 'RBN'\n              OR o.code = 'RPJCB'\n              THEN 'brown'\n         WHEN o.code = 'NCD'\n              OR o.code LIKE 'NCD-%'\n              OR o.code = 'NDD'\n              THEN 'duke'\n         WHEN o.code = 'MH'\n              OR o.code LIKE 'MH-%'\n              OR o.code = 'HLS'\n              OR o.code = 'HUL'\n              OR o.code = 'HMS'\n              OR o.code = 'HBS'\n              OR o.code = 'DDO'\n              OR o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL'\n              THEN 'harvard'\n         WHEN o.code = 'PU'\n              OR o.code LIKE 'PU-%'\n              OR o.code = 'PAU'\n              THEN 'penn'\n         WHEN o.code = 'NJP'\n              OR o.code LIKE 'NJP-%'\n              OR o.code = 'PUL'\n              OR o.code = 'PULEA'\n              THEN 'princeton'\n         WHEN o.code = 'CST'\n              OR o.code LIKE 'CST-%'\n              OR o.code = 'STF'\n              THEN 'stanford'\n         END AS source_org,\n         o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL' AS inferred_self,\n         coalesce(d.mod_agencies, 0) AS mod_agencies,\n         p.pod_record_id IS NOT NULL AS has_040\n  FROM record_meta m\n  LEFT JOIN present p USING (org, pod_record_id)\n  LEFT JOIN orig o USING (org, pod_record_id)\n  LEFT JOIN mods d USING (org, pod_record_id)\n)\nSELECT org, source_code, source_org,\n       CASE\n         WHEN source_code IS NULL                            THEN 'none'\n         WHEN source_code = 'DLC' OR source_code LIKE 'DLC-%' THEN 'lc'\n         -- No 'oclc' bucket: OCoLC appears as the *original* agency on only 27k\n         -- of 48m records (0.06%), because 040 credits the library that made the\n         -- description, not the utility the record travelled through. Reporting a\n         -- 0% OCLC bucket would imply OCLC plays no role here, when in fact\n         -- 66-98% of these records carry an (OCoLC) number in 035. That channel\n         -- signal belongs to 035, not 040, so OCoLC-in-$a falls to 'other'.\n         WHEN source_org = org AND inferred_self             THEN 'self_inferred'\n         WHEN source_org = org                               THEN 'self'\n         WHEN source_org IS NOT NULL                         THEN 'pod'\n         ELSE 'other'\n       END AS bucket,\n       -- \"no 040 at all\" is a different fact from \"an 040 that names no\n       -- modifying agency\", and the gap is large (182k-933k records per\n       -- institution carry an 040 with no $a), so they get separate buckets.\n       CASE\n         WHEN NOT has_040        THEN 'no_040'\n         WHEN mod_agencies >= 10 THEN '10+'\n         WHEN mod_agencies >= 5  THEN '5-9'\n         WHEN mod_agencies >= 3  THEN '3-4'\n         ELSE CAST(mod_agencies AS VARCHAR)\n       END AS mod_depth,\n       count(*) AS n\nFROM joined\nGROUP BY ALL"
+          "sql": "CREATE OR REPLACE TEMP TABLE cataloging_source AS\nWITH f AS (\n  SELECT org, pod_record_id, subfield_code, field_seq, subfield_seq,\n         upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160))) AS code\n  FROM records\n  WHERE field_tag = '040'\n),\npresent AS (\n  SELECT DISTINCT org, pod_record_id FROM f\n),\norig AS (\n  SELECT org, pod_record_id, code\n  FROM f\n  WHERE subfield_code = 'a' AND code <> ''\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq, subfield_seq) = 1\n),\nmods AS (\n  SELECT org, pod_record_id, count(DISTINCT code) AS mod_agencies\n  FROM f\n  WHERE subfield_code = 'd' AND code <> ''\n  GROUP BY org, pod_record_id\n),\n-- When the record entered this institution's system. ~2.5k records carry two 008\n-- fields; the first by field_seq is the record's own, so QUALIFY keeps the join\n-- one-to-one rather than silently double-counting them.\nentered AS (\n  SELECT org, pod_record_id,\n         CASE WHEN regexp_matches(substr(value, 1, 6), '^[0-9]{6}$')\n              AND substr(value, 1, 6) <> '000000'\n              THEN CASE WHEN CAST(substr(value, 1, 2) AS INTEGER) <= 26 THEN 2000\n                        ELSE 1900 END + CAST(substr(value, 1, 2) AS INTEGER)\n         END AS entered_year\n  FROM records\n  WHERE field_tag = '008'\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq) = 1\n),\njoined AS (\n  SELECT m.org,\n         e.entered_year,\n         o.code AS source_code,\n         CASE\n         WHEN o.code = 'RPB'\n              OR o.code LIKE 'RPB-%'\n              OR o.code = 'RBN'\n              OR o.code = 'RPJCB'\n              THEN 'brown'\n         WHEN o.code = 'NCD'\n              OR o.code LIKE 'NCD-%'\n              OR o.code = 'NDD'\n              THEN 'duke'\n         WHEN o.code = 'MH'\n              OR o.code LIKE 'MH-%'\n              OR o.code = 'HLS'\n              OR o.code = 'HUL'\n              OR o.code = 'HMS'\n              OR o.code = 'HBS'\n              OR o.code = 'DDO'\n              OR o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL'\n              THEN 'harvard'\n         WHEN o.code = 'PU'\n              OR o.code LIKE 'PU-%'\n              OR o.code = 'PAU'\n              THEN 'penn'\n         WHEN o.code = 'NJP'\n              OR o.code LIKE 'NJP-%'\n              OR o.code = 'PUL'\n              OR o.code = 'PULEA'\n              THEN 'princeton'\n         WHEN o.code = 'CST'\n              OR o.code LIKE 'CST-%'\n              OR o.code = 'STF'\n              THEN 'stanford'\n         END AS source_org,\n         o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL' AS inferred_self,\n         coalesce(d.mod_agencies, 0) AS mod_agencies,\n         p.pod_record_id IS NOT NULL AS has_040\n  FROM record_meta m\n  LEFT JOIN present p USING (org, pod_record_id)\n  LEFT JOIN orig o USING (org, pod_record_id)\n  LEFT JOIN mods d USING (org, pod_record_id)\n  LEFT JOIN entered e USING (org, pod_record_id)\n)\nSELECT org, entered_year, source_code, source_org,\n       CASE\n         WHEN source_code IS NULL                            THEN 'none'\n         WHEN source_code = 'DLC' OR source_code LIKE 'DLC-%' THEN 'lc'\n         -- No 'oclc' bucket: OCoLC appears as the *original* agency on only 27k\n         -- of 48m records (0.06%), because 040 credits the library that made the\n         -- description, not the utility the record travelled through. Reporting a\n         -- 0% OCLC bucket would imply OCLC plays no role here, when in fact\n         -- 66-98% of these records carry an (OCoLC) number in 035. That channel\n         -- signal belongs to 035, not 040, so OCoLC-in-$a falls to 'other'.\n         WHEN source_org = org AND inferred_self             THEN 'self_inferred'\n         WHEN source_org = org                               THEN 'self'\n         WHEN source_org IS NOT NULL                         THEN 'pod'\n         ELSE 'other'\n       END AS bucket,\n       -- \"no 040 at all\" is a different fact from \"an 040 that names no\n       -- modifying agency\", and the gap is large (182k-933k records per\n       -- institution carry an 040 with no $a), so they get separate buckets.\n       CASE\n         WHEN NOT has_040        THEN 'no_040'\n         WHEN mod_agencies >= 10 THEN '10+'\n         WHEN mod_agencies >= 5  THEN '5-9'\n         WHEN mod_agencies >= 3  THEN '3-4'\n         ELSE CAST(mod_agencies AS VARCHAR)\n       END AS mod_depth,\n       count(*) AS n\nFROM joined\nGROUP BY ALL"
         },
         {
           "label": "Cataloging agencies (040 $a): each institution's own top 12, unioned",
@@ -434,7 +434,7 @@
       "sql": [
         {
           "label": "Per-record 040 summary, materialized once",
-          "sql": "CREATE OR REPLACE TEMP TABLE cataloging_source AS\nWITH f AS (\n  SELECT org, pod_record_id, subfield_code, field_seq, subfield_seq,\n         upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160))) AS code\n  FROM records\n  WHERE field_tag = '040'\n),\npresent AS (\n  SELECT DISTINCT org, pod_record_id FROM f\n),\norig AS (\n  SELECT org, pod_record_id, code\n  FROM f\n  WHERE subfield_code = 'a' AND code <> ''\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq, subfield_seq) = 1\n),\nmods AS (\n  SELECT org, pod_record_id, count(DISTINCT code) AS mod_agencies\n  FROM f\n  WHERE subfield_code = 'd' AND code <> ''\n  GROUP BY org, pod_record_id\n),\njoined AS (\n  SELECT m.org,\n         o.code AS source_code,\n         CASE\n         WHEN o.code = 'RPB'\n              OR o.code LIKE 'RPB-%'\n              OR o.code = 'RBN'\n              OR o.code = 'RPJCB'\n              THEN 'brown'\n         WHEN o.code = 'NCD'\n              OR o.code LIKE 'NCD-%'\n              OR o.code = 'NDD'\n              THEN 'duke'\n         WHEN o.code = 'MH'\n              OR o.code LIKE 'MH-%'\n              OR o.code = 'HLS'\n              OR o.code = 'HUL'\n              OR o.code = 'HMS'\n              OR o.code = 'HBS'\n              OR o.code = 'DDO'\n              OR o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL'\n              THEN 'harvard'\n         WHEN o.code = 'PU'\n              OR o.code LIKE 'PU-%'\n              OR o.code = 'PAU'\n              THEN 'penn'\n         WHEN o.code = 'NJP'\n              OR o.code LIKE 'NJP-%'\n              OR o.code = 'PUL'\n              OR o.code = 'PULEA'\n              THEN 'princeton'\n         WHEN o.code = 'CST'\n              OR o.code LIKE 'CST-%'\n              OR o.code = 'STF'\n              THEN 'stanford'\n         END AS source_org,\n         o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL' AS inferred_self,\n         coalesce(d.mod_agencies, 0) AS mod_agencies,\n         p.pod_record_id IS NOT NULL AS has_040\n  FROM record_meta m\n  LEFT JOIN present p USING (org, pod_record_id)\n  LEFT JOIN orig o USING (org, pod_record_id)\n  LEFT JOIN mods d USING (org, pod_record_id)\n)\nSELECT org, source_code, source_org,\n       CASE\n         WHEN source_code IS NULL                            THEN 'none'\n         WHEN source_code = 'DLC' OR source_code LIKE 'DLC-%' THEN 'lc'\n         -- No 'oclc' bucket: OCoLC appears as the *original* agency on only 27k\n         -- of 48m records (0.06%), because 040 credits the library that made the\n         -- description, not the utility the record travelled through. Reporting a\n         -- 0% OCLC bucket would imply OCLC plays no role here, when in fact\n         -- 66-98% of these records carry an (OCoLC) number in 035. That channel\n         -- signal belongs to 035, not 040, so OCoLC-in-$a falls to 'other'.\n         WHEN source_org = org AND inferred_self             THEN 'self_inferred'\n         WHEN source_org = org                               THEN 'self'\n         WHEN source_org IS NOT NULL                         THEN 'pod'\n         ELSE 'other'\n       END AS bucket,\n       -- \"no 040 at all\" is a different fact from \"an 040 that names no\n       -- modifying agency\", and the gap is large (182k-933k records per\n       -- institution carry an 040 with no $a), so they get separate buckets.\n       CASE\n         WHEN NOT has_040        THEN 'no_040'\n         WHEN mod_agencies >= 10 THEN '10+'\n         WHEN mod_agencies >= 5  THEN '5-9'\n         WHEN mod_agencies >= 3  THEN '3-4'\n         ELSE CAST(mod_agencies AS VARCHAR)\n       END AS mod_depth,\n       count(*) AS n\nFROM joined\nGROUP BY ALL"
+          "sql": "CREATE OR REPLACE TEMP TABLE cataloging_source AS\nWITH f AS (\n  SELECT org, pod_record_id, subfield_code, field_seq, subfield_seq,\n         upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160))) AS code\n  FROM records\n  WHERE field_tag = '040'\n),\npresent AS (\n  SELECT DISTINCT org, pod_record_id FROM f\n),\norig AS (\n  SELECT org, pod_record_id, code\n  FROM f\n  WHERE subfield_code = 'a' AND code <> ''\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq, subfield_seq) = 1\n),\nmods AS (\n  SELECT org, pod_record_id, count(DISTINCT code) AS mod_agencies\n  FROM f\n  WHERE subfield_code = 'd' AND code <> ''\n  GROUP BY org, pod_record_id\n),\n-- When the record entered this institution's system. ~2.5k records carry two 008\n-- fields; the first by field_seq is the record's own, so QUALIFY keeps the join\n-- one-to-one rather than silently double-counting them.\nentered AS (\n  SELECT org, pod_record_id,\n         CASE WHEN regexp_matches(substr(value, 1, 6), '^[0-9]{6}$')\n              AND substr(value, 1, 6) <> '000000'\n              THEN CASE WHEN CAST(substr(value, 1, 2) AS INTEGER) <= 26 THEN 2000\n                        ELSE 1900 END + CAST(substr(value, 1, 2) AS INTEGER)\n         END AS entered_year\n  FROM records\n  WHERE field_tag = '008'\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq) = 1\n),\njoined AS (\n  SELECT m.org,\n         e.entered_year,\n         o.code AS source_code,\n         CASE\n         WHEN o.code = 'RPB'\n              OR o.code LIKE 'RPB-%'\n              OR o.code = 'RBN'\n              OR o.code = 'RPJCB'\n              THEN 'brown'\n         WHEN o.code = 'NCD'\n              OR o.code LIKE 'NCD-%'\n              OR o.code = 'NDD'\n              THEN 'duke'\n         WHEN o.code = 'MH'\n              OR o.code LIKE 'MH-%'\n              OR o.code = 'HLS'\n              OR o.code = 'HUL'\n              OR o.code = 'HMS'\n              OR o.code = 'HBS'\n              OR o.code = 'DDO'\n              OR o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL'\n              THEN 'harvard'\n         WHEN o.code = 'PU'\n              OR o.code LIKE 'PU-%'\n              OR o.code = 'PAU'\n              THEN 'penn'\n         WHEN o.code = 'NJP'\n              OR o.code LIKE 'NJP-%'\n              OR o.code = 'PUL'\n              OR o.code = 'PULEA'\n              THEN 'princeton'\n         WHEN o.code = 'CST'\n              OR o.code LIKE 'CST-%'\n              OR o.code = 'STF'\n              THEN 'stanford'\n         END AS source_org,\n         o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL' AS inferred_self,\n         coalesce(d.mod_agencies, 0) AS mod_agencies,\n         p.pod_record_id IS NOT NULL AS has_040\n  FROM record_meta m\n  LEFT JOIN present p USING (org, pod_record_id)\n  LEFT JOIN orig o USING (org, pod_record_id)\n  LEFT JOIN mods d USING (org, pod_record_id)\n  LEFT JOIN entered e USING (org, pod_record_id)\n)\nSELECT org, entered_year, source_code, source_org,\n       CASE\n         WHEN source_code IS NULL                            THEN 'none'\n         WHEN source_code = 'DLC' OR source_code LIKE 'DLC-%' THEN 'lc'\n         -- No 'oclc' bucket: OCoLC appears as the *original* agency on only 27k\n         -- of 48m records (0.06%), because 040 credits the library that made the\n         -- description, not the utility the record travelled through. Reporting a\n         -- 0% OCLC bucket would imply OCLC plays no role here, when in fact\n         -- 66-98% of these records carry an (OCoLC) number in 035. That channel\n         -- signal belongs to 035, not 040, so OCoLC-in-$a falls to 'other'.\n         WHEN source_org = org AND inferred_self             THEN 'self_inferred'\n         WHEN source_org = org                               THEN 'self'\n         WHEN source_org IS NOT NULL                         THEN 'pod'\n         ELSE 'other'\n       END AS bucket,\n       -- \"no 040 at all\" is a different fact from \"an 040 that names no\n       -- modifying agency\", and the gap is large (182k-933k records per\n       -- institution carry an 040 with no $a), so they get separate buckets.\n       CASE\n         WHEN NOT has_040        THEN 'no_040'\n         WHEN mod_agencies >= 10 THEN '10+'\n         WHEN mod_agencies >= 5  THEN '5-9'\n         WHEN mod_agencies >= 3  THEN '3-4'\n         ELSE CAST(mod_agencies AS VARCHAR)\n       END AS mod_depth,\n       count(*) AS n\nFROM joined\nGROUP BY ALL"
         },
         {
           "label": "Cataloging attributed to each POD member, by holding institution",
@@ -519,7 +519,7 @@
       "sql": [
         {
           "label": "Per-record 040 summary, materialized once",
-          "sql": "CREATE OR REPLACE TEMP TABLE cataloging_source AS\nWITH f AS (\n  SELECT org, pod_record_id, subfield_code, field_seq, subfield_seq,\n         upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160))) AS code\n  FROM records\n  WHERE field_tag = '040'\n),\npresent AS (\n  SELECT DISTINCT org, pod_record_id FROM f\n),\norig AS (\n  SELECT org, pod_record_id, code\n  FROM f\n  WHERE subfield_code = 'a' AND code <> ''\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq, subfield_seq) = 1\n),\nmods AS (\n  SELECT org, pod_record_id, count(DISTINCT code) AS mod_agencies\n  FROM f\n  WHERE subfield_code = 'd' AND code <> ''\n  GROUP BY org, pod_record_id\n),\njoined AS (\n  SELECT m.org,\n         o.code AS source_code,\n         CASE\n         WHEN o.code = 'RPB'\n              OR o.code LIKE 'RPB-%'\n              OR o.code = 'RBN'\n              OR o.code = 'RPJCB'\n              THEN 'brown'\n         WHEN o.code = 'NCD'\n              OR o.code LIKE 'NCD-%'\n              OR o.code = 'NDD'\n              THEN 'duke'\n         WHEN o.code = 'MH'\n              OR o.code LIKE 'MH-%'\n              OR o.code = 'HLS'\n              OR o.code = 'HUL'\n              OR o.code = 'HMS'\n              OR o.code = 'HBS'\n              OR o.code = 'DDO'\n              OR o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL'\n              THEN 'harvard'\n         WHEN o.code = 'PU'\n              OR o.code LIKE 'PU-%'\n              OR o.code = 'PAU'\n              THEN 'penn'\n         WHEN o.code = 'NJP'\n              OR o.code LIKE 'NJP-%'\n              OR o.code = 'PUL'\n              OR o.code = 'PULEA'\n              THEN 'princeton'\n         WHEN o.code = 'CST'\n              OR o.code LIKE 'CST-%'\n              OR o.code = 'STF'\n              THEN 'stanford'\n         END AS source_org,\n         o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL' AS inferred_self,\n         coalesce(d.mod_agencies, 0) AS mod_agencies,\n         p.pod_record_id IS NOT NULL AS has_040\n  FROM record_meta m\n  LEFT JOIN present p USING (org, pod_record_id)\n  LEFT JOIN orig o USING (org, pod_record_id)\n  LEFT JOIN mods d USING (org, pod_record_id)\n)\nSELECT org, source_code, source_org,\n       CASE\n         WHEN source_code IS NULL                            THEN 'none'\n         WHEN source_code = 'DLC' OR source_code LIKE 'DLC-%' THEN 'lc'\n         -- No 'oclc' bucket: OCoLC appears as the *original* agency on only 27k\n         -- of 48m records (0.06%), because 040 credits the library that made the\n         -- description, not the utility the record travelled through. Reporting a\n         -- 0% OCLC bucket would imply OCLC plays no role here, when in fact\n         -- 66-98% of these records carry an (OCoLC) number in 035. That channel\n         -- signal belongs to 035, not 040, so OCoLC-in-$a falls to 'other'.\n         WHEN source_org = org AND inferred_self             THEN 'self_inferred'\n         WHEN source_org = org                               THEN 'self'\n         WHEN source_org IS NOT NULL                         THEN 'pod'\n         ELSE 'other'\n       END AS bucket,\n       -- \"no 040 at all\" is a different fact from \"an 040 that names no\n       -- modifying agency\", and the gap is large (182k-933k records per\n       -- institution carry an 040 with no $a), so they get separate buckets.\n       CASE\n         WHEN NOT has_040        THEN 'no_040'\n         WHEN mod_agencies >= 10 THEN '10+'\n         WHEN mod_agencies >= 5  THEN '5-9'\n         WHEN mod_agencies >= 3  THEN '3-4'\n         ELSE CAST(mod_agencies AS VARCHAR)\n       END AS mod_depth,\n       count(*) AS n\nFROM joined\nGROUP BY ALL"
+          "sql": "CREATE OR REPLACE TEMP TABLE cataloging_source AS\nWITH f AS (\n  SELECT org, pod_record_id, subfield_code, field_seq, subfield_seq,\n         upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160))) AS code\n  FROM records\n  WHERE field_tag = '040'\n),\npresent AS (\n  SELECT DISTINCT org, pod_record_id FROM f\n),\norig AS (\n  SELECT org, pod_record_id, code\n  FROM f\n  WHERE subfield_code = 'a' AND code <> ''\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq, subfield_seq) = 1\n),\nmods AS (\n  SELECT org, pod_record_id, count(DISTINCT code) AS mod_agencies\n  FROM f\n  WHERE subfield_code = 'd' AND code <> ''\n  GROUP BY org, pod_record_id\n),\n-- When the record entered this institution's system. ~2.5k records carry two 008\n-- fields; the first by field_seq is the record's own, so QUALIFY keeps the join\n-- one-to-one rather than silently double-counting them.\nentered AS (\n  SELECT org, pod_record_id,\n         CASE WHEN regexp_matches(substr(value, 1, 6), '^[0-9]{6}$')\n              AND substr(value, 1, 6) <> '000000'\n              THEN CASE WHEN CAST(substr(value, 1, 2) AS INTEGER) <= 26 THEN 2000\n                        ELSE 1900 END + CAST(substr(value, 1, 2) AS INTEGER)\n         END AS entered_year\n  FROM records\n  WHERE field_tag = '008'\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq) = 1\n),\njoined AS (\n  SELECT m.org,\n         e.entered_year,\n         o.code AS source_code,\n         CASE\n         WHEN o.code = 'RPB'\n              OR o.code LIKE 'RPB-%'\n              OR o.code = 'RBN'\n              OR o.code = 'RPJCB'\n              THEN 'brown'\n         WHEN o.code = 'NCD'\n              OR o.code LIKE 'NCD-%'\n              OR o.code = 'NDD'\n              THEN 'duke'\n         WHEN o.code = 'MH'\n              OR o.code LIKE 'MH-%'\n              OR o.code = 'HLS'\n              OR o.code = 'HUL'\n              OR o.code = 'HMS'\n              OR o.code = 'HBS'\n              OR o.code = 'DDO'\n              OR o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL'\n              THEN 'harvard'\n         WHEN o.code = 'PU'\n              OR o.code LIKE 'PU-%'\n              OR o.code = 'PAU'\n              THEN 'penn'\n         WHEN o.code = 'NJP'\n              OR o.code LIKE 'NJP-%'\n              OR o.code = 'PUL'\n              OR o.code = 'PULEA'\n              THEN 'princeton'\n         WHEN o.code = 'CST'\n              OR o.code LIKE 'CST-%'\n              OR o.code = 'STF'\n              THEN 'stanford'\n         END AS source_org,\n         o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL' AS inferred_self,\n         coalesce(d.mod_agencies, 0) AS mod_agencies,\n         p.pod_record_id IS NOT NULL AS has_040\n  FROM record_meta m\n  LEFT JOIN present p USING (org, pod_record_id)\n  LEFT JOIN orig o USING (org, pod_record_id)\n  LEFT JOIN mods d USING (org, pod_record_id)\n  LEFT JOIN entered e USING (org, pod_record_id)\n)\nSELECT org, entered_year, source_code, source_org,\n       CASE\n         WHEN source_code IS NULL                            THEN 'none'\n         WHEN source_code = 'DLC' OR source_code LIKE 'DLC-%' THEN 'lc'\n         -- No 'oclc' bucket: OCoLC appears as the *original* agency on only 27k\n         -- of 48m records (0.06%), because 040 credits the library that made the\n         -- description, not the utility the record travelled through. Reporting a\n         -- 0% OCLC bucket would imply OCLC plays no role here, when in fact\n         -- 66-98% of these records carry an (OCoLC) number in 035. That channel\n         -- signal belongs to 035, not 040, so OCoLC-in-$a falls to 'other'.\n         WHEN source_org = org AND inferred_self             THEN 'self_inferred'\n         WHEN source_org = org                               THEN 'self'\n         WHEN source_org IS NOT NULL                         THEN 'pod'\n         ELSE 'other'\n       END AS bucket,\n       -- \"no 040 at all\" is a different fact from \"an 040 that names no\n       -- modifying agency\", and the gap is large (182k-933k records per\n       -- institution carry an 040 with no $a), so they get separate buckets.\n       CASE\n         WHEN NOT has_040        THEN 'no_040'\n         WHEN mod_agencies >= 10 THEN '10+'\n         WHEN mod_agencies >= 5  THEN '5-9'\n         WHEN mod_agencies >= 3  THEN '3-4'\n         ELSE CAST(mod_agencies AS VARCHAR)\n       END AS mod_depth,\n       count(*) AS n\nFROM joined\nGROUP BY ALL"
         },
         {
           "label": "Distinct modifying agencies (040 $d) per record",
@@ -536,7 +536,7 @@
       }
     }
   },
-  "generated_at": "2026-08-05T01:13:19.375822+00:00",
+  "generated_at": "2026-08-11T03:00:55.266835+00:00",
   "per_org": [
     {
       "counts": {
@@ -662,11 +662,4454 @@
   "sql": [
     {
       "label": "Per-record 040 summary, materialized once",
-      "sql": "CREATE OR REPLACE TEMP TABLE cataloging_source AS\nWITH f AS (\n  SELECT org, pod_record_id, subfield_code, field_seq, subfield_seq,\n         upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160))) AS code\n  FROM records\n  WHERE field_tag = '040'\n),\npresent AS (\n  SELECT DISTINCT org, pod_record_id FROM f\n),\norig AS (\n  SELECT org, pod_record_id, code\n  FROM f\n  WHERE subfield_code = 'a' AND code <> ''\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq, subfield_seq) = 1\n),\nmods AS (\n  SELECT org, pod_record_id, count(DISTINCT code) AS mod_agencies\n  FROM f\n  WHERE subfield_code = 'd' AND code <> ''\n  GROUP BY org, pod_record_id\n),\njoined AS (\n  SELECT m.org,\n         o.code AS source_code,\n         CASE\n         WHEN o.code = 'RPB'\n              OR o.code LIKE 'RPB-%'\n              OR o.code = 'RBN'\n              OR o.code = 'RPJCB'\n              THEN 'brown'\n         WHEN o.code = 'NCD'\n              OR o.code LIKE 'NCD-%'\n              OR o.code = 'NDD'\n              THEN 'duke'\n         WHEN o.code = 'MH'\n              OR o.code LIKE 'MH-%'\n              OR o.code = 'HLS'\n              OR o.code = 'HUL'\n              OR o.code = 'HMS'\n              OR o.code = 'HBS'\n              OR o.code = 'DDO'\n              OR o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL'\n              THEN 'harvard'\n         WHEN o.code = 'PU'\n              OR o.code LIKE 'PU-%'\n              OR o.code = 'PAU'\n              THEN 'penn'\n         WHEN o.code = 'NJP'\n              OR o.code LIKE 'NJP-%'\n              OR o.code = 'PUL'\n              OR o.code = 'PULEA'\n              THEN 'princeton'\n         WHEN o.code = 'CST'\n              OR o.code LIKE 'CST-%'\n              OR o.code = 'STF'\n              THEN 'stanford'\n         END AS source_org,\n         o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL' AS inferred_self,\n         coalesce(d.mod_agencies, 0) AS mod_agencies,\n         p.pod_record_id IS NOT NULL AS has_040\n  FROM record_meta m\n  LEFT JOIN present p USING (org, pod_record_id)\n  LEFT JOIN orig o USING (org, pod_record_id)\n  LEFT JOIN mods d USING (org, pod_record_id)\n)\nSELECT org, source_code, source_org,\n       CASE\n         WHEN source_code IS NULL                            THEN 'none'\n         WHEN source_code = 'DLC' OR source_code LIKE 'DLC-%' THEN 'lc'\n         -- No 'oclc' bucket: OCoLC appears as the *original* agency on only 27k\n         -- of 48m records (0.06%), because 040 credits the library that made the\n         -- description, not the utility the record travelled through. Reporting a\n         -- 0% OCLC bucket would imply OCLC plays no role here, when in fact\n         -- 66-98% of these records carry an (OCoLC) number in 035. That channel\n         -- signal belongs to 035, not 040, so OCoLC-in-$a falls to 'other'.\n         WHEN source_org = org AND inferred_self             THEN 'self_inferred'\n         WHEN source_org = org                               THEN 'self'\n         WHEN source_org IS NOT NULL                         THEN 'pod'\n         ELSE 'other'\n       END AS bucket,\n       -- \"no 040 at all\" is a different fact from \"an 040 that names no\n       -- modifying agency\", and the gap is large (182k-933k records per\n       -- institution carry an 040 with no $a), so they get separate buckets.\n       CASE\n         WHEN NOT has_040        THEN 'no_040'\n         WHEN mod_agencies >= 10 THEN '10+'\n         WHEN mod_agencies >= 5  THEN '5-9'\n         WHEN mod_agencies >= 3  THEN '3-4'\n         ELSE CAST(mod_agencies AS VARCHAR)\n       END AS mod_depth,\n       count(*) AS n\nFROM joined\nGROUP BY ALL"
+      "sql": "CREATE OR REPLACE TEMP TABLE cataloging_source AS\nWITH f AS (\n  SELECT org, pod_record_id, subfield_code, field_seq, subfield_seq,\n         upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160))) AS code\n  FROM records\n  WHERE field_tag = '040'\n),\npresent AS (\n  SELECT DISTINCT org, pod_record_id FROM f\n),\norig AS (\n  SELECT org, pod_record_id, code\n  FROM f\n  WHERE subfield_code = 'a' AND code <> ''\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq, subfield_seq) = 1\n),\nmods AS (\n  SELECT org, pod_record_id, count(DISTINCT code) AS mod_agencies\n  FROM f\n  WHERE subfield_code = 'd' AND code <> ''\n  GROUP BY org, pod_record_id\n),\n-- When the record entered this institution's system. ~2.5k records carry two 008\n-- fields; the first by field_seq is the record's own, so QUALIFY keeps the join\n-- one-to-one rather than silently double-counting them.\nentered AS (\n  SELECT org, pod_record_id,\n         CASE WHEN regexp_matches(substr(value, 1, 6), '^[0-9]{6}$')\n              AND substr(value, 1, 6) <> '000000'\n              THEN CASE WHEN CAST(substr(value, 1, 2) AS INTEGER) <= 26 THEN 2000\n                        ELSE 1900 END + CAST(substr(value, 1, 2) AS INTEGER)\n         END AS entered_year\n  FROM records\n  WHERE field_tag = '008'\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq) = 1\n),\njoined AS (\n  SELECT m.org,\n         e.entered_year,\n         o.code AS source_code,\n         CASE\n         WHEN o.code = 'RPB'\n              OR o.code LIKE 'RPB-%'\n              OR o.code = 'RBN'\n              OR o.code = 'RPJCB'\n              THEN 'brown'\n         WHEN o.code = 'NCD'\n              OR o.code LIKE 'NCD-%'\n              OR o.code = 'NDD'\n              THEN 'duke'\n         WHEN o.code = 'MH'\n              OR o.code LIKE 'MH-%'\n              OR o.code = 'HLS'\n              OR o.code = 'HUL'\n              OR o.code = 'HMS'\n              OR o.code = 'HBS'\n              OR o.code = 'DDO'\n              OR o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL'\n              THEN 'harvard'\n         WHEN o.code = 'PU'\n              OR o.code LIKE 'PU-%'\n              OR o.code = 'PAU'\n              THEN 'penn'\n         WHEN o.code = 'NJP'\n              OR o.code LIKE 'NJP-%'\n              OR o.code = 'PUL'\n              OR o.code = 'PULEA'\n              THEN 'princeton'\n         WHEN o.code = 'CST'\n              OR o.code LIKE 'CST-%'\n              OR o.code = 'STF'\n              THEN 'stanford'\n         END AS source_org,\n         o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL' AS inferred_self,\n         coalesce(d.mod_agencies, 0) AS mod_agencies,\n         p.pod_record_id IS NOT NULL AS has_040\n  FROM record_meta m\n  LEFT JOIN present p USING (org, pod_record_id)\n  LEFT JOIN orig o USING (org, pod_record_id)\n  LEFT JOIN mods d USING (org, pod_record_id)\n  LEFT JOIN entered e USING (org, pod_record_id)\n)\nSELECT org, entered_year, source_code, source_org,\n       CASE\n         WHEN source_code IS NULL                            THEN 'none'\n         WHEN source_code = 'DLC' OR source_code LIKE 'DLC-%' THEN 'lc'\n         -- No 'oclc' bucket: OCoLC appears as the *original* agency on only 27k\n         -- of 48m records (0.06%), because 040 credits the library that made the\n         -- description, not the utility the record travelled through. Reporting a\n         -- 0% OCLC bucket would imply OCLC plays no role here, when in fact\n         -- 66-98% of these records carry an (OCoLC) number in 035. That channel\n         -- signal belongs to 035, not 040, so OCoLC-in-$a falls to 'other'.\n         WHEN source_org = org AND inferred_self             THEN 'self_inferred'\n         WHEN source_org = org                               THEN 'self'\n         WHEN source_org IS NOT NULL                         THEN 'pod'\n         ELSE 'other'\n       END AS bucket,\n       -- \"no 040 at all\" is a different fact from \"an 040 that names no\n       -- modifying agency\", and the gap is large (182k-933k records per\n       -- institution carry an 040 with no $a), so they get separate buckets.\n       CASE\n         WHEN NOT has_040        THEN 'no_040'\n         WHEN mod_agencies >= 10 THEN '10+'\n         WHEN mod_agencies >= 5  THEN '5-9'\n         WHEN mod_agencies >= 3  THEN '3-4'\n         ELSE CAST(mod_agencies AS VARCHAR)\n       END AS mod_depth,\n       count(*) AS n\nFROM joined\nGROUP BY ALL"
     },
     {
       "label": "Provenance mix by institution",
       "sql": "SELECT org, bucket AS category, sum(n) AS n\nFROM cataloging_source\nGROUP BY org, bucket"
     }
-  ]
+  ],
+  "timeline": {
+    "partial_year": 2026,
+    "per_org": [
+      {
+        "org": "brown",
+        "unplaced": 12519,
+        "values": [
+          {
+            "counts": {
+              "lc": 0,
+              "none": 0,
+              "other": 174,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 174,
+            "year": 1966
+          },
+          {
+            "counts": {
+              "lc": 0,
+              "none": 0,
+              "other": 348,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 348,
+            "year": 1967
+          },
+          {
+            "counts": {
+              "lc": 2622,
+              "none": 0,
+              "other": 378,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 3000,
+            "year": 1968
+          },
+          {
+            "counts": {
+              "lc": 9057,
+              "none": 23,
+              "other": 179,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 9259,
+            "year": 1969
+          },
+          {
+            "counts": {
+              "lc": 15157,
+              "none": 47,
+              "other": 169,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 15373,
+            "year": 1970
+          },
+          {
+            "counts": {
+              "lc": 19355,
+              "none": 807,
+              "other": 1074,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 21236,
+            "year": 1971
+          },
+          {
+            "counts": {
+              "lc": 37433,
+              "none": 9060,
+              "other": 10584,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 57077,
+            "year": 1972
+          },
+          {
+            "counts": {
+              "lc": 28105,
+              "none": 7681,
+              "other": 7821,
+              "pod": 22,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 43629,
+            "year": 1973
+          },
+          {
+            "counts": {
+              "lc": 28578,
+              "none": 11669,
+              "other": 11504,
+              "pod": 204,
+              "self": 148,
+              "self_inferred": 0
+            },
+            "total": 52103,
+            "year": 1974
+          },
+          {
+            "counts": {
+              "lc": 52146,
+              "none": 15794,
+              "other": 24863,
+              "pod": 224,
+              "self": 1231,
+              "self_inferred": 0
+            },
+            "total": 94258,
+            "year": 1975
+          },
+          {
+            "counts": {
+              "lc": 45708,
+              "none": 2472,
+              "other": 18804,
+              "pod": 261,
+              "self": 1645,
+              "self_inferred": 0
+            },
+            "total": 68890,
+            "year": 1976
+          },
+          {
+            "counts": {
+              "lc": 44648,
+              "none": 1462,
+              "other": 19925,
+              "pod": 389,
+              "self": 2824,
+              "self_inferred": 0
+            },
+            "total": 69248,
+            "year": 1977
+          },
+          {
+            "counts": {
+              "lc": 37372,
+              "none": 1099,
+              "other": 22660,
+              "pod": 345,
+              "self": 1809,
+              "self_inferred": 0
+            },
+            "total": 63285,
+            "year": 1978
+          },
+          {
+            "counts": {
+              "lc": 32357,
+              "none": 687,
+              "other": 27091,
+              "pod": 426,
+              "self": 1960,
+              "self_inferred": 0
+            },
+            "total": 62521,
+            "year": 1979
+          },
+          {
+            "counts": {
+              "lc": 20282,
+              "none": 3386,
+              "other": 22165,
+              "pod": 332,
+              "self": 1629,
+              "self_inferred": 0
+            },
+            "total": 47794,
+            "year": 1980
+          },
+          {
+            "counts": {
+              "lc": 9454,
+              "none": 13552,
+              "other": 25306,
+              "pod": 375,
+              "self": 3557,
+              "self_inferred": 0
+            },
+            "total": 52244,
+            "year": 1981
+          },
+          {
+            "counts": {
+              "lc": 8488,
+              "none": 15231,
+              "other": 32495,
+              "pod": 627,
+              "self": 7306,
+              "self_inferred": 0
+            },
+            "total": 64147,
+            "year": 1982
+          },
+          {
+            "counts": {
+              "lc": 8439,
+              "none": 19615,
+              "other": 29178,
+              "pod": 946,
+              "self": 8112,
+              "self_inferred": 0
+            },
+            "total": 66290,
+            "year": 1983
+          },
+          {
+            "counts": {
+              "lc": 8653,
+              "none": 25015,
+              "other": 38700,
+              "pod": 1758,
+              "self": 8001,
+              "self_inferred": 0
+            },
+            "total": 82127,
+            "year": 1984
+          },
+          {
+            "counts": {
+              "lc": 9577,
+              "none": 24456,
+              "other": 57303,
+              "pod": 1392,
+              "self": 17742,
+              "self_inferred": 0
+            },
+            "total": 110470,
+            "year": 1985
+          },
+          {
+            "counts": {
+              "lc": 8116,
+              "none": 22269,
+              "other": 37797,
+              "pod": 1346,
+              "self": 14426,
+              "self_inferred": 0
+            },
+            "total": 83954,
+            "year": 1986
+          },
+          {
+            "counts": {
+              "lc": 8443,
+              "none": 24583,
+              "other": 33166,
+              "pod": 1300,
+              "self": 11444,
+              "self_inferred": 0
+            },
+            "total": 78936,
+            "year": 1987
+          },
+          {
+            "counts": {
+              "lc": 8958,
+              "none": 26807,
+              "other": 36015,
+              "pod": 1745,
+              "self": 6747,
+              "self_inferred": 0
+            },
+            "total": 80272,
+            "year": 1988
+          },
+          {
+            "counts": {
+              "lc": 7834,
+              "none": 32643,
+              "other": 23844,
+              "pod": 1629,
+              "self": 11711,
+              "self_inferred": 0
+            },
+            "total": 77661,
+            "year": 1989
+          },
+          {
+            "counts": {
+              "lc": 13862,
+              "none": 23164,
+              "other": 23156,
+              "pod": 2073,
+              "self": 7496,
+              "self_inferred": 0
+            },
+            "total": 69751,
+            "year": 1990
+          },
+          {
+            "counts": {
+              "lc": 18750,
+              "none": 4742,
+              "other": 20546,
+              "pod": 1888,
+              "self": 23010,
+              "self_inferred": 0
+            },
+            "total": 68936,
+            "year": 1991
+          },
+          {
+            "counts": {
+              "lc": 20211,
+              "none": 3655,
+              "other": 18379,
+              "pod": 2111,
+              "self": 11350,
+              "self_inferred": 0
+            },
+            "total": 55706,
+            "year": 1992
+          },
+          {
+            "counts": {
+              "lc": 22576,
+              "none": 2776,
+              "other": 19784,
+              "pod": 1839,
+              "self": 9417,
+              "self_inferred": 0
+            },
+            "total": 56392,
+            "year": 1993
+          },
+          {
+            "counts": {
+              "lc": 30648,
+              "none": 2809,
+              "other": 23760,
+              "pod": 2566,
+              "self": 20274,
+              "self_inferred": 0
+            },
+            "total": 80057,
+            "year": 1994
+          },
+          {
+            "counts": {
+              "lc": 17742,
+              "none": 389,
+              "other": 16952,
+              "pod": 1637,
+              "self": 24145,
+              "self_inferred": 0
+            },
+            "total": 60865,
+            "year": 1995
+          },
+          {
+            "counts": {
+              "lc": 18303,
+              "none": 206,
+              "other": 17319,
+              "pod": 1432,
+              "self": 10486,
+              "self_inferred": 0
+            },
+            "total": 47746,
+            "year": 1996
+          },
+          {
+            "counts": {
+              "lc": 16784,
+              "none": 250,
+              "other": 15622,
+              "pod": 1123,
+              "self": 6955,
+              "self_inferred": 0
+            },
+            "total": 40734,
+            "year": 1997
+          },
+          {
+            "counts": {
+              "lc": 17352,
+              "none": 698,
+              "other": 15925,
+              "pod": 978,
+              "self": 3717,
+              "self_inferred": 0
+            },
+            "total": 38670,
+            "year": 1998
+          },
+          {
+            "counts": {
+              "lc": 18191,
+              "none": 558,
+              "other": 15915,
+              "pod": 733,
+              "self": 4136,
+              "self_inferred": 0
+            },
+            "total": 39533,
+            "year": 1999
+          },
+          {
+            "counts": {
+              "lc": 18941,
+              "none": 372,
+              "other": 16515,
+              "pod": 635,
+              "self": 4676,
+              "self_inferred": 0
+            },
+            "total": 41139,
+            "year": 2000
+          },
+          {
+            "counts": {
+              "lc": 18265,
+              "none": 218,
+              "other": 17567,
+              "pod": 746,
+              "self": 4682,
+              "self_inferred": 0
+            },
+            "total": 41478,
+            "year": 2001
+          },
+          {
+            "counts": {
+              "lc": 16490,
+              "none": 234,
+              "other": 18252,
+              "pod": 801,
+              "self": 4451,
+              "self_inferred": 0
+            },
+            "total": 40228,
+            "year": 2002
+          },
+          {
+            "counts": {
+              "lc": 14721,
+              "none": 150,
+              "other": 15571,
+              "pod": 888,
+              "self": 7028,
+              "self_inferred": 0
+            },
+            "total": 38358,
+            "year": 2003
+          },
+          {
+            "counts": {
+              "lc": 15095,
+              "none": 612,
+              "other": 17283,
+              "pod": 1046,
+              "self": 4970,
+              "self_inferred": 0
+            },
+            "total": 39006,
+            "year": 2004
+          },
+          {
+            "counts": {
+              "lc": 13890,
+              "none": 103,
+              "other": 18088,
+              "pod": 889,
+              "self": 3595,
+              "self_inferred": 0
+            },
+            "total": 36565,
+            "year": 2005
+          },
+          {
+            "counts": {
+              "lc": 12732,
+              "none": 110,
+              "other": 18479,
+              "pod": 1048,
+              "self": 3339,
+              "self_inferred": 0
+            },
+            "total": 35708,
+            "year": 2006
+          },
+          {
+            "counts": {
+              "lc": 11206,
+              "none": 74,
+              "other": 17723,
+              "pod": 700,
+              "self": 5135,
+              "self_inferred": 0
+            },
+            "total": 34838,
+            "year": 2007
+          },
+          {
+            "counts": {
+              "lc": 11718,
+              "none": 0,
+              "other": 17023,
+              "pod": 625,
+              "self": 3188,
+              "self_inferred": 0
+            },
+            "total": 32554,
+            "year": 2008
+          },
+          {
+            "counts": {
+              "lc": 9831,
+              "none": 0,
+              "other": 15763,
+              "pod": 502,
+              "self": 2418,
+              "self_inferred": 0
+            },
+            "total": 28514,
+            "year": 2009
+          },
+          {
+            "counts": {
+              "lc": 9825,
+              "none": 14,
+              "other": 15837,
+              "pod": 599,
+              "self": 3155,
+              "self_inferred": 0
+            },
+            "total": 29430,
+            "year": 2010
+          },
+          {
+            "counts": {
+              "lc": 11021,
+              "none": 91,
+              "other": 15713,
+              "pod": 634,
+              "self": 2649,
+              "self_inferred": 0
+            },
+            "total": 30108,
+            "year": 2011
+          },
+          {
+            "counts": {
+              "lc": 10800,
+              "none": 0,
+              "other": 15697,
+              "pod": 766,
+              "self": 2316,
+              "self_inferred": 0
+            },
+            "total": 29579,
+            "year": 2012
+          },
+          {
+            "counts": {
+              "lc": 11824,
+              "none": 0,
+              "other": 16740,
+              "pod": 687,
+              "self": 3012,
+              "self_inferred": 0
+            },
+            "total": 32263,
+            "year": 2013
+          },
+          {
+            "counts": {
+              "lc": 10534,
+              "none": 0,
+              "other": 16924,
+              "pod": 841,
+              "self": 2450,
+              "self_inferred": 0
+            },
+            "total": 30749,
+            "year": 2014
+          },
+          {
+            "counts": {
+              "lc": 9759,
+              "none": 19,
+              "other": 18203,
+              "pod": 961,
+              "self": 2351,
+              "self_inferred": 0
+            },
+            "total": 31293,
+            "year": 2015
+          },
+          {
+            "counts": {
+              "lc": 8060,
+              "none": 0,
+              "other": 18599,
+              "pod": 1180,
+              "self": 2202,
+              "self_inferred": 0
+            },
+            "total": 30041,
+            "year": 2016
+          },
+          {
+            "counts": {
+              "lc": 6840,
+              "none": 0,
+              "other": 18434,
+              "pod": 1158,
+              "self": 1878,
+              "self_inferred": 0
+            },
+            "total": 28310,
+            "year": 2017
+          },
+          {
+            "counts": {
+              "lc": 5760,
+              "none": 0,
+              "other": 17964,
+              "pod": 1046,
+              "self": 1678,
+              "self_inferred": 0
+            },
+            "total": 26448,
+            "year": 2018
+          },
+          {
+            "counts": {
+              "lc": 3673,
+              "none": 0,
+              "other": 13714,
+              "pod": 705,
+              "self": 1585,
+              "self_inferred": 0
+            },
+            "total": 19677,
+            "year": 2019
+          },
+          {
+            "counts": {
+              "lc": 968,
+              "none": 0,
+              "other": 4698,
+              "pod": 328,
+              "self": 785,
+              "self_inferred": 0
+            },
+            "total": 6779,
+            "year": 2020
+          },
+          {
+            "counts": {
+              "lc": 1075,
+              "none": 159,
+              "other": 4948,
+              "pod": 333,
+              "self": 617,
+              "self_inferred": 0
+            },
+            "total": 7132,
+            "year": 2021
+          },
+          {
+            "counts": {
+              "lc": 1537,
+              "none": 500,
+              "other": 5863,
+              "pod": 471,
+              "self": 1102,
+              "self_inferred": 0
+            },
+            "total": 9473,
+            "year": 2022
+          },
+          {
+            "counts": {
+              "lc": 1525,
+              "none": 237,
+              "other": 7833,
+              "pod": 421,
+              "self": 1586,
+              "self_inferred": 0
+            },
+            "total": 11602,
+            "year": 2023
+          },
+          {
+            "counts": {
+              "lc": 1467,
+              "none": 194,
+              "other": 7073,
+              "pod": 380,
+              "self": 619,
+              "self_inferred": 0
+            },
+            "total": 9733,
+            "year": 2024
+          },
+          {
+            "counts": {
+              "lc": 383,
+              "none": 229,
+              "other": 3921,
+              "pod": 181,
+              "self": 770,
+              "self_inferred": 0
+            },
+            "total": 5484,
+            "year": 2025
+          },
+          {
+            "counts": {
+              "lc": 0,
+              "none": 39,
+              "other": 50,
+              "pod": 0,
+              "self": 39,
+              "self_inferred": 0
+            },
+            "total": 128,
+            "year": 2026
+          }
+        ]
+      },
+      {
+        "org": "duke",
+        "unplaced": 55434,
+        "values": [
+          {
+            "counts": {
+              "lc": 0,
+              "none": 27,
+              "other": 168,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 195,
+            "year": 1966
+          },
+          {
+            "counts": {
+              "lc": 0,
+              "none": 17,
+              "other": 181,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 198,
+            "year": 1967
+          },
+          {
+            "counts": {
+              "lc": 2699,
+              "none": 13,
+              "other": 250,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 2962,
+            "year": 1968
+          },
+          {
+            "counts": {
+              "lc": 9542,
+              "none": 17,
+              "other": 339,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 9898,
+            "year": 1969
+          },
+          {
+            "counts": {
+              "lc": 19246,
+              "none": 28,
+              "other": 409,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 19683,
+            "year": 1970
+          },
+          {
+            "counts": {
+              "lc": 25834,
+              "none": 958,
+              "other": 1515,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 28307,
+            "year": 1971
+          },
+          {
+            "counts": {
+              "lc": 39082,
+              "none": 10464,
+              "other": 11381,
+              "pod": 21,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 60948,
+            "year": 1972
+          },
+          {
+            "counts": {
+              "lc": 32771,
+              "none": 8369,
+              "other": 8987,
+              "pod": 34,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 50161,
+            "year": 1973
+          },
+          {
+            "counts": {
+              "lc": 34636,
+              "none": 13204,
+              "other": 14492,
+              "pod": 273,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 62605,
+            "year": 1974
+          },
+          {
+            "counts": {
+              "lc": 58117,
+              "none": 22747,
+              "other": 29287,
+              "pod": 395,
+              "self": 38,
+              "self_inferred": 0
+            },
+            "total": 110584,
+            "year": 1975
+          },
+          {
+            "counts": {
+              "lc": 56305,
+              "none": 3226,
+              "other": 28781,
+              "pod": 458,
+              "self": 15,
+              "self_inferred": 0
+            },
+            "total": 88785,
+            "year": 1976
+          },
+          {
+            "counts": {
+              "lc": 57651,
+              "none": 2693,
+              "other": 29367,
+              "pod": 763,
+              "self": 19,
+              "self_inferred": 0
+            },
+            "total": 90493,
+            "year": 1977
+          },
+          {
+            "counts": {
+              "lc": 53737,
+              "none": 3779,
+              "other": 42846,
+              "pod": 608,
+              "self": 23,
+              "self_inferred": 0
+            },
+            "total": 100993,
+            "year": 1978
+          },
+          {
+            "counts": {
+              "lc": 53144,
+              "none": 3485,
+              "other": 91435,
+              "pod": 673,
+              "self": 1968,
+              "self_inferred": 0
+            },
+            "total": 150705,
+            "year": 1979
+          },
+          {
+            "counts": {
+              "lc": 45826,
+              "none": 2847,
+              "other": 55473,
+              "pod": 436,
+              "self": 3458,
+              "self_inferred": 0
+            },
+            "total": 108040,
+            "year": 1980
+          },
+          {
+            "counts": {
+              "lc": 29386,
+              "none": 1114,
+              "other": 61608,
+              "pod": 240,
+              "self": 3173,
+              "self_inferred": 0
+            },
+            "total": 95521,
+            "year": 1981
+          },
+          {
+            "counts": {
+              "lc": 28203,
+              "none": 1517,
+              "other": 61669,
+              "pod": 425,
+              "self": 4185,
+              "self_inferred": 0
+            },
+            "total": 95999,
+            "year": 1982
+          },
+          {
+            "counts": {
+              "lc": 30351,
+              "none": 2714,
+              "other": 59854,
+              "pod": 1105,
+              "self": 3452,
+              "self_inferred": 0
+            },
+            "total": 97476,
+            "year": 1983
+          },
+          {
+            "counts": {
+              "lc": 23194,
+              "none": 1867,
+              "other": 63010,
+              "pod": 3377,
+              "self": 4084,
+              "self_inferred": 0
+            },
+            "total": 95532,
+            "year": 1984
+          },
+          {
+            "counts": {
+              "lc": 22038,
+              "none": 1933,
+              "other": 98571,
+              "pod": 2988,
+              "self": 3893,
+              "self_inferred": 0
+            },
+            "total": 129423,
+            "year": 1985
+          },
+          {
+            "counts": {
+              "lc": 55378,
+              "none": 4775,
+              "other": 73653,
+              "pod": 1361,
+              "self": 4122,
+              "self_inferred": 0
+            },
+            "total": 139289,
+            "year": 1986
+          },
+          {
+            "counts": {
+              "lc": 43570,
+              "none": 3520,
+              "other": 83609,
+              "pod": 1339,
+              "self": 4044,
+              "self_inferred": 0
+            },
+            "total": 136082,
+            "year": 1987
+          },
+          {
+            "counts": {
+              "lc": 56914,
+              "none": 8433,
+              "other": 93234,
+              "pod": 1767,
+              "self": 5918,
+              "self_inferred": 0
+            },
+            "total": 166266,
+            "year": 1988
+          },
+          {
+            "counts": {
+              "lc": 86197,
+              "none": 14021,
+              "other": 101513,
+              "pod": 2189,
+              "self": 7666,
+              "self_inferred": 0
+            },
+            "total": 211586,
+            "year": 1989
+          },
+          {
+            "counts": {
+              "lc": 62732,
+              "none": 7081,
+              "other": 93783,
+              "pod": 2134,
+              "self": 19538,
+              "self_inferred": 0
+            },
+            "total": 185268,
+            "year": 1990
+          },
+          {
+            "counts": {
+              "lc": 64768,
+              "none": 10065,
+              "other": 101347,
+              "pod": 2509,
+              "self": 14161,
+              "self_inferred": 0
+            },
+            "total": 192850,
+            "year": 1991
+          },
+          {
+            "counts": {
+              "lc": 44488,
+              "none": 4620,
+              "other": 93798,
+              "pod": 2841,
+              "self": 14325,
+              "self_inferred": 0
+            },
+            "total": 160072,
+            "year": 1992
+          },
+          {
+            "counts": {
+              "lc": 35190,
+              "none": 10981,
+              "other": 71483,
+              "pod": 2239,
+              "self": 17362,
+              "self_inferred": 0
+            },
+            "total": 137255,
+            "year": 1993
+          },
+          {
+            "counts": {
+              "lc": 28077,
+              "none": 2835,
+              "other": 58183,
+              "pod": 2114,
+              "self": 22398,
+              "self_inferred": 0
+            },
+            "total": 113607,
+            "year": 1994
+          },
+          {
+            "counts": {
+              "lc": 26792,
+              "none": 2187,
+              "other": 58305,
+              "pod": 1947,
+              "self": 15422,
+              "self_inferred": 0
+            },
+            "total": 104653,
+            "year": 1995
+          },
+          {
+            "counts": {
+              "lc": 26337,
+              "none": 1551,
+              "other": 42979,
+              "pod": 1904,
+              "self": 10316,
+              "self_inferred": 0
+            },
+            "total": 83087,
+            "year": 1996
+          },
+          {
+            "counts": {
+              "lc": 26010,
+              "none": 2001,
+              "other": 44120,
+              "pod": 1394,
+              "self": 11487,
+              "self_inferred": 0
+            },
+            "total": 85012,
+            "year": 1997
+          },
+          {
+            "counts": {
+              "lc": 28079,
+              "none": 2491,
+              "other": 52191,
+              "pod": 1205,
+              "self": 15680,
+              "self_inferred": 0
+            },
+            "total": 99646,
+            "year": 1998
+          },
+          {
+            "counts": {
+              "lc": 28558,
+              "none": 1773,
+              "other": 52627,
+              "pod": 1401,
+              "self": 9079,
+              "self_inferred": 0
+            },
+            "total": 93438,
+            "year": 1999
+          },
+          {
+            "counts": {
+              "lc": 28192,
+              "none": 2892,
+              "other": 50773,
+              "pod": 1385,
+              "self": 4998,
+              "self_inferred": 0
+            },
+            "total": 88240,
+            "year": 2000
+          },
+          {
+            "counts": {
+              "lc": 28150,
+              "none": 2436,
+              "other": 55090,
+              "pod": 1362,
+              "self": 3146,
+              "self_inferred": 0
+            },
+            "total": 90184,
+            "year": 2001
+          },
+          {
+            "counts": {
+              "lc": 29694,
+              "none": 948,
+              "other": 82191,
+              "pod": 1311,
+              "self": 3443,
+              "self_inferred": 0
+            },
+            "total": 117587,
+            "year": 2002
+          },
+          {
+            "counts": {
+              "lc": 26279,
+              "none": 945,
+              "other": 53361,
+              "pod": 1788,
+              "self": 5833,
+              "self_inferred": 0
+            },
+            "total": 88206,
+            "year": 2003
+          },
+          {
+            "counts": {
+              "lc": 23578,
+              "none": 1272,
+              "other": 50023,
+              "pod": 2104,
+              "self": 3420,
+              "self_inferred": 0
+            },
+            "total": 80397,
+            "year": 2004
+          },
+          {
+            "counts": {
+              "lc": 22820,
+              "none": 9742,
+              "other": 75128,
+              "pod": 1970,
+              "self": 2505,
+              "self_inferred": 0
+            },
+            "total": 112165,
+            "year": 2005
+          },
+          {
+            "counts": {
+              "lc": 23625,
+              "none": 2805,
+              "other": 169708,
+              "pod": 1762,
+              "self": 4352,
+              "self_inferred": 0
+            },
+            "total": 202252,
+            "year": 2006
+          },
+          {
+            "counts": {
+              "lc": 22070,
+              "none": 4139,
+              "other": 58919,
+              "pod": 1402,
+              "self": 4458,
+              "self_inferred": 0
+            },
+            "total": 90988,
+            "year": 2007
+          },
+          {
+            "counts": {
+              "lc": 22131,
+              "none": 4318,
+              "other": 80056,
+              "pod": 1443,
+              "self": 4706,
+              "self_inferred": 0
+            },
+            "total": 112654,
+            "year": 2008
+          },
+          {
+            "counts": {
+              "lc": 22452,
+              "none": 1343,
+              "other": 67356,
+              "pod": 1540,
+              "self": 4026,
+              "self_inferred": 0
+            },
+            "total": 96717,
+            "year": 2009
+          },
+          {
+            "counts": {
+              "lc": 21550,
+              "none": 3458,
+              "other": 82530,
+              "pod": 1847,
+              "self": 4502,
+              "self_inferred": 0
+            },
+            "total": 113887,
+            "year": 2010
+          },
+          {
+            "counts": {
+              "lc": 19621,
+              "none": 1542,
+              "other": 87921,
+              "pod": 2583,
+              "self": 3633,
+              "self_inferred": 0
+            },
+            "total": 115300,
+            "year": 2011
+          },
+          {
+            "counts": {
+              "lc": 16127,
+              "none": 21177,
+              "other": 100976,
+              "pod": 2469,
+              "self": 3796,
+              "self_inferred": 0
+            },
+            "total": 144545,
+            "year": 2012
+          },
+          {
+            "counts": {
+              "lc": 16929,
+              "none": 9683,
+              "other": 94934,
+              "pod": 2231,
+              "self": 3670,
+              "self_inferred": 0
+            },
+            "total": 127447,
+            "year": 2013
+          },
+          {
+            "counts": {
+              "lc": 15915,
+              "none": 16758,
+              "other": 124916,
+              "pod": 3591,
+              "self": 4115,
+              "self_inferred": 0
+            },
+            "total": 165295,
+            "year": 2014
+          },
+          {
+            "counts": {
+              "lc": 17443,
+              "none": 12797,
+              "other": 98432,
+              "pod": 3736,
+              "self": 2848,
+              "self_inferred": 0
+            },
+            "total": 135256,
+            "year": 2015
+          },
+          {
+            "counts": {
+              "lc": 14360,
+              "none": 17326,
+              "other": 204450,
+              "pod": 3656,
+              "self": 2741,
+              "self_inferred": 0
+            },
+            "total": 242533,
+            "year": 2016
+          },
+          {
+            "counts": {
+              "lc": 24007,
+              "none": 177985,
+              "other": 161887,
+              "pod": 5031,
+              "self": 2942,
+              "self_inferred": 0
+            },
+            "total": 371852,
+            "year": 2017
+          },
+          {
+            "counts": {
+              "lc": 11500,
+              "none": 41818,
+              "other": 150043,
+              "pod": 4060,
+              "self": 2551,
+              "self_inferred": 0
+            },
+            "total": 209972,
+            "year": 2018
+          },
+          {
+            "counts": {
+              "lc": 10005,
+              "none": 49273,
+              "other": 153444,
+              "pod": 3192,
+              "self": 4047,
+              "self_inferred": 0
+            },
+            "total": 219961,
+            "year": 2019
+          },
+          {
+            "counts": {
+              "lc": 8768,
+              "none": 34115,
+              "other": 118990,
+              "pod": 2561,
+              "self": 1255,
+              "self_inferred": 0
+            },
+            "total": 165689,
+            "year": 2020
+          },
+          {
+            "counts": {
+              "lc": 9939,
+              "none": 84140,
+              "other": 119705,
+              "pod": 3103,
+              "self": 1466,
+              "self_inferred": 0
+            },
+            "total": 218353,
+            "year": 2021
+          },
+          {
+            "counts": {
+              "lc": 11974,
+              "none": 273423,
+              "other": 365914,
+              "pod": 3814,
+              "self": 1622,
+              "self_inferred": 0
+            },
+            "total": 656747,
+            "year": 2022
+          },
+          {
+            "counts": {
+              "lc": 5356,
+              "none": 300315,
+              "other": 250759,
+              "pod": 2600,
+              "self": 1828,
+              "self_inferred": 0
+            },
+            "total": 560858,
+            "year": 2023
+          },
+          {
+            "counts": {
+              "lc": 4566,
+              "none": 226821,
+              "other": 184183,
+              "pod": 1976,
+              "self": 1524,
+              "self_inferred": 0
+            },
+            "total": 419070,
+            "year": 2024
+          },
+          {
+            "counts": {
+              "lc": 2389,
+              "none": 97544,
+              "other": 190618,
+              "pod": 469,
+              "self": 1684,
+              "self_inferred": 0
+            },
+            "total": 292704,
+            "year": 2025
+          },
+          {
+            "counts": {
+              "lc": 0,
+              "none": 7211,
+              "other": 20399,
+              "pod": 0,
+              "self": 154,
+              "self_inferred": 0
+            },
+            "total": 27764,
+            "year": 2026
+          }
+        ]
+      },
+      {
+        "org": "harvard",
+        "unplaced": 6011,
+        "values": [
+          {
+            "counts": {
+              "lc": 0,
+              "none": 68,
+              "other": 1113,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 1181,
+            "year": 1966
+          },
+          {
+            "counts": {
+              "lc": 0,
+              "none": 56,
+              "other": 1085,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 1141,
+            "year": 1967
+          },
+          {
+            "counts": {
+              "lc": 4380,
+              "none": 112,
+              "other": 1509,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 6001,
+            "year": 1968
+          },
+          {
+            "counts": {
+              "lc": 16173,
+              "none": 383,
+              "other": 1369,
+              "pod": 0,
+              "self": 11,
+              "self_inferred": 0
+            },
+            "total": 17936,
+            "year": 1969
+          },
+          {
+            "counts": {
+              "lc": 31308,
+              "none": 777,
+              "other": 1291,
+              "pod": 0,
+              "self": 19,
+              "self_inferred": 0
+            },
+            "total": 33395,
+            "year": 1970
+          },
+          {
+            "counts": {
+              "lc": 41868,
+              "none": 3187,
+              "other": 2775,
+              "pod": 0,
+              "self": 46,
+              "self_inferred": 18
+            },
+            "total": 47894,
+            "year": 1971
+          },
+          {
+            "counts": {
+              "lc": 62858,
+              "none": 28060,
+              "other": 17379,
+              "pod": 25,
+              "self": 199,
+              "self_inferred": 35
+            },
+            "total": 108556,
+            "year": 1972
+          },
+          {
+            "counts": {
+              "lc": 55404,
+              "none": 22781,
+              "other": 16135,
+              "pod": 45,
+              "self": 185,
+              "self_inferred": 33
+            },
+            "total": 94583,
+            "year": 1973
+          },
+          {
+            "counts": {
+              "lc": 63117,
+              "none": 35877,
+              "other": 30466,
+              "pod": 673,
+              "self": 391,
+              "self_inferred": 57
+            },
+            "total": 130581,
+            "year": 1974
+          },
+          {
+            "counts": {
+              "lc": 115970,
+              "none": 54582,
+              "other": 65590,
+              "pod": 993,
+              "self": 670,
+              "self_inferred": 55
+            },
+            "total": 237860,
+            "year": 1975
+          },
+          {
+            "counts": {
+              "lc": 132811,
+              "none": 7602,
+              "other": 57249,
+              "pod": 1348,
+              "self": 275,
+              "self_inferred": 22
+            },
+            "total": 199307,
+            "year": 1976
+          },
+          {
+            "counts": {
+              "lc": 136733,
+              "none": 7812,
+              "other": 64386,
+              "pod": 2532,
+              "self": 722,
+              "self_inferred": 347
+            },
+            "total": 212532,
+            "year": 1977
+          },
+          {
+            "counts": {
+              "lc": 135275,
+              "none": 6602,
+              "other": 76734,
+              "pod": 1588,
+              "self": 3146,
+              "self_inferred": 397
+            },
+            "total": 223742,
+            "year": 1978
+          },
+          {
+            "counts": {
+              "lc": 143726,
+              "none": 6997,
+              "other": 103209,
+              "pod": 2029,
+              "self": 3659,
+              "self_inferred": 357
+            },
+            "total": 259977,
+            "year": 1979
+          },
+          {
+            "counts": {
+              "lc": 120774,
+              "none": 8033,
+              "other": 102839,
+              "pod": 1402,
+              "self": 5161,
+              "self_inferred": 256
+            },
+            "total": 238465,
+            "year": 1980
+          },
+          {
+            "counts": {
+              "lc": 77022,
+              "none": 7214,
+              "other": 105535,
+              "pod": 1202,
+              "self": 4458,
+              "self_inferred": 322
+            },
+            "total": 195753,
+            "year": 1981
+          },
+          {
+            "counts": {
+              "lc": 79271,
+              "none": 18899,
+              "other": 116479,
+              "pod": 5314,
+              "self": 7917,
+              "self_inferred": 366
+            },
+            "total": 228246,
+            "year": 1982
+          },
+          {
+            "counts": {
+              "lc": 93842,
+              "none": 32547,
+              "other": 113806,
+              "pod": 6792,
+              "self": 9918,
+              "self_inferred": 548
+            },
+            "total": 257453,
+            "year": 1983
+          },
+          {
+            "counts": {
+              "lc": 88757,
+              "none": 61652,
+              "other": 132885,
+              "pod": 8047,
+              "self": 11844,
+              "self_inferred": 771
+            },
+            "total": 303956,
+            "year": 1984
+          },
+          {
+            "counts": {
+              "lc": 99563,
+              "none": 45032,
+              "other": 155949,
+              "pod": 7667,
+              "self": 12595,
+              "self_inferred": 1551
+            },
+            "total": 322357,
+            "year": 1985
+          },
+          {
+            "counts": {
+              "lc": 87984,
+              "none": 43686,
+              "other": 148164,
+              "pod": 9755,
+              "self": 13673,
+              "self_inferred": 1258
+            },
+            "total": 304520,
+            "year": 1986
+          },
+          {
+            "counts": {
+              "lc": 87437,
+              "none": 47503,
+              "other": 160391,
+              "pod": 4156,
+              "self": 13143,
+              "self_inferred": 1591
+            },
+            "total": 314221,
+            "year": 1987
+          },
+          {
+            "counts": {
+              "lc": 80508,
+              "none": 89725,
+              "other": 147134,
+              "pod": 5059,
+              "self": 13008,
+              "self_inferred": 4056
+            },
+            "total": 339490,
+            "year": 1988
+          },
+          {
+            "counts": {
+              "lc": 83111,
+              "none": 57013,
+              "other": 149819,
+              "pod": 7813,
+              "self": 11105,
+              "self_inferred": 2696
+            },
+            "total": 311557,
+            "year": 1989
+          },
+          {
+            "counts": {
+              "lc": 90440,
+              "none": 80505,
+              "other": 131537,
+              "pod": 8972,
+              "self": 12252,
+              "self_inferred": 3424
+            },
+            "total": 327130,
+            "year": 1990
+          },
+          {
+            "counts": {
+              "lc": 81608,
+              "none": 77942,
+              "other": 133050,
+              "pod": 10578,
+              "self": 16641,
+              "self_inferred": 3386
+            },
+            "total": 323205,
+            "year": 1991
+          },
+          {
+            "counts": {
+              "lc": 75654,
+              "none": 64519,
+              "other": 128095,
+              "pod": 12611,
+              "self": 15845,
+              "self_inferred": 4072
+            },
+            "total": 300796,
+            "year": 1992
+          },
+          {
+            "counts": {
+              "lc": 79527,
+              "none": 63193,
+              "other": 197542,
+              "pod": 9350,
+              "self": 159522,
+              "self_inferred": 52871
+            },
+            "total": 562005,
+            "year": 1993
+          },
+          {
+            "counts": {
+              "lc": 89624,
+              "none": 57573,
+              "other": 157442,
+              "pod": 10237,
+              "self": 158242,
+              "self_inferred": 188841
+            },
+            "total": 661959,
+            "year": 1994
+          },
+          {
+            "counts": {
+              "lc": 84501,
+              "none": 51639,
+              "other": 145237,
+              "pod": 7107,
+              "self": 201293,
+              "self_inferred": 151522
+            },
+            "total": 641299,
+            "year": 1995
+          },
+          {
+            "counts": {
+              "lc": 66385,
+              "none": 69682,
+              "other": 134952,
+              "pod": 4439,
+              "self": 245649,
+              "self_inferred": 60626
+            },
+            "total": 581733,
+            "year": 1996
+          },
+          {
+            "counts": {
+              "lc": 59790,
+              "none": 45332,
+              "other": 107925,
+              "pod": 3848,
+              "self": 9289,
+              "self_inferred": 1120
+            },
+            "total": 227304,
+            "year": 1997
+          },
+          {
+            "counts": {
+              "lc": 63963,
+              "none": 40030,
+              "other": 117194,
+              "pod": 4193,
+              "self": 13397,
+              "self_inferred": 1745
+            },
+            "total": 240522,
+            "year": 1998
+          },
+          {
+            "counts": {
+              "lc": 62937,
+              "none": 35358,
+              "other": 113396,
+              "pod": 4320,
+              "self": 13177,
+              "self_inferred": 2634
+            },
+            "total": 231822,
+            "year": 1999
+          },
+          {
+            "counts": {
+              "lc": 59706,
+              "none": 32568,
+              "other": 106134,
+              "pod": 3376,
+              "self": 11543,
+              "self_inferred": 4823
+            },
+            "total": 218150,
+            "year": 2000
+          },
+          {
+            "counts": {
+              "lc": 61647,
+              "none": 46524,
+              "other": 110770,
+              "pod": 3270,
+              "self": 11215,
+              "self_inferred": 2688
+            },
+            "total": 236114,
+            "year": 2001
+          },
+          {
+            "counts": {
+              "lc": 67270,
+              "none": 29289,
+              "other": 106791,
+              "pod": 3909,
+              "self": 17246,
+              "self_inferred": 6704
+            },
+            "total": 231209,
+            "year": 2002
+          },
+          {
+            "counts": {
+              "lc": 54913,
+              "none": 47558,
+              "other": 97945,
+              "pod": 5769,
+              "self": 22001,
+              "self_inferred": 5357
+            },
+            "total": 233543,
+            "year": 2003
+          },
+          {
+            "counts": {
+              "lc": 52484,
+              "none": 40556,
+              "other": 104986,
+              "pod": 5878,
+              "self": 16830,
+              "self_inferred": 8372
+            },
+            "total": 229106,
+            "year": 2004
+          },
+          {
+            "counts": {
+              "lc": 51319,
+              "none": 45206,
+              "other": 119322,
+              "pod": 5312,
+              "self": 11935,
+              "self_inferred": 7237
+            },
+            "total": 240331,
+            "year": 2005
+          },
+          {
+            "counts": {
+              "lc": 54227,
+              "none": 51148,
+              "other": 119531,
+              "pod": 4873,
+              "self": 12466,
+              "self_inferred": 7570
+            },
+            "total": 249815,
+            "year": 2006
+          },
+          {
+            "counts": {
+              "lc": 49193,
+              "none": 36983,
+              "other": 124832,
+              "pod": 3972,
+              "self": 10268,
+              "self_inferred": 12831
+            },
+            "total": 238079,
+            "year": 2007
+          },
+          {
+            "counts": {
+              "lc": 47799,
+              "none": 26492,
+              "other": 139418,
+              "pod": 4147,
+              "self": 8265,
+              "self_inferred": 5114
+            },
+            "total": 231235,
+            "year": 2008
+          },
+          {
+            "counts": {
+              "lc": 46982,
+              "none": 23326,
+              "other": 142308,
+              "pod": 4477,
+              "self": 9945,
+              "self_inferred": 7785
+            },
+            "total": 234823,
+            "year": 2009
+          },
+          {
+            "counts": {
+              "lc": 47158,
+              "none": 19486,
+              "other": 124618,
+              "pod": 5326,
+              "self": 7861,
+              "self_inferred": 10487
+            },
+            "total": 214936,
+            "year": 2010
+          },
+          {
+            "counts": {
+              "lc": 42795,
+              "none": 25369,
+              "other": 189486,
+              "pod": 8438,
+              "self": 8520,
+              "self_inferred": 14947
+            },
+            "total": 289555,
+            "year": 2011
+          },
+          {
+            "counts": {
+              "lc": 38077,
+              "none": 37964,
+              "other": 170445,
+              "pod": 4291,
+              "self": 7012,
+              "self_inferred": 13628
+            },
+            "total": 271417,
+            "year": 2012
+          },
+          {
+            "counts": {
+              "lc": 38702,
+              "none": 18538,
+              "other": 123560,
+              "pod": 5146,
+              "self": 7498,
+              "self_inferred": 6556
+            },
+            "total": 200000,
+            "year": 2013
+          },
+          {
+            "counts": {
+              "lc": 34735,
+              "none": 20395,
+              "other": 158453,
+              "pod": 10157,
+              "self": 7925,
+              "self_inferred": 11510
+            },
+            "total": 243175,
+            "year": 2014
+          },
+          {
+            "counts": {
+              "lc": 37275,
+              "none": 21751,
+              "other": 114386,
+              "pod": 4394,
+              "self": 11360,
+              "self_inferred": 12973
+            },
+            "total": 202139,
+            "year": 2015
+          },
+          {
+            "counts": {
+              "lc": 32102,
+              "none": 18178,
+              "other": 120852,
+              "pod": 4017,
+              "self": 11716,
+              "self_inferred": 12229
+            },
+            "total": 199094,
+            "year": 2016
+          },
+          {
+            "counts": {
+              "lc": 32679,
+              "none": 18385,
+              "other": 122810,
+              "pod": 5085,
+              "self": 10599,
+              "self_inferred": 10164
+            },
+            "total": 199722,
+            "year": 2017
+          },
+          {
+            "counts": {
+              "lc": 31479,
+              "none": 24701,
+              "other": 98920,
+              "pod": 6136,
+              "self": 14706,
+              "self_inferred": 8119
+            },
+            "total": 184061,
+            "year": 2018
+          },
+          {
+            "counts": {
+              "lc": 32206,
+              "none": 23039,
+              "other": 96852,
+              "pod": 6211,
+              "self": 22037,
+              "self_inferred": 10186
+            },
+            "total": 190531,
+            "year": 2019
+          },
+          {
+            "counts": {
+              "lc": 22031,
+              "none": 36028,
+              "other": 67798,
+              "pod": 4207,
+              "self": 18028,
+              "self_inferred": 5666
+            },
+            "total": 153758,
+            "year": 2020
+          },
+          {
+            "counts": {
+              "lc": 27578,
+              "none": 21236,
+              "other": 82329,
+              "pod": 5001,
+              "self": 22738,
+              "self_inferred": 3375
+            },
+            "total": 162257,
+            "year": 2021
+          },
+          {
+            "counts": {
+              "lc": 28014,
+              "none": 19682,
+              "other": 96267,
+              "pod": 5770,
+              "self": 28280,
+              "self_inferred": 3727
+            },
+            "total": 181740,
+            "year": 2022
+          },
+          {
+            "counts": {
+              "lc": 24782,
+              "none": 14897,
+              "other": 78096,
+              "pod": 4577,
+              "self": 31668,
+              "self_inferred": 3920
+            },
+            "total": 157940,
+            "year": 2023
+          },
+          {
+            "counts": {
+              "lc": 14839,
+              "none": 21969,
+              "other": 75610,
+              "pod": 3394,
+              "self": 26634,
+              "self_inferred": 4441
+            },
+            "total": 146887,
+            "year": 2024
+          },
+          {
+            "counts": {
+              "lc": 5260,
+              "none": 23861,
+              "other": 59245,
+              "pod": 1653,
+              "self": 26853,
+              "self_inferred": 5436
+            },
+            "total": 122308,
+            "year": 2025
+          },
+          {
+            "counts": {
+              "lc": 246,
+              "none": 3220,
+              "other": 4668,
+              "pod": 72,
+              "self": 4263,
+              "self_inferred": 797
+            },
+            "total": 13266,
+            "year": 2026
+          }
+        ]
+      },
+      {
+        "org": "penn",
+        "unplaced": 30422,
+        "values": [
+          {
+            "counts": {
+              "lc": 0,
+              "none": 32,
+              "other": 409,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 441,
+            "year": 1966
+          },
+          {
+            "counts": {
+              "lc": 0,
+              "none": 32,
+              "other": 361,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 393,
+            "year": 1967
+          },
+          {
+            "counts": {
+              "lc": 571,
+              "none": 204,
+              "other": 436,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 1211,
+            "year": 1968
+          },
+          {
+            "counts": {
+              "lc": 2096,
+              "none": 861,
+              "other": 279,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 3236,
+            "year": 1969
+          },
+          {
+            "counts": {
+              "lc": 4026,
+              "none": 2289,
+              "other": 405,
+              "pod": 0,
+              "self": 24,
+              "self_inferred": 0
+            },
+            "total": 6744,
+            "year": 1970
+          },
+          {
+            "counts": {
+              "lc": 5862,
+              "none": 6467,
+              "other": 986,
+              "pod": 13,
+              "self": 43,
+              "self_inferred": 0
+            },
+            "total": 13371,
+            "year": 1971
+          },
+          {
+            "counts": {
+              "lc": 11614,
+              "none": 20074,
+              "other": 6656,
+              "pod": 46,
+              "self": 94,
+              "self_inferred": 0
+            },
+            "total": 38484,
+            "year": 1972
+          },
+          {
+            "counts": {
+              "lc": 9671,
+              "none": 18433,
+              "other": 6792,
+              "pod": 43,
+              "self": 85,
+              "self_inferred": 0
+            },
+            "total": 35024,
+            "year": 1973
+          },
+          {
+            "counts": {
+              "lc": 12225,
+              "none": 19257,
+              "other": 13597,
+              "pod": 118,
+              "self": 142,
+              "self_inferred": 0
+            },
+            "total": 45339,
+            "year": 1974
+          },
+          {
+            "counts": {
+              "lc": 32796,
+              "none": 21726,
+              "other": 22088,
+              "pod": 328,
+              "self": 664,
+              "self_inferred": 0
+            },
+            "total": 77602,
+            "year": 1975
+          },
+          {
+            "counts": {
+              "lc": 36078,
+              "none": 7518,
+              "other": 17929,
+              "pod": 328,
+              "self": 2115,
+              "self_inferred": 0
+            },
+            "total": 63968,
+            "year": 1976
+          },
+          {
+            "counts": {
+              "lc": 33637,
+              "none": 6992,
+              "other": 17629,
+              "pod": 469,
+              "self": 2304,
+              "self_inferred": 0
+            },
+            "total": 61031,
+            "year": 1977
+          },
+          {
+            "counts": {
+              "lc": 30298,
+              "none": 7511,
+              "other": 28702,
+              "pod": 462,
+              "self": 2220,
+              "self_inferred": 0
+            },
+            "total": 69193,
+            "year": 1978
+          },
+          {
+            "counts": {
+              "lc": 22472,
+              "none": 6896,
+              "other": 76066,
+              "pod": 588,
+              "self": 1792,
+              "self_inferred": 0
+            },
+            "total": 107814,
+            "year": 1979
+          },
+          {
+            "counts": {
+              "lc": 12964,
+              "none": 28301,
+              "other": 44109,
+              "pod": 798,
+              "self": 4755,
+              "self_inferred": 0
+            },
+            "total": 90927,
+            "year": 1980
+          },
+          {
+            "counts": {
+              "lc": 7548,
+              "none": 30591,
+              "other": 54530,
+              "pod": 962,
+              "self": 3777,
+              "self_inferred": 0
+            },
+            "total": 97408,
+            "year": 1981
+          },
+          {
+            "counts": {
+              "lc": 7060,
+              "none": 35730,
+              "other": 70134,
+              "pod": 5366,
+              "self": 4575,
+              "self_inferred": 0
+            },
+            "total": 122865,
+            "year": 1982
+          },
+          {
+            "counts": {
+              "lc": 8287,
+              "none": 36816,
+              "other": 63949,
+              "pod": 8225,
+              "self": 8607,
+              "self_inferred": 0
+            },
+            "total": 125884,
+            "year": 1983
+          },
+          {
+            "counts": {
+              "lc": 8605,
+              "none": 38965,
+              "other": 65691,
+              "pod": 14812,
+              "self": 6666,
+              "self_inferred": 0
+            },
+            "total": 134739,
+            "year": 1984
+          },
+          {
+            "counts": {
+              "lc": 12775,
+              "none": 61351,
+              "other": 109952,
+              "pod": 9955,
+              "self": 59296,
+              "self_inferred": 0
+            },
+            "total": 253329,
+            "year": 1985
+          },
+          {
+            "counts": {
+              "lc": 13210,
+              "none": 89716,
+              "other": 82425,
+              "pod": 10403,
+              "self": 174271,
+              "self_inferred": 0
+            },
+            "total": 370025,
+            "year": 1986
+          },
+          {
+            "counts": {
+              "lc": 10041,
+              "none": 39824,
+              "other": 66612,
+              "pod": 3445,
+              "self": 31723,
+              "self_inferred": 0
+            },
+            "total": 151645,
+            "year": 1987
+          },
+          {
+            "counts": {
+              "lc": 9545,
+              "none": 33207,
+              "other": 60891,
+              "pod": 3512,
+              "self": 19593,
+              "self_inferred": 0
+            },
+            "total": 126748,
+            "year": 1988
+          },
+          {
+            "counts": {
+              "lc": 11398,
+              "none": 36087,
+              "other": 51129,
+              "pod": 3706,
+              "self": 15593,
+              "self_inferred": 0
+            },
+            "total": 117913,
+            "year": 1989
+          },
+          {
+            "counts": {
+              "lc": 41623,
+              "none": 48164,
+              "other": 93495,
+              "pod": 52799,
+              "self": 17739,
+              "self_inferred": 0
+            },
+            "total": 253820,
+            "year": 1990
+          },
+          {
+            "counts": {
+              "lc": 38207,
+              "none": 13938,
+              "other": 70132,
+              "pod": 3434,
+              "self": 11054,
+              "self_inferred": 0
+            },
+            "total": 136765,
+            "year": 1991
+          },
+          {
+            "counts": {
+              "lc": 44762,
+              "none": 31019,
+              "other": 87375,
+              "pod": 5669,
+              "self": 23793,
+              "self_inferred": 0
+            },
+            "total": 192618,
+            "year": 1992
+          },
+          {
+            "counts": {
+              "lc": 35667,
+              "none": 11636,
+              "other": 55863,
+              "pod": 5386,
+              "self": 16730,
+              "self_inferred": 0
+            },
+            "total": 125282,
+            "year": 1993
+          },
+          {
+            "counts": {
+              "lc": 34876,
+              "none": 6212,
+              "other": 60106,
+              "pod": 5406,
+              "self": 7973,
+              "self_inferred": 0
+            },
+            "total": 114573,
+            "year": 1994
+          },
+          {
+            "counts": {
+              "lc": 30239,
+              "none": 5549,
+              "other": 69892,
+              "pod": 5436,
+              "self": 8610,
+              "self_inferred": 0
+            },
+            "total": 119726,
+            "year": 1995
+          },
+          {
+            "counts": {
+              "lc": 27375,
+              "none": 4168,
+              "other": 39654,
+              "pod": 5029,
+              "self": 8520,
+              "self_inferred": 0
+            },
+            "total": 84746,
+            "year": 1996
+          },
+          {
+            "counts": {
+              "lc": 36369,
+              "none": 15290,
+              "other": 55518,
+              "pod": 4308,
+              "self": 10036,
+              "self_inferred": 0
+            },
+            "total": 121521,
+            "year": 1997
+          },
+          {
+            "counts": {
+              "lc": 51576,
+              "none": 65157,
+              "other": 63196,
+              "pod": 5935,
+              "self": 13073,
+              "self_inferred": 0
+            },
+            "total": 198937,
+            "year": 1998
+          },
+          {
+            "counts": {
+              "lc": 47370,
+              "none": 57594,
+              "other": 56954,
+              "pod": 5697,
+              "self": 7576,
+              "self_inferred": 0
+            },
+            "total": 175191,
+            "year": 1999
+          },
+          {
+            "counts": {
+              "lc": 34506,
+              "none": 69251,
+              "other": 49420,
+              "pod": 3465,
+              "self": 4995,
+              "self_inferred": 0
+            },
+            "total": 161637,
+            "year": 2000
+          },
+          {
+            "counts": {
+              "lc": 32710,
+              "none": 10095,
+              "other": 51122,
+              "pod": 3156,
+              "self": 8430,
+              "self_inferred": 0
+            },
+            "total": 105513,
+            "year": 2001
+          },
+          {
+            "counts": {
+              "lc": 31714,
+              "none": 1641,
+              "other": 48573,
+              "pod": 2528,
+              "self": 4380,
+              "self_inferred": 0
+            },
+            "total": 88836,
+            "year": 2002
+          },
+          {
+            "counts": {
+              "lc": 27818,
+              "none": 1047,
+              "other": 53400,
+              "pod": 2017,
+              "self": 4822,
+              "self_inferred": 0
+            },
+            "total": 89104,
+            "year": 2003
+          },
+          {
+            "counts": {
+              "lc": 27328,
+              "none": 1172,
+              "other": 53301,
+              "pod": 2167,
+              "self": 4508,
+              "self_inferred": 0
+            },
+            "total": 88476,
+            "year": 2004
+          },
+          {
+            "counts": {
+              "lc": 25765,
+              "none": 891,
+              "other": 58540,
+              "pod": 2970,
+              "self": 5870,
+              "self_inferred": 0
+            },
+            "total": 94036,
+            "year": 2005
+          },
+          {
+            "counts": {
+              "lc": 26148,
+              "none": 803,
+              "other": 162200,
+              "pod": 3421,
+              "self": 5204,
+              "self_inferred": 0
+            },
+            "total": 197776,
+            "year": 2006
+          },
+          {
+            "counts": {
+              "lc": 23723,
+              "none": 899,
+              "other": 206770,
+              "pod": 2466,
+              "self": 4333,
+              "self_inferred": 0
+            },
+            "total": 238191,
+            "year": 2007
+          },
+          {
+            "counts": {
+              "lc": 21953,
+              "none": 587,
+              "other": 373202,
+              "pod": 2072,
+              "self": 4411,
+              "self_inferred": 0
+            },
+            "total": 402225,
+            "year": 2008
+          },
+          {
+            "counts": {
+              "lc": 20635,
+              "none": 363,
+              "other": 149068,
+              "pod": 3382,
+              "self": 4312,
+              "self_inferred": 0
+            },
+            "total": 177760,
+            "year": 2009
+          },
+          {
+            "counts": {
+              "lc": 19876,
+              "none": 5144,
+              "other": 166566,
+              "pod": 1891,
+              "self": 3785,
+              "self_inferred": 0
+            },
+            "total": 197262,
+            "year": 2010
+          },
+          {
+            "counts": {
+              "lc": 19919,
+              "none": 2673,
+              "other": 95291,
+              "pod": 1871,
+              "self": 5497,
+              "self_inferred": 0
+            },
+            "total": 125251,
+            "year": 2011
+          },
+          {
+            "counts": {
+              "lc": 18533,
+              "none": 6023,
+              "other": 92699,
+              "pod": 1645,
+              "self": 9203,
+              "self_inferred": 0
+            },
+            "total": 128103,
+            "year": 2012
+          },
+          {
+            "counts": {
+              "lc": 18353,
+              "none": 2747,
+              "other": 81742,
+              "pod": 1578,
+              "self": 5641,
+              "self_inferred": 0
+            },
+            "total": 110061,
+            "year": 2013
+          },
+          {
+            "counts": {
+              "lc": 16782,
+              "none": 2730,
+              "other": 101191,
+              "pod": 2273,
+              "self": 4166,
+              "self_inferred": 0
+            },
+            "total": 127142,
+            "year": 2014
+          },
+          {
+            "counts": {
+              "lc": 18013,
+              "none": 3126,
+              "other": 98899,
+              "pod": 1860,
+              "self": 4298,
+              "self_inferred": 0
+            },
+            "total": 126196,
+            "year": 2015
+          },
+          {
+            "counts": {
+              "lc": 16378,
+              "none": 4310,
+              "other": 144828,
+              "pod": 2652,
+              "self": 5659,
+              "self_inferred": 0
+            },
+            "total": 173827,
+            "year": 2016
+          },
+          {
+            "counts": {
+              "lc": 21092,
+              "none": 7414,
+              "other": 188638,
+              "pod": 3073,
+              "self": 3257,
+              "self_inferred": 0
+            },
+            "total": 223474,
+            "year": 2017
+          },
+          {
+            "counts": {
+              "lc": 15429,
+              "none": 4648,
+              "other": 107228,
+              "pod": 3217,
+              "self": 3797,
+              "self_inferred": 0
+            },
+            "total": 134319,
+            "year": 2018
+          },
+          {
+            "counts": {
+              "lc": 14053,
+              "none": 7160,
+              "other": 122670,
+              "pod": 3215,
+              "self": 3970,
+              "self_inferred": 0
+            },
+            "total": 151068,
+            "year": 2019
+          },
+          {
+            "counts": {
+              "lc": 11748,
+              "none": 4785,
+              "other": 118713,
+              "pod": 3271,
+              "self": 1743,
+              "self_inferred": 0
+            },
+            "total": 140260,
+            "year": 2020
+          },
+          {
+            "counts": {
+              "lc": 12214,
+              "none": 9884,
+              "other": 131900,
+              "pod": 3786,
+              "self": 4914,
+              "self_inferred": 0
+            },
+            "total": 162698,
+            "year": 2021
+          },
+          {
+            "counts": {
+              "lc": 15413,
+              "none": 7331,
+              "other": 146365,
+              "pod": 3915,
+              "self": 4172,
+              "self_inferred": 0
+            },
+            "total": 177196,
+            "year": 2022
+          },
+          {
+            "counts": {
+              "lc": 13324,
+              "none": 5591,
+              "other": 86291,
+              "pod": 4270,
+              "self": 3590,
+              "self_inferred": 0
+            },
+            "total": 113066,
+            "year": 2023
+          },
+          {
+            "counts": {
+              "lc": 6836,
+              "none": 4581,
+              "other": 82907,
+              "pod": 3822,
+              "self": 4459,
+              "self_inferred": 0
+            },
+            "total": 102605,
+            "year": 2024
+          },
+          {
+            "counts": {
+              "lc": 3183,
+              "none": 9878,
+              "other": 93441,
+              "pod": 2318,
+              "self": 16870,
+              "self_inferred": 0
+            },
+            "total": 125690,
+            "year": 2025
+          },
+          {
+            "counts": {
+              "lc": 0,
+              "none": 3388,
+              "other": 2353,
+              "pod": 0,
+              "self": 430,
+              "self_inferred": 0
+            },
+            "total": 6171,
+            "year": 2026
+          }
+        ]
+      },
+      {
+        "org": "princeton",
+        "unplaced": 34774,
+        "values": [
+          {
+            "counts": {
+              "lc": 0,
+              "none": 17,
+              "other": 203,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 220,
+            "year": 1966
+          },
+          {
+            "counts": {
+              "lc": 0,
+              "none": 23,
+              "other": 213,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 236,
+            "year": 1967
+          },
+          {
+            "counts": {
+              "lc": 3323,
+              "none": 27,
+              "other": 242,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 3592,
+            "year": 1968
+          },
+          {
+            "counts": {
+              "lc": 12539,
+              "none": 78,
+              "other": 233,
+              "pod": 0,
+              "self": 14,
+              "self_inferred": 0
+            },
+            "total": 12864,
+            "year": 1969
+          },
+          {
+            "counts": {
+              "lc": 23373,
+              "none": 161,
+              "other": 313,
+              "pod": 0,
+              "self": 18,
+              "self_inferred": 0
+            },
+            "total": 23865,
+            "year": 1970
+          },
+          {
+            "counts": {
+              "lc": 31427,
+              "none": 752,
+              "other": 1979,
+              "pod": 0,
+              "self": 21,
+              "self_inferred": 0
+            },
+            "total": 34179,
+            "year": 1971
+          },
+          {
+            "counts": {
+              "lc": 49810,
+              "none": 6057,
+              "other": 18974,
+              "pod": 30,
+              "self": 76,
+              "self_inferred": 0
+            },
+            "total": 74947,
+            "year": 1972
+          },
+          {
+            "counts": {
+              "lc": 43502,
+              "none": 4414,
+              "other": 16021,
+              "pod": 54,
+              "self": 56,
+              "self_inferred": 0
+            },
+            "total": 64047,
+            "year": 1973
+          },
+          {
+            "counts": {
+              "lc": 47878,
+              "none": 6694,
+              "other": 26248,
+              "pod": 569,
+              "self": 100,
+              "self_inferred": 0
+            },
+            "total": 81489,
+            "year": 1974
+          },
+          {
+            "counts": {
+              "lc": 72222,
+              "none": 11794,
+              "other": 41713,
+              "pod": 660,
+              "self": 386,
+              "self_inferred": 0
+            },
+            "total": 126775,
+            "year": 1975
+          },
+          {
+            "counts": {
+              "lc": 72813,
+              "none": 2539,
+              "other": 22647,
+              "pod": 599,
+              "self": 1015,
+              "self_inferred": 0
+            },
+            "total": 99613,
+            "year": 1976
+          },
+          {
+            "counts": {
+              "lc": 71800,
+              "none": 1229,
+              "other": 24566,
+              "pod": 819,
+              "self": 3830,
+              "self_inferred": 0
+            },
+            "total": 102244,
+            "year": 1977
+          },
+          {
+            "counts": {
+              "lc": 64950,
+              "none": 1313,
+              "other": 26833,
+              "pod": 574,
+              "self": 2321,
+              "self_inferred": 0
+            },
+            "total": 95991,
+            "year": 1978
+          },
+          {
+            "counts": {
+              "lc": 51378,
+              "none": 1073,
+              "other": 32845,
+              "pod": 685,
+              "self": 2607,
+              "self_inferred": 0
+            },
+            "total": 88588,
+            "year": 1979
+          },
+          {
+            "counts": {
+              "lc": 32233,
+              "none": 24882,
+              "other": 30256,
+              "pod": 1119,
+              "self": 7405,
+              "self_inferred": 0
+            },
+            "total": 95895,
+            "year": 1980
+          },
+          {
+            "counts": {
+              "lc": 16525,
+              "none": 20853,
+              "other": 28102,
+              "pod": 1453,
+              "self": 6406,
+              "self_inferred": 0
+            },
+            "total": 73339,
+            "year": 1981
+          },
+          {
+            "counts": {
+              "lc": 13833,
+              "none": 30327,
+              "other": 37505,
+              "pod": 7180,
+              "self": 9082,
+              "self_inferred": 0
+            },
+            "total": 97927,
+            "year": 1982
+          },
+          {
+            "counts": {
+              "lc": 14369,
+              "none": 41267,
+              "other": 48694,
+              "pod": 11189,
+              "self": 19175,
+              "self_inferred": 0
+            },
+            "total": 134694,
+            "year": 1983
+          },
+          {
+            "counts": {
+              "lc": 14741,
+              "none": 30484,
+              "other": 42267,
+              "pod": 14708,
+              "self": 15170,
+              "self_inferred": 0
+            },
+            "total": 117370,
+            "year": 1984
+          },
+          {
+            "counts": {
+              "lc": 15003,
+              "none": 23581,
+              "other": 42194,
+              "pod": 9403,
+              "self": 14307,
+              "self_inferred": 0
+            },
+            "total": 104488,
+            "year": 1985
+          },
+          {
+            "counts": {
+              "lc": 12385,
+              "none": 37240,
+              "other": 47372,
+              "pod": 10705,
+              "self": 12473,
+              "self_inferred": 0
+            },
+            "total": 120175,
+            "year": 1986
+          },
+          {
+            "counts": {
+              "lc": 11235,
+              "none": 37791,
+              "other": 46431,
+              "pod": 4043,
+              "self": 18092,
+              "self_inferred": 0
+            },
+            "total": 117592,
+            "year": 1987
+          },
+          {
+            "counts": {
+              "lc": 8934,
+              "none": 36738,
+              "other": 45164,
+              "pod": 4162,
+              "self": 14843,
+              "self_inferred": 0
+            },
+            "total": 109841,
+            "year": 1988
+          },
+          {
+            "counts": {
+              "lc": 12143,
+              "none": 33990,
+              "other": 53325,
+              "pod": 4543,
+              "self": 16914,
+              "self_inferred": 0
+            },
+            "total": 120915,
+            "year": 1989
+          },
+          {
+            "counts": {
+              "lc": 22020,
+              "none": 19195,
+              "other": 42214,
+              "pod": 4438,
+              "self": 15526,
+              "self_inferred": 0
+            },
+            "total": 103393,
+            "year": 1990
+          },
+          {
+            "counts": {
+              "lc": 33115,
+              "none": 10548,
+              "other": 43586,
+              "pod": 4650,
+              "self": 17908,
+              "self_inferred": 0
+            },
+            "total": 109807,
+            "year": 1991
+          },
+          {
+            "counts": {
+              "lc": 39830,
+              "none": 8040,
+              "other": 42766,
+              "pod": 5743,
+              "self": 17966,
+              "self_inferred": 0
+            },
+            "total": 114345,
+            "year": 1992
+          },
+          {
+            "counts": {
+              "lc": 37718,
+              "none": 6574,
+              "other": 41529,
+              "pod": 4644,
+              "self": 20310,
+              "self_inferred": 0
+            },
+            "total": 110775,
+            "year": 1993
+          },
+          {
+            "counts": {
+              "lc": 39248,
+              "none": 5607,
+              "other": 46938,
+              "pod": 5854,
+              "self": 21706,
+              "self_inferred": 0
+            },
+            "total": 119353,
+            "year": 1994
+          },
+          {
+            "counts": {
+              "lc": 39074,
+              "none": 7318,
+              "other": 44531,
+              "pod": 6545,
+              "self": 19707,
+              "self_inferred": 0
+            },
+            "total": 117175,
+            "year": 1995
+          },
+          {
+            "counts": {
+              "lc": 38291,
+              "none": 5350,
+              "other": 44958,
+              "pod": 6495,
+              "self": 15988,
+              "self_inferred": 0
+            },
+            "total": 111082,
+            "year": 1996
+          },
+          {
+            "counts": {
+              "lc": 39363,
+              "none": 6306,
+              "other": 49006,
+              "pod": 5411,
+              "self": 14197,
+              "self_inferred": 0
+            },
+            "total": 114283,
+            "year": 1997
+          },
+          {
+            "counts": {
+              "lc": 49158,
+              "none": 5043,
+              "other": 59544,
+              "pod": 6792,
+              "self": 29014,
+              "self_inferred": 0
+            },
+            "total": 149551,
+            "year": 1998
+          },
+          {
+            "counts": {
+              "lc": 63241,
+              "none": 4679,
+              "other": 70421,
+              "pod": 7954,
+              "self": 57921,
+              "self_inferred": 0
+            },
+            "total": 204216,
+            "year": 1999
+          },
+          {
+            "counts": {
+              "lc": 36383,
+              "none": 5890,
+              "other": 45248,
+              "pod": 4289,
+              "self": 46764,
+              "self_inferred": 0
+            },
+            "total": 138574,
+            "year": 2000
+          },
+          {
+            "counts": {
+              "lc": 33228,
+              "none": 3449,
+              "other": 55190,
+              "pod": 5133,
+              "self": 13134,
+              "self_inferred": 0
+            },
+            "total": 110134,
+            "year": 2001
+          },
+          {
+            "counts": {
+              "lc": 38576,
+              "none": 2080,
+              "other": 50593,
+              "pod": 3574,
+              "self": 12739,
+              "self_inferred": 0
+            },
+            "total": 107562,
+            "year": 2002
+          },
+          {
+            "counts": {
+              "lc": 31207,
+              "none": 1941,
+              "other": 50232,
+              "pod": 3548,
+              "self": 17144,
+              "self_inferred": 0
+            },
+            "total": 104072,
+            "year": 2003
+          },
+          {
+            "counts": {
+              "lc": 28869,
+              "none": 1980,
+              "other": 53202,
+              "pod": 4145,
+              "self": 17297,
+              "self_inferred": 0
+            },
+            "total": 105493,
+            "year": 2004
+          },
+          {
+            "counts": {
+              "lc": 28248,
+              "none": 2032,
+              "other": 52567,
+              "pod": 4820,
+              "self": 20514,
+              "self_inferred": 0
+            },
+            "total": 108181,
+            "year": 2005
+          },
+          {
+            "counts": {
+              "lc": 34268,
+              "none": 40125,
+              "other": 62949,
+              "pod": 4797,
+              "self": 36195,
+              "self_inferred": 0
+            },
+            "total": 178334,
+            "year": 2006
+          },
+          {
+            "counts": {
+              "lc": 33480,
+              "none": 2270,
+              "other": 62556,
+              "pod": 4497,
+              "self": 14416,
+              "self_inferred": 0
+            },
+            "total": 117219,
+            "year": 2007
+          },
+          {
+            "counts": {
+              "lc": 34953,
+              "none": 2818,
+              "other": 69650,
+              "pod": 4835,
+              "self": 15455,
+              "self_inferred": 0
+            },
+            "total": 127711,
+            "year": 2008
+          },
+          {
+            "counts": {
+              "lc": 31190,
+              "none": 5188,
+              "other": 70375,
+              "pod": 5310,
+              "self": 11849,
+              "self_inferred": 0
+            },
+            "total": 123912,
+            "year": 2009
+          },
+          {
+            "counts": {
+              "lc": 32137,
+              "none": 8424,
+              "other": 69071,
+              "pod": 5497,
+              "self": 10791,
+              "self_inferred": 0
+            },
+            "total": 125920,
+            "year": 2010
+          },
+          {
+            "counts": {
+              "lc": 31461,
+              "none": 42428,
+              "other": 70006,
+              "pod": 6365,
+              "self": 18567,
+              "self_inferred": 0
+            },
+            "total": 168827,
+            "year": 2011
+          },
+          {
+            "counts": {
+              "lc": 28325,
+              "none": 1704,
+              "other": 67828,
+              "pod": 5383,
+              "self": 8010,
+              "self_inferred": 0
+            },
+            "total": 111250,
+            "year": 2012
+          },
+          {
+            "counts": {
+              "lc": 25968,
+              "none": 809,
+              "other": 67709,
+              "pod": 4687,
+              "self": 6907,
+              "self_inferred": 0
+            },
+            "total": 106080,
+            "year": 2013
+          },
+          {
+            "counts": {
+              "lc": 25319,
+              "none": 1097,
+              "other": 73083,
+              "pod": 7958,
+              "self": 13251,
+              "self_inferred": 0
+            },
+            "total": 120708,
+            "year": 2014
+          },
+          {
+            "counts": {
+              "lc": 25782,
+              "none": 587,
+              "other": 71626,
+              "pod": 6079,
+              "self": 5403,
+              "self_inferred": 0
+            },
+            "total": 109477,
+            "year": 2015
+          },
+          {
+            "counts": {
+              "lc": 22558,
+              "none": 964,
+              "other": 74872,
+              "pod": 7219,
+              "self": 5524,
+              "self_inferred": 0
+            },
+            "total": 111137,
+            "year": 2016
+          },
+          {
+            "counts": {
+              "lc": 23208,
+              "none": 806,
+              "other": 80162,
+              "pod": 8301,
+              "self": 39088,
+              "self_inferred": 0
+            },
+            "total": 151565,
+            "year": 2017
+          },
+          {
+            "counts": {
+              "lc": 19091,
+              "none": 571,
+              "other": 83754,
+              "pod": 7095,
+              "self": 10393,
+              "self_inferred": 0
+            },
+            "total": 120904,
+            "year": 2018
+          },
+          {
+            "counts": {
+              "lc": 16886,
+              "none": 5683,
+              "other": 80164,
+              "pod": 6124,
+              "self": 12885,
+              "self_inferred": 0
+            },
+            "total": 121742,
+            "year": 2019
+          },
+          {
+            "counts": {
+              "lc": 12862,
+              "none": 353,
+              "other": 65425,
+              "pod": 6132,
+              "self": 6773,
+              "self_inferred": 0
+            },
+            "total": 91545,
+            "year": 2020
+          },
+          {
+            "counts": {
+              "lc": 15405,
+              "none": 912,
+              "other": 75799,
+              "pod": 6836,
+              "self": 6972,
+              "self_inferred": 0
+            },
+            "total": 105924,
+            "year": 2021
+          },
+          {
+            "counts": {
+              "lc": 16319,
+              "none": 1393,
+              "other": 74673,
+              "pod": 5335,
+              "self": 10012,
+              "self_inferred": 0
+            },
+            "total": 107732,
+            "year": 2022
+          },
+          {
+            "counts": {
+              "lc": 14360,
+              "none": 1515,
+              "other": 73281,
+              "pod": 4725,
+              "self": 11332,
+              "self_inferred": 0
+            },
+            "total": 105213,
+            "year": 2023
+          },
+          {
+            "counts": {
+              "lc": 11562,
+              "none": 1183,
+              "other": 66297,
+              "pod": 4053,
+              "self": 14723,
+              "self_inferred": 0
+            },
+            "total": 97818,
+            "year": 2024
+          },
+          {
+            "counts": {
+              "lc": 5717,
+              "none": 5271,
+              "other": 51389,
+              "pod": 2897,
+              "self": 17163,
+              "self_inferred": 0
+            },
+            "total": 82437,
+            "year": 2025
+          },
+          {
+            "counts": {
+              "lc": 94,
+              "none": 1205,
+              "other": 3113,
+              "pod": 82,
+              "self": 3063,
+              "self_inferred": 0
+            },
+            "total": 7557,
+            "year": 2026
+          }
+        ]
+      },
+      {
+        "org": "stanford",
+        "unplaced": 63952,
+        "values": [
+          {
+            "counts": {
+              "lc": 0,
+              "none": 26,
+              "other": 239,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 265,
+            "year": 1966
+          },
+          {
+            "counts": {
+              "lc": 0,
+              "none": 0,
+              "other": 260,
+              "pod": 0,
+              "self": 0,
+              "self_inferred": 0
+            },
+            "total": 260,
+            "year": 1967
+          },
+          {
+            "counts": {
+              "lc": 3285,
+              "none": 320,
+              "other": 304,
+              "pod": 0,
+              "self": 14,
+              "self_inferred": 0
+            },
+            "total": 3923,
+            "year": 1968
+          },
+          {
+            "counts": {
+              "lc": 12166,
+              "none": 1139,
+              "other": 526,
+              "pod": 0,
+              "self": 60,
+              "self_inferred": 0
+            },
+            "total": 13891,
+            "year": 1969
+          },
+          {
+            "counts": {
+              "lc": 22431,
+              "none": 2152,
+              "other": 501,
+              "pod": 0,
+              "self": 104,
+              "self_inferred": 0
+            },
+            "total": 25188,
+            "year": 1970
+          },
+          {
+            "counts": {
+              "lc": 28975,
+              "none": 3872,
+              "other": 1682,
+              "pod": 16,
+              "self": 208,
+              "self_inferred": 0
+            },
+            "total": 34753,
+            "year": 1971
+          },
+          {
+            "counts": {
+              "lc": 41836,
+              "none": 17467,
+              "other": 10344,
+              "pod": 22,
+              "self": 440,
+              "self_inferred": 0
+            },
+            "total": 70109,
+            "year": 1972
+          },
+          {
+            "counts": {
+              "lc": 25076,
+              "none": 22469,
+              "other": 7465,
+              "pod": 26,
+              "self": 525,
+              "self_inferred": 0
+            },
+            "total": 55561,
+            "year": 1973
+          },
+          {
+            "counts": {
+              "lc": 25080,
+              "none": 59466,
+              "other": 12096,
+              "pod": 402,
+              "self": 2476,
+              "self_inferred": 0
+            },
+            "total": 99520,
+            "year": 1974
+          },
+          {
+            "counts": {
+              "lc": 44967,
+              "none": 65950,
+              "other": 26379,
+              "pod": 451,
+              "self": 5142,
+              "self_inferred": 0
+            },
+            "total": 142889,
+            "year": 1975
+          },
+          {
+            "counts": {
+              "lc": 42857,
+              "none": 37286,
+              "other": 31580,
+              "pod": 678,
+              "self": 7702,
+              "self_inferred": 0
+            },
+            "total": 120103,
+            "year": 1976
+          },
+          {
+            "counts": {
+              "lc": 42681,
+              "none": 43039,
+              "other": 33729,
+              "pod": 1018,
+              "self": 9092,
+              "self_inferred": 0
+            },
+            "total": 129559,
+            "year": 1977
+          },
+          {
+            "counts": {
+              "lc": 36709,
+              "none": 49195,
+              "other": 40205,
+              "pod": 991,
+              "self": 10727,
+              "self_inferred": 0
+            },
+            "total": 137827,
+            "year": 1978
+          },
+          {
+            "counts": {
+              "lc": 34758,
+              "none": 69698,
+              "other": 52759,
+              "pod": 1357,
+              "self": 37504,
+              "self_inferred": 0
+            },
+            "total": 196076,
+            "year": 1979
+          },
+          {
+            "counts": {
+              "lc": 26662,
+              "none": 47317,
+              "other": 48199,
+              "pod": 1342,
+              "self": 19585,
+              "self_inferred": 0
+            },
+            "total": 143105,
+            "year": 1980
+          },
+          {
+            "counts": {
+              "lc": 15353,
+              "none": 31473,
+              "other": 54323,
+              "pod": 1302,
+              "self": 22144,
+              "self_inferred": 0
+            },
+            "total": 124595,
+            "year": 1981
+          },
+          {
+            "counts": {
+              "lc": 14216,
+              "none": 27137,
+              "other": 58207,
+              "pod": 1437,
+              "self": 20508,
+              "self_inferred": 0
+            },
+            "total": 121505,
+            "year": 1982
+          },
+          {
+            "counts": {
+              "lc": 15490,
+              "none": 41450,
+              "other": 68349,
+              "pod": 2781,
+              "self": 28012,
+              "self_inferred": 0
+            },
+            "total": 156082,
+            "year": 1983
+          },
+          {
+            "counts": {
+              "lc": 14060,
+              "none": 48348,
+              "other": 75520,
+              "pod": 3854,
+              "self": 35116,
+              "self_inferred": 0
+            },
+            "total": 176898,
+            "year": 1984
+          },
+          {
+            "counts": {
+              "lc": 16957,
+              "none": 76271,
+              "other": 84017,
+              "pod": 4011,
+              "self": 43541,
+              "self_inferred": 0
+            },
+            "total": 224797,
+            "year": 1985
+          },
+          {
+            "counts": {
+              "lc": 15133,
+              "none": 72144,
+              "other": 79835,
+              "pod": 7439,
+              "self": 44861,
+              "self_inferred": 0
+            },
+            "total": 219412,
+            "year": 1986
+          },
+          {
+            "counts": {
+              "lc": 14237,
+              "none": 53292,
+              "other": 84102,
+              "pod": 4766,
+              "self": 29893,
+              "self_inferred": 0
+            },
+            "total": 186290,
+            "year": 1987
+          },
+          {
+            "counts": {
+              "lc": 14948,
+              "none": 47229,
+              "other": 68807,
+              "pod": 4537,
+              "self": 28584,
+              "self_inferred": 0
+            },
+            "total": 164105,
+            "year": 1988
+          },
+          {
+            "counts": {
+              "lc": 21128,
+              "none": 52421,
+              "other": 70717,
+              "pod": 4784,
+              "self": 22432,
+              "self_inferred": 0
+            },
+            "total": 171482,
+            "year": 1989
+          },
+          {
+            "counts": {
+              "lc": 43506,
+              "none": 52357,
+              "other": 81957,
+              "pod": 5201,
+              "self": 24219,
+              "self_inferred": 0
+            },
+            "total": 207240,
+            "year": 1990
+          },
+          {
+            "counts": {
+              "lc": 37106,
+              "none": 23932,
+              "other": 62635,
+              "pod": 4934,
+              "self": 29222,
+              "self_inferred": 0
+            },
+            "total": 157829,
+            "year": 1991
+          },
+          {
+            "counts": {
+              "lc": 39945,
+              "none": 15024,
+              "other": 58895,
+              "pod": 4916,
+              "self": 58468,
+              "self_inferred": 0
+            },
+            "total": 177248,
+            "year": 1992
+          },
+          {
+            "counts": {
+              "lc": 34875,
+              "none": 12189,
+              "other": 62034,
+              "pod": 6387,
+              "self": 32988,
+              "self_inferred": 0
+            },
+            "total": 148473,
+            "year": 1993
+          },
+          {
+            "counts": {
+              "lc": 32424,
+              "none": 9414,
+              "other": 63173,
+              "pod": 6732,
+              "self": 22064,
+              "self_inferred": 0
+            },
+            "total": 133807,
+            "year": 1994
+          },
+          {
+            "counts": {
+              "lc": 36781,
+              "none": 21584,
+              "other": 61785,
+              "pod": 6335,
+              "self": 17549,
+              "self_inferred": 0
+            },
+            "total": 144034,
+            "year": 1995
+          },
+          {
+            "counts": {
+              "lc": 32507,
+              "none": 15728,
+              "other": 50423,
+              "pod": 6705,
+              "self": 66874,
+              "self_inferred": 0
+            },
+            "total": 172237,
+            "year": 1996
+          },
+          {
+            "counts": {
+              "lc": 33488,
+              "none": 7804,
+              "other": 55791,
+              "pod": 6466,
+              "self": 3179,
+              "self_inferred": 0
+            },
+            "total": 106728,
+            "year": 1997
+          },
+          {
+            "counts": {
+              "lc": 35735,
+              "none": 9383,
+              "other": 67193,
+              "pod": 7965,
+              "self": 3726,
+              "self_inferred": 0
+            },
+            "total": 124002,
+            "year": 1998
+          },
+          {
+            "counts": {
+              "lc": 33498,
+              "none": 8964,
+              "other": 66989,
+              "pod": 6182,
+              "self": 4553,
+              "self_inferred": 0
+            },
+            "total": 120186,
+            "year": 1999
+          },
+          {
+            "counts": {
+              "lc": 32502,
+              "none": 3171,
+              "other": 68664,
+              "pod": 4270,
+              "self": 5791,
+              "self_inferred": 0
+            },
+            "total": 114398,
+            "year": 2000
+          },
+          {
+            "counts": {
+              "lc": 34361,
+              "none": 1359,
+              "other": 74757,
+              "pod": 4156,
+              "self": 10200,
+              "self_inferred": 0
+            },
+            "total": 124833,
+            "year": 2001
+          },
+          {
+            "counts": {
+              "lc": 34433,
+              "none": 1356,
+              "other": 81141,
+              "pod": 4383,
+              "self": 14556,
+              "self_inferred": 0
+            },
+            "total": 135869,
+            "year": 2002
+          },
+          {
+            "counts": {
+              "lc": 30206,
+              "none": 1142,
+              "other": 89747,
+              "pod": 4283,
+              "self": 12932,
+              "self_inferred": 0
+            },
+            "total": 138310,
+            "year": 2003
+          },
+          {
+            "counts": {
+              "lc": 37539,
+              "none": 4927,
+              "other": 105649,
+              "pod": 5785,
+              "self": 26888,
+              "self_inferred": 0
+            },
+            "total": 180788,
+            "year": 2004
+          },
+          {
+            "counts": {
+              "lc": 42545,
+              "none": 8700,
+              "other": 160492,
+              "pod": 7007,
+              "self": 39197,
+              "self_inferred": 0
+            },
+            "total": 257941,
+            "year": 2005
+          },
+          {
+            "counts": {
+              "lc": 37669,
+              "none": 4175,
+              "other": 108305,
+              "pod": 4616,
+              "self": 19969,
+              "self_inferred": 0
+            },
+            "total": 174734,
+            "year": 2006
+          },
+          {
+            "counts": {
+              "lc": 31431,
+              "none": 1293,
+              "other": 138012,
+              "pod": 5520,
+              "self": 16076,
+              "self_inferred": 0
+            },
+            "total": 192332,
+            "year": 2007
+          },
+          {
+            "counts": {
+              "lc": 33478,
+              "none": 707,
+              "other": 135357,
+              "pod": 5701,
+              "self": 14975,
+              "self_inferred": 0
+            },
+            "total": 190218,
+            "year": 2008
+          },
+          {
+            "counts": {
+              "lc": 34003,
+              "none": 317,
+              "other": 145600,
+              "pod": 5568,
+              "self": 18830,
+              "self_inferred": 0
+            },
+            "total": 204318,
+            "year": 2009
+          },
+          {
+            "counts": {
+              "lc": 29564,
+              "none": 288,
+              "other": 156130,
+              "pod": 5615,
+              "self": 17265,
+              "self_inferred": 0
+            },
+            "total": 208862,
+            "year": 2010
+          },
+          {
+            "counts": {
+              "lc": 28343,
+              "none": 846,
+              "other": 155550,
+              "pod": 7066,
+              "self": 20318,
+              "self_inferred": 0
+            },
+            "total": 212123,
+            "year": 2011
+          },
+          {
+            "counts": {
+              "lc": 25267,
+              "none": 629,
+              "other": 176360,
+              "pod": 6883,
+              "self": 18927,
+              "self_inferred": 0
+            },
+            "total": 228066,
+            "year": 2012
+          },
+          {
+            "counts": {
+              "lc": 24737,
+              "none": 74,
+              "other": 153143,
+              "pod": 5215,
+              "self": 25206,
+              "self_inferred": 0
+            },
+            "total": 208375,
+            "year": 2013
+          },
+          {
+            "counts": {
+              "lc": 23923,
+              "none": 74,
+              "other": 153597,
+              "pod": 6021,
+              "self": 22419,
+              "self_inferred": 0
+            },
+            "total": 206034,
+            "year": 2014
+          },
+          {
+            "counts": {
+              "lc": 23758,
+              "none": 95,
+              "other": 139336,
+              "pod": 4585,
+              "self": 18386,
+              "self_inferred": 0
+            },
+            "total": 186160,
+            "year": 2015
+          },
+          {
+            "counts": {
+              "lc": 24997,
+              "none": 100,
+              "other": 165075,
+              "pod": 4969,
+              "self": 17758,
+              "self_inferred": 0
+            },
+            "total": 212899,
+            "year": 2016
+          },
+          {
+            "counts": {
+              "lc": 25120,
+              "none": 118,
+              "other": 199191,
+              "pod": 4095,
+              "self": 15787,
+              "self_inferred": 0
+            },
+            "total": 244311,
+            "year": 2017
+          },
+          {
+            "counts": {
+              "lc": 20129,
+              "none": 1482,
+              "other": 152730,
+              "pod": 3148,
+              "self": 14349,
+              "self_inferred": 0
+            },
+            "total": 191838,
+            "year": 2018
+          },
+          {
+            "counts": {
+              "lc": 17150,
+              "none": 100,
+              "other": 151894,
+              "pod": 3357,
+              "self": 13195,
+              "self_inferred": 0
+            },
+            "total": 185696,
+            "year": 2019
+          },
+          {
+            "counts": {
+              "lc": 16769,
+              "none": 63,
+              "other": 124772,
+              "pod": 4298,
+              "self": 9497,
+              "self_inferred": 0
+            },
+            "total": 155399,
+            "year": 2020
+          },
+          {
+            "counts": {
+              "lc": 17380,
+              "none": 191,
+              "other": 128037,
+              "pod": 4457,
+              "self": 12916,
+              "self_inferred": 0
+            },
+            "total": 162981,
+            "year": 2021
+          },
+          {
+            "counts": {
+              "lc": 17213,
+              "none": 137,
+              "other": 121565,
+              "pod": 4727,
+              "self": 16173,
+              "self_inferred": 0
+            },
+            "total": 159815,
+            "year": 2022
+          },
+          {
+            "counts": {
+              "lc": 14250,
+              "none": 36,
+              "other": 107653,
+              "pod": 4838,
+              "self": 12895,
+              "self_inferred": 0
+            },
+            "total": 139672,
+            "year": 2023
+          },
+          {
+            "counts": {
+              "lc": 9681,
+              "none": 10,
+              "other": 98038,
+              "pod": 4469,
+              "self": 13454,
+              "self_inferred": 0
+            },
+            "total": 125652,
+            "year": 2024
+          },
+          {
+            "counts": {
+              "lc": 3837,
+              "none": 96,
+              "other": 89949,
+              "pod": 3015,
+              "self": 17659,
+              "self_inferred": 0
+            },
+            "total": 114556,
+            "year": 2025
+          },
+          {
+            "counts": {
+              "lc": 489,
+              "none": 123,
+              "other": 19883,
+              "pod": 422,
+              "self": 8465,
+              "self_inferred": 0
+            },
+            "total": 29382,
+            "year": 2026
+          }
+        ]
+      }
+    ],
+    "sql": [
+      {
+        "label": "Per-record 040 summary, materialized once",
+        "sql": "CREATE OR REPLACE TEMP TABLE cataloging_source AS\nWITH f AS (\n  SELECT org, pod_record_id, subfield_code, field_seq, subfield_seq,\n         upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160))) AS code\n  FROM records\n  WHERE field_tag = '040'\n),\npresent AS (\n  SELECT DISTINCT org, pod_record_id FROM f\n),\norig AS (\n  SELECT org, pod_record_id, code\n  FROM f\n  WHERE subfield_code = 'a' AND code <> ''\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq, subfield_seq) = 1\n),\nmods AS (\n  SELECT org, pod_record_id, count(DISTINCT code) AS mod_agencies\n  FROM f\n  WHERE subfield_code = 'd' AND code <> ''\n  GROUP BY org, pod_record_id\n),\n-- When the record entered this institution's system. ~2.5k records carry two 008\n-- fields; the first by field_seq is the record's own, so QUALIFY keeps the join\n-- one-to-one rather than silently double-counting them.\nentered AS (\n  SELECT org, pod_record_id,\n         CASE WHEN regexp_matches(substr(value, 1, 6), '^[0-9]{6}$')\n              AND substr(value, 1, 6) <> '000000'\n              THEN CASE WHEN CAST(substr(value, 1, 2) AS INTEGER) <= 26 THEN 2000\n                        ELSE 1900 END + CAST(substr(value, 1, 2) AS INTEGER)\n         END AS entered_year\n  FROM records\n  WHERE field_tag = '008'\n  QUALIFY row_number() OVER (\n    PARTITION BY org, pod_record_id ORDER BY field_seq) = 1\n),\njoined AS (\n  SELECT m.org,\n         e.entered_year,\n         o.code AS source_code,\n         CASE\n         WHEN o.code = 'RPB'\n              OR o.code LIKE 'RPB-%'\n              OR o.code = 'RBN'\n              OR o.code = 'RPJCB'\n              THEN 'brown'\n         WHEN o.code = 'NCD'\n              OR o.code LIKE 'NCD-%'\n              OR o.code = 'NDD'\n              THEN 'duke'\n         WHEN o.code = 'MH'\n              OR o.code LIKE 'MH-%'\n              OR o.code = 'HLS'\n              OR o.code = 'HUL'\n              OR o.code = 'HMS'\n              OR o.code = 'HBS'\n              OR o.code = 'DDO'\n              OR o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL'\n              THEN 'harvard'\n         WHEN o.code = 'PU'\n              OR o.code LIKE 'PU-%'\n              OR o.code = 'PAU'\n              THEN 'penn'\n         WHEN o.code = 'NJP'\n              OR o.code LIKE 'NJP-%'\n              OR o.code = 'PUL'\n              OR o.code = 'PULEA'\n              THEN 'princeton'\n         WHEN o.code = 'CST'\n              OR o.code LIKE 'CST-%'\n              OR o.code = 'STF'\n              THEN 'stanford'\n         END AS source_org,\n         o.code = 'HVL'\n              OR o.code = 'HHG'\n              OR o.code = 'HMY'\n              OR o.code = 'HMZ'\n              OR o.code = 'HMG'\n              OR o.code = 'HTV'\n              OR o.code = 'HMU'\n              OR o.code = 'HFL' AS inferred_self,\n         coalesce(d.mod_agencies, 0) AS mod_agencies,\n         p.pod_record_id IS NOT NULL AS has_040\n  FROM record_meta m\n  LEFT JOIN present p USING (org, pod_record_id)\n  LEFT JOIN orig o USING (org, pod_record_id)\n  LEFT JOIN mods d USING (org, pod_record_id)\n  LEFT JOIN entered e USING (org, pod_record_id)\n)\nSELECT org, entered_year, source_code, source_org,\n       CASE\n         WHEN source_code IS NULL                            THEN 'none'\n         WHEN source_code = 'DLC' OR source_code LIKE 'DLC-%' THEN 'lc'\n         -- No 'oclc' bucket: OCoLC appears as the *original* agency on only 27k\n         -- of 48m records (0.06%), because 040 credits the library that made the\n         -- description, not the utility the record travelled through. Reporting a\n         -- 0% OCLC bucket would imply OCLC plays no role here, when in fact\n         -- 66-98% of these records carry an (OCoLC) number in 035. That channel\n         -- signal belongs to 035, not 040, so OCoLC-in-$a falls to 'other'.\n         WHEN source_org = org AND inferred_self             THEN 'self_inferred'\n         WHEN source_org = org                               THEN 'self'\n         WHEN source_org IS NOT NULL                         THEN 'pod'\n         ELSE 'other'\n       END AS bucket,\n       -- \"no 040 at all\" is a different fact from \"an 040 that names no\n       -- modifying agency\", and the gap is large (182k-933k records per\n       -- institution carry an 040 with no $a), so they get separate buckets.\n       CASE\n         WHEN NOT has_040        THEN 'no_040'\n         WHEN mod_agencies >= 10 THEN '10+'\n         WHEN mod_agencies >= 5  THEN '5-9'\n         WHEN mod_agencies >= 3  THEN '3-4'\n         ELSE CAST(mod_agencies AS VARCHAR)\n       END AS mod_depth,\n       count(*) AS n\nFROM joined\nGROUP BY ALL"
+      },
+      {
+        "label": "Provenance mix by year entered on file",
+        "sql": "SELECT org, entered_year AS year, bucket, sum(n) AS n\nFROM cataloging_source\nGROUP BY org, entered_year, bucket"
+      }
+    ]
+  }
 }

@@ -1,13 +1,13 @@
 # How records arrived
 
 [Source of cataloging](./cataloging-source) asks who *wrote* a record. This page
-asks how it *travelled* — a different question, answered by a different field.
+asks how it *travelled* which is answered by a different field.
 
 MARC `035` holds system control numbers, written `(ORGCODE)number`: the number, and
 the system the number belongs to. Records accumulate these as they move between
 union catalogues, knowledge bases and vendor platforms, so the set of namespaces on
 a record is a rough itinerary. It is also much better populated than the cataloging
-source — **99.3% to 100%** of records carry an `035`, against 86% with an `040 $a`.
+source: **99.3% to 100%** of records carry an `035`, against 86% with an `040 $a`.
 
 Two things to keep in mind:
 
@@ -20,6 +20,13 @@ Two things to keep in mind:
   which is exactly why the `040` page shows almost no OCLC authorship while nearly
   every record here has an OCLC number.
 
+The two charts below are the same field seen at two resolutions. The first sorts
+namespaces into a handful of categories, so one question *has this record been
+through OCLC?* can be put to every library and answered on comparable terms. The
+second drops the categories and shows the namespace strings as they were written.
+Neither is a summary of the other, and **their numbers will not always agree**; the
+list under the second chart says exactly where they diverge and why.
+
 ```js
 import {orgLabel, channelLabel, namespaceLabel} from "./components/marc.js";
 import {shareHeatmap} from "./components/heatmap.js";
@@ -31,7 +38,7 @@ const channels = channelFile.json();
 ## Which systems each library's records have been through
 
 Share of each institution's records carrying a control number from each system.
-"Any system number" is the baseline — essentially every record has one.
+"Any system number" is the baseline, essentially every record has one.
 
 ```js
 const chanRows = channels.per_org.flatMap((o) =>
@@ -90,31 +97,6 @@ Plot.plot({
 })
 ```
 
-Four things stand out.
-
-**Nearly everything went through OCLC — except at Duke.** Five of the six libraries
-sit between 95% and 98%. Duke is at 66%, and the gap is filled by the Ex Libris
-Community Zone: about 45% of Duke's records carry a `(EXLCZ)` or `(CKB)` number.
-Duke is sourcing a large share of its records, mostly electronic, straight from Ex
-Libris rather than through WorldCat. That is the same fact appearing as Duke's
-unusually large "some other agency" band on the cataloging-source page, seen from
-the other side — and no other member does this at any scale.
-
-**RLIN is still visible in three catalogues.** Princeton (30%), Penn (23%) and
-Stanford (17%) carry substantial RLIN numbers; Brown, Duke and Harvard essentially
-none. RLIN closed in 2006, so this is a durable trace of how these catalogues were
-built rather than anything about current practice.
-
-**Harvard is the outlier on local identifiers**, at 8% against 52–97% everywhere
-else. Read that as a data-contribution difference rather than a cataloging one: it
-reflects whether an institution exports its local record number into `035`, not
-anything about the records themselves.
-
-**Direct member-to-member identifiers are almost nonexistent** — under 1%
-everywhere. Records travel between these libraries through the utilities, not
-laterally, which is the same story the cataloging-source flow matrix tells with
-different evidence.
-
 ```js
 provenance({sql: channels.sql, dataUrl: await channelFile.url(), dataName: "record_channels.json"})
 ```
@@ -122,14 +104,32 @@ provenance({sql: channels.sql, dataUrl: await channelFile.url(), dataName: "reco
 ## The namespaces themselves
 
 The raw `035` namespaces, uncategorized: the union of each institution's own twelve
-most common, so a system that matters to one library isn't ranked away by the
-others. Cells are a share of all that institution's records.
+most common — a namespace must also reach 0.1% of that institution's records to earn
+a row — so a system that matters to one library isn't ranked away by the others.
+Cells are a share of all that institution's records, the same denominator as the
+chart above, which makes the two directly comparable.
 
-This is where the channel taxonomy above stops and the detail begins — local
-systems (`SIRSI`, `PUVoyagerBibID`), vendor platforms (`MiAaPQ`, `VaAlASP`,
-`UkMbAM-D`), special-collections databases (`CotsenDB` at Princeton, `DASH` at
-Harvard), and other libraries' union catalogues. Unrecognized codes pass through
-raw rather than being dropped or guessed at.
+Three ways they differ, each of them a reason both charts exist:
+
+- **One category can be several namespaces.** `OCLC / WorldCat` above matches
+  `(OCoLC)` together with its variants. Five libraries write only `(OCoLC)`, so their
+  two figures agree; Stanford also writes `(OCoLC-M)` and `(OCoLC-I)`, which is why
+  it reads 98% above and 11%, 91% and 63% across three separate rows here.
+- **One category can be a different namespace at each library.** `A local library
+  system` is `RPB` at Brown, `NCD` at Duke, `MH` at Harvard, `PU` at Penn, `NJP` at
+  Princeton, and `SIRSI` at Stanford — an institution's own code in five cases and an
+  ILS product name in the sixth. The category is what makes those one comparable row;
+  only the raw view shows what that row is made of.
+- **The categories are not exhaustive.** Nothing above collects vendor platforms,
+  special-collections databases, or other libraries' union catalogues, so ProQuest,
+  Adam Matthew Digital, the University of Toronto and the rest appear only here.
+
+Unrecognized codes pass through raw rather than being dropped or guessed at.
+
+Two rows of the first chart — `A local library system` and `Another POD member's
+system` — rest on a hand-curated map of namespace codes to institutions that POD has
+not ratified. See [the institution code mapping](./data#the-institution-code-mapping)
+for what it contains and what adding a member would change.
 
 ```js
 shareHeatmap(channels, "namespace", namespaceLabel, {

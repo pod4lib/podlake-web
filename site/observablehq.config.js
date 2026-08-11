@@ -14,6 +14,7 @@ export default {
     {name: "Electronic resources", path: "/electronic"},
     {name: "Completeness", path: "/completeness"},
     {name: "Source of cataloging", path: "/cataloging-source"},
+    {name: "Original cataloging over time", path: "/original-cataloging"},
     {name: "How records arrived", path: "/record-channels"},
     {name: "About the data", path: "/data"},
   ],
@@ -37,7 +38,7 @@ export default {
     "const nav=document.querySelector('#observablehq-sidebar');" +
     "if(!nav||nav.querySelector('.alpha-banner'))return;" +
     "const d=document.createElement('div');d.className='alpha-banner';" +
-    "d.innerHTML='<strong>Alpha preview</strong> — podlake is under active development; the data and visualizations here are exploratory and may change.';" +
+    "d.innerHTML='<strong>Alpha preview</strong> — podlake is under active development; the data and visualizations here are exploratory, may be wrong, and will change.';" +
     "const firstOl=nav.querySelector('ol');" +
     "firstOl.insertAdjacentElement('afterend', d);" +
     "});</script>",

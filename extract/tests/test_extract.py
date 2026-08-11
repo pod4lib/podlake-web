@@ -697,6 +697,102 @@ def test_cataloging_source_suppresses_small_cells(tmp_path):
     )
 
 
+def test_cataloging_timeline(tmp_path):
+    # 008/00-05 is 'date entered on file', yymmdd — the year the record appeared in
+    # this institution's system. Crossed with 040 $a it dates *original* cataloging,
+    # so the parsing has to be exact: a two-digit century, a placeholder that is not
+    # a date, and records that simply cannot be placed.
+    def rec(org, rid, source, entered=None):
+        """``entered`` is one or more yymmdd strings (a record can carry two 008s),
+        or None for a record with no 008 at all."""
+        pid = f"{org}:{rid}"
+        rows = [
+            (org, pid, "LDR", 0, None, None, None, None, LEADER),
+            (org, pid, "040", 1, " ", " ", "a", 0, source),
+        ]
+        for i, date in enumerate(entered or ()):
+            rows.append(
+                (org, pid, "008", 2 + i, None, None, None, None, date + " " * 34)
+            )
+        return rows, (org, pid, rid)
+
+    def many(n, prefix, source, entered):
+        return [rec("stanford", f"{prefix}{i}", source, entered) for i in range(n)]
+
+    records = {
+        "stanford": [
+            *many(20, "a", "CSt", ["850101"]),  # 1985, self
+            *many(15, "b", "DLC", ["991231"]),  # 1999, last century by the pivot
+            *many(12, "c", "CSt", ["050615"]),  # 2005, this century by the pivot
+            *many(11, "d", "DLC", ["260110"]),  # 2026: at the pivot, still this century
+            *many(3, "e", "NjP", ["850102"]),  # 1985, a sub-threshold pod bucket
+            *many(5, "f", "DLC", ["700101"]),  # 1970 — a whole year under threshold
+            rec("stanford", "z1", "CSt", ["000000"]),  # placeholder, not the year 2000
+            rec("stanford", "z2", "CSt", ["xxxxxx"]),  # unparseable
+            rec("stanford", "z3", "CSt"),  # no 008 at all
+            rec("stanford", "z4", "CSt", ["450101"]),  # 1945, before MARC existed
+            # two 008s: the first by field_seq is the record's own, and the record
+            # must be counted once — a duplicating join is invisible in the chart
+            rec("stanford", "z5", "CSt", ["850103", "990101"]),
+        ],
+    }
+    config = _build_lake(tmp_path, records)
+    connection = lake.connect(read_only=True, config=config)
+    try:
+        loose = queries.cataloging_source(connection, threshold=1)["timeline"]
+        strict = queries.cataloging_source(connection, threshold=10)["timeline"]
+    finally:
+        connection.close()
+
+    assert loose["partial_year"] == queries.NOW_YEAR
+    org = loose["per_org"][0]
+    assert org["org"] == "stanford"
+    by_year = {v["year"]: v for v in org["values"]}
+    assert list(by_year) == [1970, 1985, 1999, 2005, 2026]  # ascending, no gaps filled
+    assert by_year[1999]["counts"]["lc"] == 15  # '99' -> 1999, not 2099
+    assert by_year[2005]["counts"]["self"] == 12  # '05' -> 2005, not 1905
+    assert by_year[2026]["counts"]["lc"] == 11  # '26' -> NOW_YEAR, not 1926
+    # z5 lands in 1985 once, from its first 008 — not in 1985 *and* 1999
+    assert by_year[1985]["counts"] == {
+        "lc": 0,
+        "self": 21,  # 20 + z5
+        "self_inferred": 0,
+        "pod": 3,
+        "other": 0,
+        "none": 0,
+    }
+    assert by_year[1985]["total"] == 24
+
+    # the four records with no usable date, and nothing else
+    assert org["unplaced"] == 4  # z1 placeholder, z2 unparseable, z3 no 008, z4 1945
+    assert sum(v["total"] for v in org["values"]) + org["unplaced"] == 71
+
+    # suppression: a year too thin to publish disappears into `unplaced` rather than
+    # being reported as a dropped year (which subtraction would recover), and a
+    # sub-threshold bucket within a published year folds into `other` as it does
+    # everywhere else
+    strict_org = strict["per_org"][0]
+    strict_years = {v["year"]: v for v in strict_org["values"]}
+    assert 1970 not in strict_years  # 5 records
+    assert strict_org["unplaced"] == 4 + 5
+    assert strict_years[1985]["counts"]["pod"] == 0
+    assert strict_years[1985]["counts"]["other"] == 3
+    assert strict_years[1985]["total"] == 24  # folding moves records, never drops them
+    assert sum(v["total"] for v in strict_org["values"]) + strict_org["unplaced"] == 71
+    assert (
+        suppress.small_cells(
+            [
+                {"category": b, "count": n}
+                for v in strict_org["values"]
+                for b, n in v["counts"].items()
+            ],
+            threshold=10,
+            other_label="other",
+        )
+        == []
+    ), "a sub-threshold cell survived into the published timeline"
+
+
 def test_unmapped_org_is_refused(tmp_path):
     # An org missing from _SELF_CODES used to degrade silently: 0% self-cataloged,
     # nothing in `pod`, and a flow row with no column — a publishable-looking claim
@@ -869,7 +965,11 @@ def test_artifacts_expose_runnable_sql(con, tmp_path):
     for q in chan["sql"] + chan["dimensions"]["namespace"]["sql"]:
         con.execute(q["sql"])
 
-    for step_list in [cat["sql"], *(d["sql"] for d in cat["dimensions"].values())]:
+    for step_list in [
+        cat["sql"],
+        cat["timeline"]["sql"],
+        *(d["sql"] for d in cat["dimensions"].values()),
+    ]:
         assert step_list, "cataloging_source exposes an empty sql list"
         fresh = lake.connect(read_only=True, config=con_config)
         try:

@@ -36,6 +36,55 @@ raw counts are then shaped in Python (small-cell suppression, the comparison
 share matrices, the place roll-ups), all of it in the extract:
 [`extract/src/podlake_web`](https://github.com/sul-dlss/podlake-web/tree/main/extract/src/podlake_web).
 
+## The institution code mapping
+
+Several views need to know **which institution a MARC agency code belongs to** — is
+`NDD` Duke? is `RPB` Brown? — and the records do not say. Codes appear in `040 $a`
+(the agency credited with the cataloging) and as `035 $a` namespaces (the systems a
+record passed through), but nothing ties a code to a POD member.
+
+So the extract carries a hand-curated list, and **POD has not ratified it.** Treat
+every figure that rests on it as *attribution practice* rather than fact. Two
+properties of the data make the list unavoidable rather than merely convenient:
+
+- Members mostly self-attribute with an **OCLC symbol, not their MARC Organization
+  Code**. Duke's `NcD` appears on about 1,700 records; its `NDD` on 279,000.
+- One member can use **many symbols**. Harvard's work is spread across `MH` and its
+  sub-units (`MH-L`, `MH-HY`, …) plus `HLS`, `HUL`, `HMS`, `HBS` and others.
+
+Codes that follow a member's symbol family but that nobody has confirmed are kept
+apart in `_SELF_CODES_INFERRED` and reported separately as **"inferred"** wherever
+they appear, so the unratified part of a figure stays visible instead of being folded
+in. Codes too uncertain to attribute are left unattributed rather than guessed at.
+
+| What | Where | Used for |
+| --- | --- | --- |
+| `_SELF_CODES` | `queries.py` | Codes confidently belonging to a member |
+| `_SELF_CODES_INFERRED` | `queries.py` | Codes only inferred — reported separately |
+| `_LOCAL_ILS_NS` | `queries.py` | Generic ILS namespaces (`SIRSI`, `PUVoyagerBibID`) that mean "local" for *whichever* library carries them, since they name a system rather than an institution |
+| `_CHANNEL_TESTS` | `queries.py` | The `035` channel categories themselves |
+| `NAMESPACE` | `components/marc.js` | Display names for raw codes — cosmetic only; an unmapped code still charts, just bare |
+
+All of the above live in
+[`queries.py`](https://github.com/sul-dlss/podlake-web/blob/main/extract/src/podlake_web/queries.py)
+except the last, in
+[`marc.js`](https://github.com/sul-dlss/podlake-web/blob/main/site/src/components/marc.js).
+`_SELF_CODES` carries a comment recording each code's occurrence count and which
+entries are unconfirmed, so the list can be reviewed against the data.
+
+**Adding an institution to POD means revisiting these.** Only the first fails loudly:
+the extract refuses to build when the lake holds an institution missing from
+`_SELF_CODES`, because that member would otherwise publish a plausible-looking 0%
+self-cataloged and no consortium sharing rather than an error. The rest degrade
+quietly — a member arriving by a route no category covers simply doesn't appear in
+the `035` taxonomy, and an unlabelled namespace shows its raw code.
+
+Views that depend on the mapping: [Source of cataloging](./cataloging-source) (the
+"this institution", "inferred", and "another POD member" buckets, and the whole
+intra-consortium flow matrix), [Original cataloging over time](./original-cataloging)
+(entirely), and [How records arrived](./record-channels) (the "a local library
+system" and "another POD member's system" rows).
+
 ## Querying the lake yourself
 
 The dashboard shows aggregates. To work at the **record level** — reconstruct
@@ -131,8 +180,9 @@ How MARC maps onto this layout:
   type of record is character 7, bibliographic level is character 8.
 - **Control fields** (`001`–`009`) likewise carry their data in `value` with a
   `NULL` `subfield_code`. The workhorse is `008`, whose fixed positions hold the
-  publication date (chars 8–11), country of publication (16–18), and language
-  (36–38). DuckDB `substr` is **1-indexed**, so those become `substr(value, 8, 4)`,
+  date the record was created (chars 1–6, `yymmdd`), the publication date (8–11),
+  country of publication (16–18), and language (36–38). DuckDB `substr` is
+  **1-indexed**, so those become `substr(value, 1, 6)`, `substr(value, 8, 4)`,
   `substr(value, 16, 3)`, `substr(value, 36, 3)`.
 - **Data fields** (`010`+) carry indicators and one row per subfield.
 
