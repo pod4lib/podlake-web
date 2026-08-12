@@ -1,4 +1,4 @@
-.PHONY: extract site build check
+.PHONY: extract probe site build check
 
 # Compile the public aggregate artifacts from the lake into site/src/data.
 # Point CATALOG at the lake to read: a local .ducklake path, an
@@ -25,6 +25,17 @@ extract:
 	}
 	cd extract && uv run podlake-web extract --catalog "$(CATALOG)" \
 		$(if $(DATA_PATH),--data-path "$(DATA_PATH)",)
+
+# Dump each institution's cataloging-agency codes (MARC 040 $a) as CSV, for
+# building queries._SELF_CODES when a member joins. Same CATALOG/DATA_PATH as
+# `extract`; writes to OUT (default codes.csv in the repo root).
+#   make probe CATALOG=../../podlake/podlake.ducklake
+OUT ?= $(CURDIR)/codes.csv
+probe:
+	@test -n "$(CATALOG)" || { \
+	  echo "make probe: CATALOG is not set (see 'make extract' above)."; exit 1; }
+	cd extract && uv run podlake-web probe --catalog "$(CATALOG)" \
+		$(if $(DATA_PATH),--data-path "$(DATA_PATH)",) --out "$(OUT)"
 
 # Preview the dashboard locally (expects artifacts to exist; run `make extract` first).
 site:

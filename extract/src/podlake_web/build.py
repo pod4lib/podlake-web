@@ -9,8 +9,10 @@ runs each Tier-1 aggregate query, and writes a JSON file per view plus a
 
 from __future__ import annotations
 
+import csv
 import json
 import logging
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -109,24 +111,88 @@ ARTIFACTS = [
 ]
 
 
+CATALOG_OPTION = typer.Option(
+    ...,
+    "--catalog",
+    help=(
+        "The DuckLake catalog to read: a local .ducklake path, an "
+        "s3://…/x.ducklake URI, or a postgres:… DSN."
+    ),
+)
+
+DATA_PATH_OPTION = typer.Option(
+    None,
+    "--data-path",
+    help=(
+        "Where the lake's Parquet data lives. Defaults to the catalog's "
+        "sibling lake-data/ for file catalogs; required for a Postgres catalog."
+    ),
+)
+
+
+def _require_data_path_for_postgres(catalog: str, data_path: str | None) -> None:
+    if data_path is None and source.is_postgres(catalog):
+        raise typer.BadParameter(
+            "--data-path is required when --catalog is a Postgres DSN",
+            param_hint="--data-path",
+        )
+
+
+@app.command()
+def probe(
+    catalog: str = CATALOG_OPTION,
+    data_path: str = DATA_PATH_OPTION,
+    out: Path = typer.Option(
+        None, "--out", help="Write the CSV here instead of standard output."
+    ),
+) -> None:
+    """
+    Print the cataloging-agency codes each institution uses, as CSV.
+
+    This is the query behind ``queries._SELF_CODES`` — run it when onboarding a
+    member, or when the extract refuses to build because an institution is
+    unmapped. It is a command rather than a snippet to copy out of the source
+    because a transcribed copy drifts: the version in circulation ranked on
+    ``upper(trim(value))`` while the extract matched on ``_CODE_NORM``, so it
+    reported one code as two rows and nobody noticed.
+
+    Columns: ``n`` is occurrences of the code at that institution,
+    ``pct_of_org`` its share of that institution's records, and
+    ``pct_at_this_org`` how much of the code's *consortium-wide* use sits at this
+    one institution. Sort by the last of these — a code used almost only at one
+    member is the shape worth reviewing. It is not proof, though: single-subscriber
+    vendor namespaces look identical. Settle a MARC Organization Code against
+    id.loc.gov/vocabulary/organizations/<code>.json and an OCLC symbol against
+    OCLC's member directory (searching by *institution name* returns every symbol
+    that institution owns).
+    """
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+    _require_data_path_for_postgres(catalog, data_path)
+
+    con = source.connect(catalog, data_path, read_only=True)
+    try:
+        rows = con.execute(queries._SELF_CODE_PROBE)
+        header = [d[0] for d in rows.description]
+        records = rows.fetchall()
+    finally:
+        con.close()
+
+    if out is None:
+        writer = csv.writer(sys.stdout)
+        writer.writerow(header)
+        writer.writerows(records)
+        return
+    with out.open("w", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(header)
+        writer.writerows(records)
+    logger.info("wrote %s (%d rows)", out, len(records))
+
+
 @app.command()
 def extract(
-    catalog: str = typer.Option(
-        ...,
-        "--catalog",
-        help=(
-            "The DuckLake catalog to read: a local .ducklake path, an "
-            "s3://…/x.ducklake URI, or a postgres:… DSN."
-        ),
-    ),
-    data_path: str = typer.Option(
-        None,
-        "--data-path",
-        help=(
-            "Where the lake's Parquet data lives. Defaults to the catalog's "
-            "sibling lake-data/ for file catalogs; required for a Postgres catalog."
-        ),
-    ),
+    catalog: str = CATALOG_OPTION,
+    data_path: str = DATA_PATH_OPTION,
     out: Path = typer.Option(DEFAULT_OUT, help="Directory to write artifacts into."),
     threshold: int = typer.Option(
         10, help="Counts below this are suppressed (folded into 'Other' or blanked)."
@@ -136,11 +202,7 @@ def extract(
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     out.mkdir(parents=True, exist_ok=True)
 
-    if data_path is None and source.is_postgres(catalog):
-        raise typer.BadParameter(
-            "--data-path is required when --catalog is a Postgres DSN",
-            param_hint="--data-path",
-        )
+    _require_data_path_for_postgres(catalog, data_path)
 
     con = source.connect(catalog, data_path, read_only=True)
     try:
