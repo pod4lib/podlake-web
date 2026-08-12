@@ -736,17 +736,49 @@ _ALL_SELF_CODES: dict[str, tuple[str, ...]] = {
 _CODE_NORM = "upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160)))"
 
 
-# The probe that built _SELF_CODES in the first place, quoted in the guard's error
-# so whoever hits it can act on it instead of rediscovering the technique. Note
-# concentration alone is not sufficient to identify a member's own codes — it also
-# surfaces single-subscriber vendor namespaces (LexisNexis at Penn, MiAaPQ at Duke),
-# so the result needs a human, and ideally the member's own confirmation.
-_SELF_CODE_PROBE = """\
-SELECT org, upper(trim(value)) AS code, count(*) AS n
-FROM records
-WHERE field_tag = '040' AND subfield_code = 'a'
-GROUP BY org, code
-QUALIFY row_number() OVER (PARTITION BY org ORDER BY n DESC) <= 15
+# The probe for building _SELF_CODES, quoted in the guard's error so whoever hits it
+# can act on it instead of rediscovering the technique. Three things it has to get
+# right, each learned by getting it wrong:
+#
+# 1. Normalize with _CODE_NORM, the *same* expression the matching below uses.
+#    Ranking on a bare `upper(trim(value))` shows codes as the data spells them
+#    rather than as the extract will match them, which splits one code across
+#    several rows: Harvard's YNH appears as '*YNH*' (99k, the NOTIS convention) and
+#    'YNH' (11k) instead of one 110k row, and the smaller half falls off the list.
+# 2. Do not rank on a fixed top-N. A flat top-15 misses ten codes already in
+#    _SELF_CODES — including Harvard's MH, its actual MARC Organization Code, and
+#    HBS/DDO — because Harvard's own work is spread thinly while vendor loads are
+#    not. A share floor adapts to the institution; the top-N is kept only as a
+#    backstop for a member whose codes are all individually tiny.
+# 3. Report concentration. ~300 codes per institution clear the floor, but a code
+#    used almost exclusively at one member is the shape worth looking at, and
+#    sorting on it cuts the review to a few dozen rows.
+#
+# Concentration alone is still not sufficient: it also surfaces single-subscriber
+# vendor namespaces (LexisNexis and LinkedIn.com at Penn, EBLCP at Stanford), and
+# some members name themselves in free text ('PENNSYLVANIA UNIV LIB') where no code
+# rule can reach them. The result needs a human, and ideally the member's own
+# confirmation.
+_SELF_CODE_PROBE = f"""\
+WITH totals AS (SELECT org, count(*) AS records FROM record_meta GROUP BY org),
+per AS (
+  SELECT org, {_CODE_NORM} AS code, count(*) AS n
+  FROM records
+  WHERE field_tag = '040' AND subfield_code = 'a'
+  GROUP BY org, code
+),
+sized AS (
+  SELECT p.org, p.code, p.n, t.records,
+         sum(p.n) OVER (PARTITION BY p.code) AS n_all_orgs
+  FROM per p JOIN totals t USING (org)
+  WHERE p.code <> ''
+)
+SELECT org, code, n,
+       round(100.0 * n / records, 3)    AS pct_of_org,
+       round(100.0 * n / n_all_orgs, 1) AS pct_at_this_org
+FROM sized
+QUALIFY n >= 0.0002 * records
+     OR row_number() OVER (PARTITION BY org ORDER BY n DESC) <= 40
 ORDER BY org, n DESC"""
 
 
@@ -775,9 +807,13 @@ def _assert_orgs_mapped(con: Connection) -> None:
         "queries._SELF_CODES_INFERRED (codes you can only infer),\nthen re-run. "
         "To find the candidates:\n\n"
         + "\n".join(f"    {line}" for line in _SELF_CODE_PROBE.splitlines())
-        + "\n\nMembers often self-attribute with an OCLC symbol rather than their "
-        "MARC\nOrganization Code, so expect both (Duke's NcD appears on ~1.7k "
-        "records,\nits NDD on 279k)."
+        + "\n\nSort by pct_at_this_org: a code used almost only at one member is the "
+        "shape\nworth looking at. Expect an OCLC symbol as well as the MARC "
+        "Organization\nCode — members mostly self-attribute with the former (Duke's "
+        "NcD appears on\n~1.7k records, its NDD on 279k). The MARC code can be "
+        "confirmed against\nid.loc.gov/vocabulary/organizations/<code>.json; OCLC "
+        "symbols are a separate\nnamespace and are not in that registry, so they "
+        "belong in _SELF_CODES_INFERRED\nuntil the member confirms them."
     )
 
 

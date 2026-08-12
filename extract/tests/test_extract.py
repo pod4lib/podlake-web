@@ -793,6 +793,59 @@ def test_cataloging_timeline(tmp_path):
     ), "a sub-threshold cell survived into the published timeline"
 
 
+def test_self_code_probe_surfaces_what_the_matcher_will_match(tmp_path):
+    # The probe is the tool the guard hands you for onboarding a member, so it has
+    # to show codes the way _SELF_CODES will match them and it has to reach far
+    # enough down to find them. Both of these were wrong: a flat top-15 ranked on
+    # `upper(trim(value))` split Harvard's YNH into '*YNH*' (99k) and 'YNH' (11k),
+    # and buried ten codes already in _SELF_CODES — including Harvard's own MH.
+    def rec(org, rid, source):
+        pid = f"{org}:{rid}"
+        return (
+            [
+                (org, pid, "LDR", 0, None, None, None, None, LEADER),
+                (org, pid, "040", 1, " ", " ", "a", 0, source),
+            ],
+            (org, pid, rid),
+        )
+
+    records = {
+        # 40 distinct high-volume vendor codes, then the institution's own code on
+        # far fewer records — the real shape, where a library's own cataloging is
+        # a thin slice of what it loads.
+        "stanford": [
+            rec("stanford", f"v{i}-{j}", f"VENDOR{i:02d}")
+            for i in range(40)
+            for j in range(50)
+        ]
+        # written both bare and asterisk-wrapped, as the NOTIS era did
+        + [rec("stanford", f"s{j}", "CSt") for j in range(6)]
+        + [rec("stanford", f"a{j}", "*CSt*") for j in range(6)],
+    }
+    config = _build_lake(tmp_path, records)
+    connection = lake.connect(read_only=True, config=config)
+    try:
+        rows = connection.execute(queries._SELF_CODE_PROBE).fetchall()
+    finally:
+        connection.close()
+
+    by_code = {
+        code: (n, pct_org, pct_here) for _org, code, n, pct_org, pct_here in rows
+    }
+
+    # the two spellings are one code, counted together, under the normalized form
+    assert by_code["CST"][0] == 12
+    assert "*CST*" not in by_code
+
+    # and it survives being out-ranked by all 40 vendor codes, which a top-N would
+    # have cut (2,000 vendor records against 12 of Stanford's own)
+    assert "CST" in by_code, "the institution's own code was ranked off the probe"
+
+    # concentration is what makes the result reviewable: everything here is unique
+    # to the one org in this lake, so every row reads 100%
+    assert by_code["CST"][2] == 100.0
+
+
 def test_unmapped_org_is_refused(tmp_path):
     # An org missing from _SELF_CODES used to degrade silently: 0% self-cataloged,
     # nothing in `pod`, and a flow row with no column — a publishable-looking claim
