@@ -14,6 +14,12 @@ site/dist/
 # the GitHub Pages build can run without access to the private lake. Refresh it
 # with `make extract` and commit the result whenever the lake is updated.
 
+# Working files from the code-mapping workflow. institution-codes.csv IS committed
+# (it is curated input); these are its throwaway inputs — candidate rows straight from
+# the registry, and `podlake-web probe` output.
+*-candidates.csv
+codes.csv
+
 # local lake / env
 *.ducklake
 .env

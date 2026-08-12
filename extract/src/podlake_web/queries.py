@@ -28,7 +28,7 @@ from __future__ import annotations
 
 import duckdb
 
-from podlake_web import suppress
+from podlake_web import codes, suppress
 
 Connection = duckdb.DuckDBPyConnection
 
@@ -657,76 +657,11 @@ def electronic(con: Connection, *, threshold: int = 10, **_: object) -> dict:
 # --- source of cataloging (MARC 040) -----------------------------------------
 
 # 040 $a is the *original* cataloging agency, $d each *modifying* agency. Which
-# codes mean "this POD member cataloged it" is not derivable from the data:
-# members self-attribute with a mix of MARC Organization Codes (CSt, NjP, PU, RPB,
-# MH, NcD) and OCLC symbols (STF, PUL, PAU, RBN, HLS, NDD), and some run a symbol
-# per library (Harvard especially — its MH family accounts for only ~250k of its
-# ~1.9m self-attributed records). Sub-unit codes are base + '-' + suffix (CSt-H,
-# MH-L, NjP-G, PU-MED, RPB-JH), which the '-*' entries below cover.
-#
-# Trailing counts are $a occurrences at that institution in the 2026-08 lake, so
-# the table can be reviewed against the data. Entries marked "?" are inferred from
-# the symbol family plus near-exclusive use at that institution and are *not*
-# confirmed by the institution — POD should ratify this mapping before these
-# figures are treated as authoritative. A prefix rule would be wrong: H** is not
-# exclusively Harvard (HMM is Brown's), so this is an explicit list.
-#
-# The '-*' sub-unit rule is safe by construction, not by luck: MARC Organization
-# Codes are hierarchical on '-', so every 'BASE-…' code belongs to BASE's
-# institution. Verified against the lake — RPB-JH, MH-L/HY/MU/FA/AR, NJP-G,
-# PU-MED/L/CJS, CST-H/LAW/ES are all genuine sub-units, and 'PU-%' does not match
-# 'PUL' (Princeton's symbol, claimed by its own exact entry).
-#
-# Left in "other" as too uncertain to attribute, listed so a reviewer can promote
-# them: FLL 94k, BOH 84k, BHA 41k, TOZ 16k, SLR 11k, MCS 8k (Harvard); NDL 12k,
-# NCS 14k (Duke); QQR 19k, PAULM 13k, PPA 11k (Penn); RIBRL 8k (Brown); HMM
-# (harvard 18k / brown 15k — split too evenly to attribute either way). 'YNH'
-# (144k at Harvard, half of it written '*YNH*') is *Yale's* symbol — a
-# copy-cataloging signal, not self-attribution — and correctly stays in "other".
-# Codes we can name with confidence: a member's MARC Organization Code (and its
-# '-' sub-units) plus OCLC symbols whose owner is unambiguous from the name.
-_SELF_CODES: dict[str, tuple[str, ...]] = {
-    "brown": ("RPB", "RPB-*", "RBN", "RPJCB"),  # 117k, 5k, 155k, 18k
-    "duke": ("NCD", "NCD-*", "NDD"),  # 2k, —, 279k
-    "harvard": (
-        "MH",  # 56k (+ MH-*: MH-L 79k, MH-HY 48k, MH-MU 28k, MH-FA 19k, MH-H 19k)
-        "MH-*",
-        "HLS",  # 714k Harvard Law School
-        "HUL",  # 168k Harvard University Library
-        "HMS",  # 137k Harvard Medical School
-        "HBS",  # 38k Harvard Business School
-        "DDO",  # 17k Dumbarton Oaks
-    ),
-    "penn": ("PU", "PU-*", "PAU"),  # 490k, 3k, 105k
-    "princeton": ("NJP", "NJP-*", "PUL", "PULEA"),  # 533k, 29k, 205k, 20k
-    "stanford": ("CST", "CST-*", "STF"),  # 718k, 190k, 224k
-}
-
-# Codes we *infer* belong to a member — they follow that institution's symbol
-# family and are used almost exclusively there, but nobody has confirmed them.
-# Reported as a separate `self_inferred` bucket rather than merged into `self`,
-# because the difference is material: these move Harvard's self-cataloged share
-# from 8.3% to 14.5%, and that figure invites comparison against peers. If POD
-# ratifies them, move them into _SELF_CODES above; if POD rejects any, delete it.
-_SELF_CODES_INFERRED: dict[str, tuple[str, ...]] = {
-    "harvard": (
-        "HVL",  # 270k
-        "HHG",  # 122k
-        "HMY",  # 121k
-        "HMZ",  # 59k
-        "HMG",  # 32k
-        "HTV",  # 31k
-        "HMU",  # 30k
-        "HFL",  # 27k
-    ),
-}
-
-# Merged view, for "which member is this code's?" — used by the `pod` bucket and
-# the flow matrix, both of which care about attribution direction rather than how
-# certain the attribution is.
-_ALL_SELF_CODES: dict[str, tuple[str, ...]] = {
-    org: codes + _SELF_CODES_INFERRED.get(org, ()) for org, codes in _SELF_CODES.items()
-}
+# codes mean "this POD member cataloged it" is not derivable from the data, so it is
+# curated by hand in institution-codes.csv at the repo root and loaded here — see
+# podlake_web.codes for the file's shape, the case/hyphen rules, and how MARC
+# families expand. Nothing about the mapping lives in this module any more.
+_CODES = codes.load()
 
 # Agency codes arrive noisy: ~1.2m of 155m values carry a trailing period, and
 # 513k are wrapped in asterisks (the NOTIS-era '*YNH*' convention) — which, left
@@ -736,7 +671,8 @@ _ALL_SELF_CODES: dict[str, tuple[str, ...]] = {
 _CODE_NORM = "upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(160)))"
 
 
-# The probe for building _SELF_CODES, quoted in the guard's error so whoever hits it
+# The probe for building institution-codes.csv, quoted in the guard's error so
+# whoever hits it
 # can act on it instead of rediscovering the technique. Three things it has to get
 # right, each learned by getting it wrong:
 #
@@ -746,7 +682,7 @@ _CODE_NORM = "upper(trim(value, ' *.,;:' || chr(9) || chr(10) || chr(13) || chr(
 #    several rows: Harvard's YNH appears as '*YNH*' (99k, the NOTIS convention) and
 #    'YNH' (11k) instead of one 110k row, and the smaller half falls off the list.
 # 2. Do not rank on a fixed top-N. A flat top-15 misses ten codes already in
-#    _SELF_CODES — including Harvard's MH, its actual MARC Organization Code, and
+#    the curated map — including Harvard's MH, its actual MARC Organization Code, and
 #    HBS/DDO — because Harvard's own work is spread thinly while vendor loads are
 #    not. A share floor adapts to the institution; the top-N is kept only as a
 #    backstop for a member whose codes are all individually tiny.
@@ -784,7 +720,7 @@ ORDER BY org, n DESC"""
 
 def _assert_orgs_mapped(con: Connection) -> None:
     """
-    Refuse to build if the lake holds an org that ``_SELF_CODES`` doesn't know.
+    Refuse to build if the lake holds an org missing from ``institution-codes.csv``.
 
     An unmapped org does not error on its own — it quietly reads as 0%
     self-cataloged, contributes nothing to ``pod``, and gets a row but no column in
@@ -794,56 +730,25 @@ def _assert_orgs_mapped(con: Connection) -> None:
     whoever can fix the mapping.
     """
     rows = con.execute("SELECT DISTINCT org FROM record_meta").fetchall()
-    orgs = {org for (org,) in rows}
-    missing = sorted(orgs - set(_ALL_SELF_CODES))
+    missing = sorted({org for (org,) in rows} - codes.orgs(_CODES))
     if not missing:
         return
     raise ValueError(
         "no cataloging-agency codes are mapped for: "
         + ", ".join(missing)
-        + ".\nThese institutions would publish 0% self-cataloged, no "
-        "intra-consortium\nflow, and no local-system coverage. Add them to "
-        "queries._SELF_CODES (codes\nyou can confirm) or "
-        "queries._SELF_CODES_INFERRED (codes you can only infer),\nthen re-run. "
-        "To find the candidates:\n\n"
+        + f".\nThese institutions would publish 0% self-cataloged, no "
+        "intra-consortium\nflow, and no local-system coverage. Add rows for them to "
+        f"\n{codes.DEFAULT_PATH.name}, then re-run.\n\n"
+        "Generate candidates with tools/registry-codes.js (searching the WorldCat\n"
+        "Registry by institution name — and by its *library* name too, or you will\n"
+        "miss the profile holding the main code). To see which codes the institution\n"
+        "actually uses, and how concentrated each one is here:\n\n"
         + "\n".join(f"    {line}" for line in _SELF_CODE_PROBE.splitlines())
         + "\n\nSort by pct_at_this_org: a code used almost only at one member is the "
         "shape\nworth looking at. Expect an OCLC symbol as well as the MARC "
         "Organization\nCode — members mostly self-attribute with the former (Duke's "
-        "NcD appears on\n~1.7k records, its NDD on 279k). The MARC code can be "
-        "confirmed against\nid.loc.gov/vocabulary/organizations/<code>.json; OCLC "
-        "symbols are a separate\nnamespace and are not in that registry, so they "
-        "belong in _SELF_CODES_INFERRED\nuntil the member confirms them."
+        "NcD appears on\n~1.7k records, its NDD on 301k)."
     )
-
-
-def _code_match_sql(column: str, codes: tuple[str, ...], indent: str) -> str:
-    """OR-ed tests matching a code against exact entries and ``BASE-*`` families."""
-    tests = [
-        f"{column} LIKE '{code[:-1]}%'"
-        if code.endswith("-*")
-        else f"{column} = '{code}'"
-        for code in codes
-    ]
-    return f"\n{indent}OR ".join(tests)
-
-
-def _self_org_sql(column: str) -> str:
-    """A CASE mapping a normalized 040 agency code to the POD org that owns it."""
-    whens = [
-        f"         WHEN {_code_match_sql(column, codes, ' ' * 14)}\n"
-        f"              THEN '{org}'"
-        for org, codes in _ALL_SELF_CODES.items()
-    ]
-    return "CASE\n" + "\n".join(whens) + "\n         END"
-
-
-def _self_inferred_sql(column: str) -> str:
-    """True when the code is one of the *unconfirmed* member attributions."""
-    codes = tuple(c for codes in _SELF_CODES_INFERRED.values() for c in codes)
-    if not codes:
-        return "false"
-    return _code_match_sql(column, codes, " " * 14)
 
 
 # MARC 008/00-05 is "date entered on file" — when the record was created in the
@@ -925,8 +830,7 @@ joined AS (
   SELECT m.org,
          e.entered_year,
          o.code AS source_code,
-         {_self_org_sql("o.code")} AS source_org,
-         {_self_inferred_sql("o.code")} AS inferred_self,
+         {codes.org_case_sql("o.code", _CODES)} AS source_org,
          coalesce(d.mod_agencies, 0) AS mod_agencies,
          p.pod_record_id IS NOT NULL AS has_040
   FROM record_meta m
@@ -945,7 +849,6 @@ SELECT org, entered_year, source_code, source_org,
          -- 0% OCLC bucket would imply OCLC plays no role here, when in fact
          -- 66-98% of these records carry an (OCoLC) number in 035. That channel
          -- signal belongs to 035, not 040, so OCoLC-in-$a falls to 'other'.
-         WHEN source_org = org AND inferred_self             THEN 'self_inferred'
          WHEN source_org = org                               THEN 'self'
          WHEN source_org IS NOT NULL                         THEN 'pod'
          ELSE 'other'
@@ -1032,8 +935,18 @@ SELECT org, entered_year AS year, bucket, sum(n) AS n
 FROM cataloging_source
 GROUP BY org, entered_year, bucket"""
 
+# Every code the map claims, with how much of the corpus it actually accounts for,
+# so the published map can be judged rather than taken on trust. Counts are of the
+# holding institution's own records only — a code's use *elsewhere* is copy
+# cataloging and belongs to the flow matrix, not here.
+Q_CAT_SELF_CODES = """\
+SELECT org, source_code AS code, sum(n) AS n
+FROM cataloging_source
+WHERE source_code IS NOT NULL AND source_org = org
+GROUP BY org, source_code"""
+
 # Render order for the two fixed vocabularies (neither is worth ranking by count).
-_CAT_BUCKETS = ("lc", "self", "self_inferred", "pod", "other", "none")
+_CAT_BUCKETS = ("lc", "self", "pod", "other", "none")
 _MOD_DEPTH_BUCKETS = ("no_040", "0", "1", "2", "3-4", "5-9", "10+")
 
 
@@ -1043,8 +956,8 @@ def cataloging_source(con: Connection, *, threshold: int = 10, **_: object) -> d
     the collections contain (the POD "040 analysis" ask).
 
     - ``per_org[].mix`` / ``.counts``: share and count of the institution's records
-      by origin bucket — ``lc`` (DLC), ``self``, ``self_inferred``, ``pod``
-      (another member), ``other``, ``none`` (an 040 with no $a, or no 040 at all).
+      by origin bucket — ``lc`` (DLC), ``self``, ``pod`` (another member),
+      ``other``, ``none`` (an 040 with no $a, or no 040 at all).
       Denominator is every record the institution holds, so the shares sum to ~1.
     - ``dimensions.agency``: the union of each institution's own top
       ``_CAT_AGENCY_PER_ORG`` $a codes, on a shared axis.
@@ -1055,19 +968,20 @@ def cataloging_source(con: Connection, *, threshold: int = 10, **_: object) -> d
     - ``timeline``: the same mix again, cut by the year the record entered the
       institution's system (008/00-05) — see :func:`_cataloging_timeline`.
 
-    ``self`` depends on ``_SELF_CODES``, a curated mapping of agency codes to
-    members; read it as "attributed to us," not "we did the original work". Codes
-    that follow a member's symbol family but that nobody has confirmed live in
-    ``_SELF_CODES_INFERRED`` and are reported separately as ``self_inferred``, so
-    the uncertainty is visible in the chart rather than only in the prose. Members
-    largely self-attribute with their OCLC symbol rather than their MARC
-    Organization Code. There is deliberately no ``oclc`` bucket — see the CASE in
-    ``Q_CAT_SOURCE_TABLE``; 040 records authorship, not distribution channel.
+    ``self`` depends on ``institution-codes.csv`` (see :mod:`podlake_web.codes`), a
+    hand-curated map of agency codes to members; read it as "attributed to us," not
+    "we did the original work". Members largely self-attribute with their OCLC symbol
+    rather than their MARC Organization Code — MIT's own ``MCM`` appears on no
+    records at all, while its symbol ``MYG`` appears on 205k. There is deliberately
+    no ``oclc`` bucket — see the CASE in ``Q_CAT_SOURCE_TABLE``; 040 records
+    authorship, not distribution channel.
 
-    ``flow`` and ``pod`` count confirmed and inferred attributions together: they
-    describe the *direction* of copy cataloging, where excluding a probably-correct
-    attribution would understate a member's outflow. So ``flow``'s diagonal equals
-    ``self`` + ``self_inferred``, not ``self`` alone.
+    Every figure here is a **floor**. The map holds only codes somebody has
+    confirmed, so a member's retired or unrecorded codes go uncounted, and some
+    members name themselves in free text ('PENNSYLVANIA UNIV LIB', 'DARTMOUTH
+    COLLEGE LIB') where no code rule reaches. Adding a code raises that member's
+    figure; nothing here distinguishes "does little original cataloging" from
+    "has codes we do not know about yet".
 
     Disclosure control: sub-``threshold`` mix buckets are folded into ``other``
     (never published as their own share), and matrix cells in ``1..threshold-1``
@@ -1155,9 +1069,11 @@ def cataloging_source(con: Connection, *, threshold: int = 10, **_: object) -> d
         # aren't loaded; the union guarantees no org can get a row without a
         # column, so the matrix stays square even if _assert_orgs_mapped is
         # ever bypassed.
-        categories=sorted(set(_ALL_SELF_CODES) | set(records)),
+        categories=sorted(codes.orgs(_CODES) | set(records)),
     )
     del flow["totals"]  # see the disclosure note above
+
+    code_map = _published_code_map(con, threshold=threshold)
 
     timeline = _cataloging_timeline(con, threshold=threshold, totals=records)
     timeline["sql"] = [
@@ -1178,8 +1094,58 @@ def cataloging_source(con: Connection, *, threshold: int = 10, **_: object) -> d
             ),
         },
         "timeline": timeline,
+        "code_map": code_map,
         "sql": [ddl, {"label": "Provenance mix by institution", "sql": Q_CAT_MIX}],
     }
+
+
+def _published_code_map(con: Connection, *, threshold: int) -> dict:
+    """
+    The institution ↔ code map *as this run used it*, with each code's volume.
+
+    Published so the map can be inspected next to the figures it produced, rather
+    than a reader having to trust them: the site renders it on the About page. It
+    reports the map from :mod:`podlake_web.codes` — not the CSV as it stands now —
+    for the same reason each artifact embeds its own SQL.
+
+    ``listed`` is one entry per row of the CSV. ``via_family`` is the codes that
+    counted only because a listed MARC code covers its hyphenated children (see
+    ``codes.match_sql``); surfacing them is the point, since they are the part of
+    the mapping no row in the file states outright.
+    """
+    used = {(org, code): n for org, code, n in con.execute(Q_CAT_SELF_CODES).fetchall()}
+
+    def publish(n: int) -> int | None:
+        # null = suppressed, matching the convention used across the artifacts
+        return n if (n == 0 or n >= threshold) else None
+
+    listed = [
+        {
+            "org": c.org,
+            "code": c.code,
+            "kind": "marc" if c.is_marc else "oclc",
+            "registry_name": c.registry_name,
+            "records": publish(used.get((c.org, c.code), 0)),
+        }
+        for c in sorted(_CODES, key=lambda c: (c.org, c.code))
+    ]
+
+    exact = {(c.org, c.code) for c in _CODES}
+    families = {(c.org, c.code) for c in _CODES if c.is_marc}
+    via_family = [
+        {
+            "org": org,
+            "code": code,
+            "parent": next(
+                b for o, b in families if o == org and code.startswith(b + "-")
+            ),
+            "records": publish(n),
+        }
+        for (org, code), n in sorted(used.items())
+        if (org, code) not in exact
+        and any(o == org and code.startswith(b + "-") for o, b in families)
+    ]
+    return {"listed": listed, "via_family": via_family, "sql": Q_CAT_SELF_CODES}
 
 
 def _cataloging_timeline(
@@ -1190,7 +1156,7 @@ def _cataloging_timeline(
     record entered that institution's system.
 
     This is a record-arrival clock, not a cataloging clock; the two only coincide
-    for the ``self``/``self_inferred`` buckets, where "the record appeared in our
+    for the ``self`` bucket, where "the record appeared in our
     system" and "we cataloged it" are the same event. Even then the date survives
     only until the next migration: a reload restamps everything it touches, so a
     year holding several times its neighbours' volume is a load event and its shape
@@ -1300,10 +1266,13 @@ _CHANNEL_TESTS = {
     # "local" for whichever institution carries it stays correct as membership
     # grows, where attributing it to Stanford would not. Without this, Stanford
     # reads 3% local when its real local namespace, (SIRSI), covers 91%.
-    "local_system": (f"{_self_org_sql('prefix')} = org OR prefix IN {_LOCAL_ILS_NS}"),
+    "local_system": (
+        f"{codes.org_case_sql('prefix', _CODES)} = org OR prefix IN {_LOCAL_ILS_NS}"
+    ),
     # a number in *another* POD member's namespace — evidence of record sharing
     "pod_system": (
-        f"{_self_org_sql('prefix')} IS NOT NULL AND {_self_org_sql('prefix')} <> org"
+        f"{codes.org_case_sql('prefix', _CODES)} IS NOT NULL"
+        f" AND {codes.org_case_sql('prefix', _CODES)} <> org"
     ),
     # baseline: carries any parseable "(namespace)number" at all
     "any_system": "prefix <> ''",
