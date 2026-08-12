@@ -143,6 +143,37 @@ def _plain(output: str) -> str:
     return " ".join(no_box.split())
 
 
+def test_probe_command_emits_csv_of_agency_codes(tmp_path: Path):
+    # The probe exists as a command so the query people run is the query the
+    # extract matches on — a transcribed copy is how the normalization mismatch
+    # went unnoticed. So this asserts the CSV shape callers depend on, not just
+    # that it exits 0.
+    catalog = tmp_path / "podlake.ducklake"
+    data_path = tmp_path / "lake-data"
+    cfg = Config(
+        profile="file", data_path=str(data_path) + "/", catalog_uri=str(catalog)
+    )
+    con = lake.connect(read_only=False, config=cfg)
+    lake.ensure_schema(con)
+    con.execute("INSERT INTO record_meta VALUES ('stanford', 'stanford:a1', 'k1')")
+    con.execute(
+        "INSERT INTO records VALUES "
+        "('stanford', 'stanford:a1', '040', 1, ' ', ' ', 'a', 0, '*CSt*')"
+    )
+    con.close()
+
+    out = tmp_path / "codes.csv"
+    result = CliRunner().invoke(
+        app, ["probe", "--catalog", str(catalog), "--out", str(out)]
+    )
+    assert result.exit_code == 0, _plain(result.output)
+
+    lines = out.read_text().splitlines()
+    assert lines[0] == "org,code,n,pct_of_org,pct_at_this_org"
+    # normalized to the form _SELF_CODES compares on, not the '*CSt*' in the data
+    assert lines[1].startswith("stanford,CST,1,")
+
+
 def test_extract_requires_data_path_for_postgres_catalog():
     result = CliRunner().invoke(
         app, ["extract", "--catalog", "postgres:host=x dbname=y"]
