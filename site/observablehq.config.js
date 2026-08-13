@@ -67,6 +67,22 @@ export default {
     " font-size: 0.75rem; line-height: 1.4;" +
     " }" +
     "#observablehq-sidebar .alpha-banner strong { text-transform: uppercase; letter-spacing: 0.05em; }" +
+    // Section links injected under the active page in the sidebar (see the script
+    // below). Indented past the page links, smaller and dimmer, so they read as
+    // subordinate; the active one gets a rule down its left edge.
+    "#observablehq-sidebar .section-nav { list-style: none; margin: 0.15rem 0 0.4rem; padding: 0; }" +
+    "#observablehq-sidebar .section-nav a {" +
+    " display: block; padding: 3px 12px 3px 24px; margin-left: 12px;" +
+    " font-size: 14px; line-height: 1.35; text-decoration: none;" +
+    " color: var(--theme-foreground-muted);" +
+    " border-left: 2px solid var(--theme-foreground-faintest, rgba(128,128,128,0.25));" +
+    " }" +
+    "#observablehq-sidebar .section-nav a:hover {" +
+    " color: var(--theme-foreground); background: var(--theme-background-alt);" +
+    " }" +
+    "#observablehq-sidebar .section-nav a.current {" +
+    " color: var(--theme-foreground-focus); border-left-color: var(--theme-foreground-focus);" +
+    " }" +
     "</style>" +
     "<script>addEventListener('DOMContentLoaded',()=>{" +
     "const nav=document.querySelector('#observablehq-sidebar');" +
@@ -75,6 +91,36 @@ export default {
     "d.innerHTML='<strong>Alpha preview</strong> — podlake is under active development; the data and visualizations here are exploratory, may be wrong, and will change.';" +
     "const firstOl=nav.querySelector('ol');" +
     "firstOl.insertAdjacentElement('afterend', d);" +
+    "});</script>" +
+    // Sidebar section links for the current page. Built at load from the page's
+    // own <h2 id> elements rather than listed in `pages` above, so headings can
+    // be added, renamed or reordered without a config edit and the anchors can
+    // never drift from the markdown. Nested inside the active <li> — an <ol> may
+    // only contain <li>, so it cannot be a sibling of one.
+    "<script>addEventListener('DOMContentLoaded',()=>{" +
+    "const nav=document.querySelector('#observablehq-sidebar');" +
+    "const active=nav&&nav.querySelector('.observablehq-link-active');" +
+    "const main=document.querySelector('#observablehq-main');" +
+    "if(!nav||!active||!main||active.querySelector('.section-nav'))return;" +
+    "const hs=[...main.querySelectorAll('h2[id]')];" +
+    // one section is the whole page, so a sub-nav would just restate the title
+    "if(hs.length<2)return;" +
+    "const ol=document.createElement('ol');ol.className='section-nav';" +
+    "const links=hs.map(h=>{" +
+    "const li=document.createElement('li');const a=document.createElement('a');" +
+    "a.href='#'+h.id;a.textContent=h.textContent;li.append(a);ol.append(li);return a;});" +
+    "active.append(ol);" +
+    // mark whichever section the reader is currently in, the way the framework's
+    // own right-hand toc does
+    "const sync=()=>{" +
+    "let i=0;hs.forEach((h,j)=>{if(h.getBoundingClientRect().top<120)i=j;});" +
+    "links.forEach((a,j)=>a.classList.toggle('current',j===i));};" +
+    // `load` and `hashchange` as well as `scroll`: arriving on a URL that already
+    // carries a hash jumps the page without necessarily firing a scroll event
+    // after this handler has run, which would otherwise leave the wrong section
+    // marked on exactly the links people bookmark and share.
+    "addEventListener('scroll',sync,{passive:true});" +
+    "addEventListener('hashchange',sync);addEventListener('load',sync);sync();" +
     "});</script>",
   header: "podlake — consortial collection analytics",
   footer:
