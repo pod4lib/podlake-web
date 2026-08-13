@@ -36,95 +36,11 @@ the static site reads only those files.
 
 Every chart on this site has a **Behind this chart** panel showing the exact
 DuckDB query that produced its data, plus a link to download that derived data.
-The queries are nothing fancier than SQL over the two tables described below; the
-raw counts are then shaped in Python (small-cell suppression, the comparison
-share matrices, the place roll-ups), all of it in the extract:
+The queries are nothing fancier than SQL over the two tables described under [the
+schema](#the-schema); the raw counts are then shaped in Python (small-cell
+suppression, the comparison share matrices, the place roll-ups), all of it in the
+extract:
 [`extract/src/podlake_web`](https://github.com/sul-dlss/podlake-web/tree/main/extract/src/podlake_web).
-
-## The institution code mapping
-
-MARC `040 $a` and `035` identify a cataloging agency by code, and nothing in the
-record says which POD member a code belongs to — so the mapping is curated by hand in
-[`institution-codes.csv`](https://github.com/sul-dlss/podlake-web/blob/main/institution-codes.csv).
-
-It matters only where a view asks **who catalogued a record**: the "this institution"
-and "another POD member" shares on [Source of cataloging](./cataloging-source) and its
-intra-consortium flow matrix, all of [Original cataloging over
-time](./original-cataloging), and the "a local library system" / "another POD member's
-system" rows on [How records arrived](./record-channels). Every other per-institution
-figure — counts, overlap, subject and language distributions, classification, formats
-— keys on `org`, the lake's own record of which member contributed the record, and is
-unaffected by the map.
-[`tools/registry-codes.js`](https://github.com/sul-dlss/podlake-web/blob/main/tools/registry-codes.js)
-proposes rows from the [WorldCat Registry](https://registry.worldcat.org/) and a
-person decides what to keep;
-[docs/institution-codes.md](https://github.com/sul-dlss/podlake-web/blob/main/docs/institution-codes.md)
-covers maintaining it.
-
-**Every figure built on it is a floor.** The map holds only codes somebody has
-confirmed, so retired or unrecorded codes go uncounted — nothing here distinguishes
-"did little original cataloging" from "has codes we don't know about yet".
-
-Below is the map exactly as this snapshot used it, split by namespace because the two
-follow different rules. Most of these codes are branch libraries that rarely or never
-appear in `040 $a`; being listed does not imply the institution uses it.
-
-```js
-const codeMap = cat.code_map ?? {listed: [], sql: null};
-const codeRows = (kind) =>
-  codeMap.listed
-    .filter((r) => r.kind === kind)
-    .map((r) => ({
-      institution: orgLabel(r.org),
-      code: r.code,
-      "registry name": r.registry_name,
-    }))
-    .sort(
-      (a, b) =>
-        a.institution.localeCompare(b.institution) || a.code.localeCompare(b.code)
-    );
-// Full width, or the registry names truncate — they are the field you read to judge
-// whether a row belongs to that institution.
-const codeTable = (rows) =>
-  rows.length
-    ? html`<div class="grid grid-cols-1">${Inputs.table(rows, {
-        rows: 12,
-        width: {institution: 110, code: 150},
-      })}</div>`
-    : html`<div class="note">This snapshot predates the published map — re-running the
-        extract fills this in.</div>`;
-```
-
-**MARC Organization Codes.** Hierarchical on the hyphen, so a listed code also covers
-its sub-units without the file enumerating them: `CtY` counts `CtY-BR` (Yale's
-Beinecke) too. The hyphen is required rather than a nicety — `PU-L` is Penn's Biddle
-Law Library and `PUL` is Princeton University Library, and LC's own registry publishes
-`PU-L` normalized to `pul`, which conflates the two.
-
-```js
-codeTable(codeRows("marc"))
-```
-
-**OCLC symbols.** A separate namespace, and opaque — `AS#`, `4H7`, `YU#` — so these
-are matched exactly. A shared prefix between two symbols means nothing, and no
-sub-unit rule applies.
-
-```js
-codeTable(codeRows("oclc"))
-```
-
-Case is not significant in either namespace; agency codes are written every which way
-in real records, so both sides are upper-cased before comparing.
-
-Two smaller maps live in the extract rather than here: `_LOCAL_ILS_NS`, the generic ILS
-namespaces (`SIRSI`, `PUVoyagerBibID`) that mean "local" for whichever library carries
-them, and `_CHANNEL_TESTS`, the `035` channel categories. Display names for raw codes
-are in `components/marc.js` and are cosmetic — an unmapped code still charts, just
-bare.
-
-**Adding an institution means updating the CSV.** The extract refuses to build for an
-institution it has no codes for, rather than publishing a plausible-looking 0%
-self-cataloged.
 
 ## Querying the lake yourself
 
@@ -278,3 +194,88 @@ credentials by hand. That's a separate build; this page is the zero-infra path
 that works today.
 
 </div>
+
+## The institution code mapping
+
+MARC `040 $a` and `035` identify a cataloging agency by code, and nothing in the
+record says which POD member a code belongs to — so the mapping is curated by hand in
+[`institution-codes.csv`](https://github.com/sul-dlss/podlake-web/blob/main/institution-codes.csv).
+
+It matters only where a view asks **who catalogued a record**: the "this institution"
+and "another POD member" shares on [Source of cataloging](./cataloging-source) and its
+intra-consortium flow matrix, all of [Original cataloging over
+time](./original-cataloging), and the "a local library system" / "another POD member's
+system" rows on [How records arrived](./record-channels). Every other per-institution
+figure — counts, overlap, subject and language distributions, classification, formats
+— keys on `org`, the lake's own record of which member contributed the record, and is
+unaffected by the map.
+[`tools/registry-codes.js`](https://github.com/sul-dlss/podlake-web/blob/main/tools/registry-codes.js)
+proposes rows from the [WorldCat Registry](https://registry.worldcat.org/) and a
+person decides what to keep;
+[docs/institution-codes.md](https://github.com/sul-dlss/podlake-web/blob/main/docs/institution-codes.md)
+covers maintaining it.
+
+**Every figure built on it is a floor.** The map holds only codes somebody has
+confirmed, so retired or unrecorded codes go uncounted — nothing here distinguishes
+"did little original cataloging" from "has codes we don't know about yet".
+
+Below is the map exactly as this snapshot used it, split by namespace because the two
+follow different rules. Most of these codes are branch libraries that rarely or never
+appear in `040 $a`; being listed does not imply the institution uses it.
+
+```js
+const codeMap = cat.code_map ?? {listed: [], sql: null};
+const codeRows = (kind) =>
+  codeMap.listed
+    .filter((r) => r.kind === kind)
+    .map((r) => ({
+      institution: orgLabel(r.org),
+      code: r.code,
+      "registry name": r.registry_name,
+    }))
+    .sort(
+      (a, b) =>
+        a.institution.localeCompare(b.institution) || a.code.localeCompare(b.code)
+    );
+// Full width, or the registry names truncate — they are the field you read to judge
+// whether a row belongs to that institution.
+const codeTable = (rows) =>
+  rows.length
+    ? html`<div class="grid grid-cols-1">${Inputs.table(rows, {
+        rows: 12,
+        width: {institution: 110, code: 150},
+      })}</div>`
+    : html`<div class="note">This snapshot predates the published map — re-running the
+        extract fills this in.</div>`;
+```
+
+**MARC Organization Codes.** Hierarchical on the hyphen, so a listed code also covers
+its sub-units without the file enumerating them: `CtY` counts `CtY-BR` (Yale's
+Beinecke) too. The hyphen is required rather than a nicety — `PU-L` is Penn's Biddle
+Law Library and `PUL` is Princeton University Library, and LC's own registry publishes
+`PU-L` normalized to `pul`, which conflates the two.
+
+```js
+codeTable(codeRows("marc"))
+```
+
+**OCLC symbols.** A separate namespace, and opaque — `AS#`, `4H7`, `YU#` — so these
+are matched exactly. A shared prefix between two symbols means nothing, and no
+sub-unit rule applies.
+
+```js
+codeTable(codeRows("oclc"))
+```
+
+Case is not significant in either namespace; agency codes are written every which way
+in real records, so both sides are upper-cased before comparing.
+
+Two smaller maps live in the extract rather than here: `_LOCAL_ILS_NS`, the generic ILS
+namespaces (`SIRSI`, `PUVoyagerBibID`) that mean "local" for whichever library carries
+them, and `_CHANNEL_TESTS`, the `035` channel categories. Display names for raw codes
+are in `components/marc.js` and are cosmetic — an unmapped code still charts, just
+bare.
+
+**Adding an institution means updating the CSV.** The extract refuses to build for an
+institution it has no codes for, rather than publishing a plausible-looking 0%
+self-cataloged.
