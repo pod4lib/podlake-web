@@ -26,20 +26,22 @@ const electronicFile = FileAttachment("./data/electronic.json");
 const electronic = electronicFile.json();
 import {provenance} from "./components/provenance.js";
 import {orgLabel} from "./components/marc.js";
+import {autoGrid} from "./components/layout.js";
 ```
 
 ## Top link hosts by institution
 
 ```js
+const hostGrid = autoGrid(width, {min: 500});
 const hostPanels = electronic.hosts.map((o) => {
   const rows = o.values.map((v) => ({host: v.host, count: v.count}));
-  return html`<figure style="margin: 0 0 0.5rem 0; max-width: 520px">
+  return html`<figure style="margin: 0 0 0.5rem 0">
     <figcaption style="font-weight: 600; margin-bottom: 0.25rem">
       ${orgLabel(o.org)} <span style="font-weight: 400; color: var(--theme-foreground-muted)">· ${d3.format(",")(o.total)} links</span>
     </figcaption>
     ${Plot.plot({
       marginLeft: 230,
-      width: 520,
+      width: hostGrid.panel,
       height: 30 + rows.length * 22,
       x: {label: null, tickFormat: "~s", grid: true},
       y: {label: null, domain: rows.map((r) => r.host)},
@@ -54,7 +56,7 @@ const hostPanels = electronic.hosts.map((o) => {
 ```
 
 ```js
-html`<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 1rem 1.5rem">${hostPanels}</div>`
+html`<div style=${`display: grid; grid-template-columns: repeat(${hostGrid.cols}, 1fr); gap: 1rem 1.5rem`}>${hostPanels}</div>`
 ```
 
 ```js

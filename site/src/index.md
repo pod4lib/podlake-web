@@ -40,6 +40,7 @@ const overview = overviewFile.json();
 
 ```js
 Plot.plot({
+  width,
   marginLeft: 90,
   height: 40 + overview.per_org.length * 28,
   x: {label: "records", grid: true, tickFormat: "~s"},

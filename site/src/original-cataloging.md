@@ -28,6 +28,7 @@ Three things to hold onto before reading anything below:
 ```js
 import {html} from "npm:htl";
 import {orgLabel, sourceBucketLabel} from "./components/marc.js";
+import {gridCols, panelWidth} from "./components/layout.js";
 import {provenance} from "./components/provenance.js";
 const catFile = FileAttachment("./data/cataloging_source.json");
 const cat = catFile.json();
@@ -74,8 +75,8 @@ const unplacedShare = unplaced / cat.per_org.reduce((sum, o) => sum + o.records,
 // that overlays N libraries stops working somewhere around a dozen, while a grid of
 // panels just reflows. Columns scale with the roster so the panels stay legible
 // rather than shrinking indefinitely.
-const tlCols = tlOrgs.length <= 6 ? 2 : tlOrgs.length <= 12 ? 3 : 4;
-const panelWidth = Math.max(230, Math.floor(width / tlCols) - 60);
+const tlCols = gridCols(tlOrgs.length, width);
+const tlPanelWidth = panelWidth(tlCols, width);
 const panelGrid = (render, height = 170) =>
   html`<div class=${`grid grid-cols-${tlCols}`}>${tlOrgs.map(
     (org) => html`<div class="card">${render(org, tlByOrg.get(org), height)}</div>`
@@ -92,7 +93,7 @@ a year for the records credited, the total that arrived, and the share.
 panelGrid((org, rows, height) =>
   Plot.plot({
     title: org,
-    width: panelWidth,
+    width: tlPanelWidth,
     height,
     marginLeft: 52,
     x: {...tlX, label: null, domain: tlYears},
@@ -139,7 +140,7 @@ panelGrid(
   (org, rows, height) =>
     Plot.plot({
       title: org,
-      width: panelWidth,
+      width: tlPanelWidth,
       height,
       marginLeft: 46,
       x: {...tlX, label: null, domain: tlYears},

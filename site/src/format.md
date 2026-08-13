@@ -12,7 +12,7 @@ const comparison = comparisonFile.json();
 ```
 
 ```js
-shareHeatmap(comparison, "record_type", recordTypeLabel, {marginLeft: 205})
+shareHeatmap(comparison, "record_type", recordTypeLabel, {marginLeft: 205, width})
 ```
 
 ```js

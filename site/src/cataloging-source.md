@@ -31,7 +31,8 @@ matter before anything below means much:
 
 ```js
 import {orgLabel, agencyLabel, sourceBucketLabel, modDepthLabel} from "./components/marc.js";
-import {shareHeatmap} from "./components/heatmap.js";
+import {shareHeatmap, countHeatmap} from "./components/heatmap.js";
+import {gridCols, panelWidth} from "./components/layout.js";
 import {provenance} from "./components/provenance.js";
 const catFile = FileAttachment("./data/cataloging_source.json");
 const cat = catFile.json();
@@ -71,6 +72,7 @@ next chart.
 
 ```js
 Plot.plot({
+  width,
   marginLeft: 90,
   marginBottom: 40,
   height: 60 + institutions.length * 44,
@@ -134,7 +136,7 @@ different chart.) The same caveat applies to the "another POD member" band.
 import {html} from "npm:htl";
 const lastFullYear = cat.timeline.partial_year - 1;
 const mixOrgs = cat.timeline.per_org.map((o) => orgLabel(o.org));
-const mixCols = mixOrgs.length <= 6 ? 2 : mixOrgs.length <= 12 ? 3 : 4;
+const mixCols = gridCols(mixOrgs.length, width);
 const mixYearRows = d3.group(
   cat.timeline.per_org.flatMap((o) =>
     o.values
@@ -165,7 +167,7 @@ Plot.legend({color: mixYearColor})
 html`<div class=${`grid grid-cols-${mixCols}`}>${mixOrgs.map(
   (org) => html`<div class="card">${Plot.plot({
     title: org,
-    width: Math.max(230, Math.floor(width / mixCols) - 60),
+    width: panelWidth(mixCols, width),
     height: 170,
     marginLeft: 52,
     x: {label: null, tickFormat: "d", grid: true, domain: [1966, lastFullYear]},
@@ -213,7 +215,7 @@ on; unrecognized codes pass through raw rather than being dropped.
 shareHeatmap(cat, "agency", agencyLabel, {
   marginLeft: 300,
   legendLabel: "share of records with an 040 $a",
-  rowHeight: 30,
+  width,
 })
 ```
 
@@ -231,6 +233,7 @@ lower than its real output.
 
 ```js
 Plot.plot({
+  width,
   marginLeft: 90,
   marginBottom: 40,
   height: 55 + cat.per_org.length * 30,
@@ -268,53 +271,34 @@ everything else. Like the bar above, it can only count codes the map knows, so a
 thin row may mean unrecorded codes rather than little sharing.
 
 ```js
-const flowCells = (() => {
+// reshaped as a {categories, institutions, matrix} dimension so it uses the shared
+// heatmap component and its cells match every other heatmap, rather than being
+// forced square by an aspectRatio
+const flowDimension = (() => {
   const d = cat.dimensions.flow;
-  const out = [];
-  for (const holder of d.institutions)
+  const matrix = {};
+  for (const holder of d.institutions) {
+    matrix[holder] = {};
     for (const source of d.categories) {
-      if (holder === source) continue; // the diagonal is a different scale
-      out.push({
-        holder: orgLabel(holder),
-        source: orgLabel(source),
-        count: d.matrix[holder][source],
-      });
+      // the diagonal is self-cataloging, an order of magnitude larger; null gives
+      // it the same faint tint used for suppressed cells elsewhere
+      matrix[holder][source] = holder === source ? null : d.matrix[holder][source];
     }
-  return out;
+  }
+  return {categories: d.categories, institutions: d.institutions, matrix};
 })();
-const maxFlow = d3.max(flowCells, (d) => d.count ?? 0);
 ```
 
 ```js
-Plot.plot({
+// greens rather than the site's blues, matching the "cataloging done inside the
+// consortium" colour used above and on the bar chart before it
+countHeatmap(flowDimension, orgLabel, {
   marginLeft: 100,
-  marginBottom: 80,
-  aspectRatio: 1,
-  x: {label: "held by →", tickRotate: -30},
-  y: {label: "↓ cataloged by"},
-  color: {
-    scheme: "greens",
-    legend: true,
-    label: "records",
-    type: "sqrt",
-    domain: [0, maxFlow],
-    unknown: "color-mix(in srgb, var(--theme-foreground) 12%, transparent)",
-  },
-  marks: [
-    Plot.cell(flowCells, {
-      x: "holder",
-      y: "source",
-      fill: "count",
-      tip: {format: {fill: (d) => d3.format(",")(d)}},
-    }),
-    Plot.text(flowCells, {
-      x: "holder",
-      y: "source",
-      text: (d) => (d.count == null ? "" : d3.format(".2s")(d.count)),
-      fill: (d) => (d.count > maxFlow * 0.55 ? "white" : "black"),
-      fontSize: 11,
-    }),
-  ],
+  colorLabel: "records",
+  scheme: "greens",
+  xLabel: "held by →",
+  yLabel: "↓ cataloged by",
+  width,
 })
 ```
 
@@ -343,6 +327,7 @@ how heavily records have been edited.
 shareHeatmap(cat, "mod_depth", modDepthLabel, {
   marginLeft: 130,
   legendLabel: "share of records",
+  width,
 })
 ```
 

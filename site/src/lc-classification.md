@@ -24,7 +24,7 @@ const comparison = comparisonFile.json();
 ```
 
 ```js
-shareHeatmap(comparison, "classification", lcClassLabel, {marginLeft: 210})
+shareHeatmap(comparison, "classification", lcClassLabel, {marginLeft: 210, width})
 ```
 
 ```js

@@ -15,6 +15,7 @@ signals reflect **cataloging practice** as much as what an institution holds.
 
 ```js
 import {recordTypeLabel, orgLabel} from "./components/marc.js";
+import {autoGrid} from "./components/layout.js";
 import {shareHeatmap, countHeatmap} from "./components/heatmap.js";
 import {provenance} from "./components/provenance.js";
 const archivesFile = FileAttachment("./data/archives.json");
@@ -30,7 +31,7 @@ as **record counts** — cells are on a square-root color scale so both large
 "mixed material" is the classic multi-format archival collection.
 
 ```js
-countHeatmap(archives.dimensions.material_type, recordTypeLabel, {marginLeft: 230, colorLabel: "archival records"})
+countHeatmap(archives.dimensions.material_type, recordTypeLabel, {marginLeft: 230, colorLabel: "archival records", width})
 ```
 
 ```js
@@ -52,15 +53,16 @@ kept intact, because that's exactly where the distinctive strengths show — Ara
 and Sanskrit manuscripts, posters, broadsides, scrapbooks.
 
 ```js
+const genreGrid = autoGrid(width, {min: 440});
 const genrePanels = archives.genre.map((o) => {
   const rows = o.values.map((v) => ({term: cap(v.term), count: v.count}));
-  return html`<figure style="margin: 0 0 0.5rem 0; max-width: 460px">
+  return html`<figure style="margin: 0 0 0.5rem 0">
     <figcaption style="font-weight: 600; margin-bottom: 0.25rem">
       ${orgLabel(o.org)} <span style="font-weight: 400; color: var(--theme-foreground-muted)">· ${d3.format(",")(o.total)} archival records</span>
     </figcaption>
     ${Plot.plot({
       marginLeft: 185,
-      width: 480,
+      width: genreGrid.panel,
       height: 30 + rows.length * 22,
       x: {label: null, tickFormat: "~s", grid: true},
       y: {label: null, domain: rows.map((r) => r.term)},
@@ -75,7 +77,7 @@ const genrePanels = archives.genre.map((o) => {
 ```
 
 ```js
-html`<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: 1rem 1.5rem">${genrePanels}</div>`
+html`<div style=${`display: grid; grid-template-columns: repeat(${genreGrid.cols}, 1fr); gap: 1rem 1.5rem`}>${genrePanels}</div>`
 ```
 
 ```js
@@ -144,6 +146,7 @@ const linkShare = archives.online_link
 
 ```js
 Plot.plot({
+  width,
   marginLeft: 90,
   height: 55 + linkShare.length * 34,
   x: {label: "share with an online link", grid: true, tickFormat: ".0%", domain: [0, 1]},
@@ -176,7 +179,7 @@ const destLabel = (c) =>
 ```
 
 ```js
-shareHeatmap(archives, "link_destination", destLabel, {marginLeft: 220, legendLabel: "share of archival records"})
+shareHeatmap(archives, "link_destination", destLabel, {marginLeft: 220, legendLabel: "share of archival records", width})
 ```
 
 ```js

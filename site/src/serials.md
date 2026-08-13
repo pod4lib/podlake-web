@@ -39,6 +39,7 @@ const active = (timeline.active.find((r) => r.org === serialOrg) ?? {values: []}
 
 ```js
 Plot.plot({
+  width,
   marginLeft: 60,
   x: {label: "year", tickFormat: "d"},
   y: {label: "active serials", grid: true, tickFormat: "~s"},
@@ -75,7 +76,7 @@ const statusOrdered = {
 ```
 
 ```js
-shareHeatmap(statusOrdered, "serial_status", serialStatusLabel, {marginLeft: 150, legendLabel: "share of serials", rowHeight: 66})
+shareHeatmap(statusOrdered, "serial_status", serialStatusLabel, {marginLeft: 150, legendLabel: "share of serials", width})
 ```
 
 ```js
@@ -99,6 +100,7 @@ const vintage = timeline.start_decade.flatMap((o) => {
 
 ```js
 Plot.plot({
+  width,
   marginLeft: 55,
   x: {label: "decade of first publication", tickFormat: "d"},
   y: {label: "share of serials", grid: true, tickFormat: ".0%"},
@@ -143,7 +145,7 @@ history. The two rows are **independent** (a serial can have both a predecessor
 and a successor), so they do not sum to 100%.
 
 ```js
-shareHeatmap(succession, "succession_link", successionLinkLabel, {marginLeft: 240, legendLabel: "share of serials", rowHeight: 66})
+shareHeatmap(succession, "succession_link", successionLinkLabel, {marginLeft: 240, legendLabel: "share of serials", width})
 ```
 
 ```js
@@ -158,7 +160,7 @@ of all that institution's serials, so a column roughly totals its "continued by
 a later title" figure above.
 
 ```js
-shareHeatmap(succession, "succession_type", successionTypeLabel, {marginLeft: 190, legendLabel: "share of serials"})
+shareHeatmap(succession, "succession_type", successionTypeLabel, {marginLeft: 190, legendLabel: "share of serials", width})
 ```
 
 ```js
@@ -173,7 +175,7 @@ up to ~100\%). Same first-LC-match logic as the
 [LC classification](./lc-classification) page, restricted to serial records.
 
 ```js
-shareHeatmap(comparison, "serial_classification", lcClassLabel, {marginLeft: 210, legendLabel: "share of serials"})
+shareHeatmap(comparison, "serial_classification", lcClassLabel, {marginLeft: 210, legendLabel: "share of serials", width})
 ```
 
 ```js

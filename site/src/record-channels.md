@@ -29,7 +29,7 @@ list under the second chart says exactly where they diverge and why.
 
 ```js
 import {orgLabel, channelLabel, namespaceLabel} from "./components/marc.js";
-import {shareHeatmap} from "./components/heatmap.js";
+import {shareHeatmap, coverageHeatmap} from "./components/heatmap.js";
 import {provenance} from "./components/provenance.js";
 const channelFile = FileAttachment("./data/record_channels.json");
 const channels = channelFile.json();
@@ -41,59 +41,12 @@ Share of each institution's records carrying a control number from each system.
 "Any system number" is the baseline, essentially every record has one.
 
 ```js
-const chanRows = channels.per_org.flatMap((o) =>
-  channels.channels.map((c) => ({
-    org: orgLabel(o.org),
-    channel: channelLabel(c),
-    share: o.coverage[c],
-    records: o.counts[c],
-  }))
-);
-const chanOrder = channels.channels.map(channelLabel);
-```
-
-```js
-Plot.plot({
+// Coverage rather than a partition — a record can carry numbers from several
+// systems — so the color scale is a fixed 0–100% and rows may sum past it.
+coverageHeatmap(channels.per_org, channels.channels, channelLabel, {
   marginLeft: 230,
-  marginBottom: 60,
-  height: 55 + chanOrder.length * 40,
-  x: {label: null, domain: channels.per_org.map((o) => orgLabel(o.org)), tickRotate: -30},
-  y: {label: null, domain: chanOrder},
-  color: {
-    scheme: "blues",
-    legend: true,
-    label: "share of records",
-    domain: [0, 1],
-    tickFormat: ".0%",
-    // too few to report renders as a faint tint, matching the other heatmaps
-    unknown: "color-mix(in srgb, var(--theme-foreground) 12%, transparent)",
-  },
-  marks: [
-    Plot.cell(chanRows, {
-      x: "org",
-      y: "channel",
-      fill: "share",
-      channels: {records: {value: "records", label: "records"}},
-      tip: {format: {fill: ".1%", records: ","}},
-    }),
-    Plot.text(chanRows, {
-      x: "org",
-      y: "channel",
-      dy: -6,
-      text: (d) => (d.share == null ? "" : (d.share * 100).toFixed(0) + "%"),
-      fill: (d) => (d.share > 0.55 ? "white" : "black"),
-      fontSize: 12,
-    }),
-    Plot.text(chanRows, {
-      x: "org",
-      y: "channel",
-      dy: 8,
-      text: (d) => (d.records == null ? "" : d3.format("~s")(d.records)),
-      fill: (d) => (d.share > 0.55 ? "white" : "black"),
-      fillOpacity: 0.65,
-      fontSize: 9.5,
-    }),
-  ],
+  legendLabel: "share of records",
+  width,
 })
 ```
 
@@ -138,7 +91,7 @@ for what it contains and what adding a member would change.
 shareHeatmap(channels, "namespace", namespaceLabel, {
   marginLeft: 330,
   legendLabel: "share of records",
-  rowHeight: 30,
+  width,
 })
 ```
 

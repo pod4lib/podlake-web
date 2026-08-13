@@ -24,6 +24,7 @@ const decades = (decadeData.per_org.find((r) => r.org === org) ?? {values: []})
 
 ```js
 Plot.plot({
+  width,
   marginLeft: 60,
   x: {label: "decade", tickFormat: "d"},
   y: {label: "records", grid: true, tickFormat: "~s"},

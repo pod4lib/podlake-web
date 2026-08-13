@@ -12,7 +12,7 @@ const comparison = comparisonFile.json();
 ```
 
 ```js
-shareHeatmap(comparison, "language", languageLabel)
+shareHeatmap(comparison, "language", languageLabel, {width})
 ```
 
 ```js

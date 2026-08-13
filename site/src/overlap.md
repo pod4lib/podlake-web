@@ -22,6 +22,7 @@ a print book and its e-book edition count as two distinct titles.
 
 ```js
 import {provenance} from "./components/provenance.js";
+import {countHeatmap} from "./components/heatmap.js";
 import {orgLabel} from "./components/marc.js";
 const histogramFile = FileAttachment("./data/overlap_histogram.json");
 const histogram = histogramFile.json();
@@ -39,6 +40,7 @@ the widely-duplicated core.
 
 ```js
 Plot.plot({
+  width,
   marginLeft: 60,
   x: {label: "institutions holding the title", tickFormat: (d) => d, ticks: histogram.held_by.length},
   y: {label: "titles", grid: true, tickFormat: "~s"},
@@ -60,6 +62,7 @@ from the consortium if that copy were lost.
 
 ```js
 Plot.plot({
+  width,
   marginLeft: 90,
   height: 40 + uniqueness.per_org.length * 28,
   x: {label: "uniquely-held titles", grid: true, tickFormat: "~s"},
@@ -82,38 +85,34 @@ blank: an institution's own total sits on a far larger scale and would flatten
 the contrast between the pairwise cells.
 
 ```js
-const cells = (() => {
+// shaped as a {categories, institutions, matrix} dimension so it can share the
+// heatmap component, and so its cells match every other heatmap on the site
+// rather than being forced square by an aspectRatio
+const sharedDimension = (() => {
   const insts = pairwise.institutions;
   const shared = new Map(pairwise.pairs.map((p) => [`${p.a}|${p.b}`, p.shared]));
-  const out = [];
-  for (const a of insts)
-    for (const b of insts) {
-      if (a === b) continue; // diagonal is the org's own total — a different scale
+  const matrix = {};
+  for (const b of insts) {
+    matrix[b] = {};
+    for (const a of insts) {
+      // the diagonal is the org's own total, an order of magnitude larger; null
+      // renders as the same faint tint used for suppressed cells elsewhere
       const key = a < b ? `${a}|${b}` : `${b}|${a}`;
-      out.push({a: orgLabel(a), b: orgLabel(b), value: shared.get(key) ?? 0});
+      matrix[b][a] = a === b ? null : shared.get(key) ?? 0;
     }
-  return out;
+  }
+  return {categories: insts, institutions: insts, matrix};
 })();
-const maxShared = d3.max(cells, (d) => d.value);
 ```
 
 ```js
-Plot.plot({
+// linear rather than the component's default sqrt: these are all counts of the
+// same thing on one comparable scale, so the raw contrast is the story
+countHeatmap(sharedDimension, orgLabel, {
   marginLeft: 90,
-  marginBottom: 90,
-  aspectRatio: 1,
-  color: {scheme: "blues", legend: true, label: "shared titles", domain: [0, maxShared]},
-  x: {label: null, tickRotate: -30},
-  y: {label: null},
-  marks: [
-    Plot.cell(cells, {x: "b", y: "a", fill: "value", tip: true}),
-    Plot.text(cells, {
-      x: "b",
-      y: "a",
-      text: (d) => d3.format(".2s")(d.value),
-      fill: (d) => (d.value > maxShared * 0.55 ? "white" : "black"),
-    }),
-  ],
+  colorLabel: "shared titles",
+  colorType: "linear",
+  width,
 })
 ```
 
