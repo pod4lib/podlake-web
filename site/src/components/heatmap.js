@@ -214,6 +214,10 @@ export function countHeatmap(
     // matrices need them, because which axis is which is the whole point.
     xLabel = null,
     yLabel = null,
+    // cells hold record counts by default; a caller whose values are shares
+    // passes a percentage format for the cell text and the colour legend
+    valueFormat = countFormat,
+    colorTickFormat = undefined,
   } = {}
 ) {
   const {categories, institutions, matrix} = dimension;
@@ -239,6 +243,7 @@ export function countHeatmap(
       label: colorLabel,
       type: colorType,
       domain: [0, maxCount],
+      tickFormat: colorTickFormat,
       unknown: "color-mix(in srgb, var(--theme-foreground) 12%, transparent)",
     },
     marks: [
@@ -246,12 +251,12 @@ export function countHeatmap(
         x: "org",
         y: "category",
         fill: "count",
-        tip: {format: {fill: (d) => d3.format(",")(d)}},
+        tip: {format: {fill: (d) => valueFormat(d)}},
       }),
       Plot.text(rows, {
         x: "org",
         y: "category",
-        text: (d) => countFormat(d.count),
+        text: (d) => valueFormat(d.count),
         fill: (d) => (d.count > maxCount * 0.5 ? "white" : "black"),
         fontSize: 11,
       }),
