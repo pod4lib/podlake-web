@@ -14,17 +14,16 @@ Three things to hold onto before reading anything below:
 
 - **"Credited to this library" is not the same as "cataloged by this library."** The
   attribution comes from [a hand-curated map of agency codes to
-  members](./data#the-institution-code-mapping) that POD has not ratified, and a
-  library cataloging in OCLC Connexion often ends up with someone else's code in
-  `$a`. Everything on the [Source of cataloging](./cataloging-source) page about that
-  applies here unchanged; the counts below include both confirmed and *inferred*
-  attributions.
+  members](./data#the-institution-code-mapping), and a library cataloging in OCLC
+  Connexion often ends up with someone else's code in `$a`. Every figure here is a
+  **floor**: the map holds only codes somebody has confirmed, so a library's retired
+  or unrecorded codes go uncounted, and adding one raises its line. Nothing here
+  distinguishes "did little original cataloging" from "has codes we don't know yet".
 - **A reload restamps every record it touches.** The tallest years are almost always
   system migrations and retrospective-conversion projects, not bursts of cataloging.
   The date is only ever as old as the last system the records passed through.
-- **Volume of intake is not effort.** A year in which a library loaded 600,000 vendor
-  records looks identical to a productive year until you divide through, which is
-  what the second chart does.
+- **Volume of intake is not effort.** A year of large vendor loads looks like a
+  productive year until you divide through, which is what the second chart does.
 
 ```js
 import {html} from "npm:htl";
@@ -41,15 +40,12 @@ const cat = catFile.json();
 const BUCKET_COLOR = {
   lc: "#1d4e89",
   self: "#1f5f43",
-  self_inferred: "#4f9c76",
   pod: "#a8d5bd",
   other: "#d9a03c",
   none: "#9aa0a6",
 };
-// self + self_inferred: everything credited to the library holding the record.
-// Inferred attribution is included — excluding a probably-correct one would
-// understate a library's own output — which is most of the gap in Harvard's figures.
-const ORIGINAL = ["self", "self_inferred"];
+// everything credited to the library holding the record
+const ORIGINAL = ["self"];
 const lastFullYear = cat.timeline.partial_year - 1;
 const tlRows = cat.timeline.per_org.flatMap((o) =>
   o.values
@@ -182,8 +178,8 @@ panelGrid(
 
 ${d3.format(",")(unplaced)} records — ${d3.format(".1%")(unplacedShare)} of the
 corpus — carry no usable date and are absent from every chart here: no `008`, an
-unparseable one, the placeholder `000000` (which is *not* the year 2000, though
-141,000 records would land there if it were taken literally), or a year before 1966,
+unparseable one, the placeholder `000000` (which is *not* the year 2000, and would
+distort it badly if taken literally), or a year before 1966,
 when MARC did not yet exist. Years holding too few records to publish are folded in
 with them, so that a suppressed year cannot be recovered by subtraction.
 

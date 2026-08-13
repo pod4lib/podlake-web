@@ -73,9 +73,16 @@ The repository's **Settings → Pages → Source** must be set to **"GitHub Acti
 
 ```
 extract/   Python: aggregate queries (queries.py), disclosure control
-           (suppress.py), and the `podlake-web extract` CLI (build.py).
+           (suppress.py), the institution↔code map loader (codes.py), and the
+           `podlake-web extract` / `probe` CLI (build.py).
 site/      Observable Framework app; pages read site/src/data/*.json.
-docs/      POD analytics use cases and user stories that motivate the views.
+tools/     registry-codes.js — browser console script that proposes rows for
+           institution-codes.csv from the WorldCat Registry.
+docs/      POD analytics use cases and user stories that motivate the views,
+           plus institution-codes.md on maintaining the code map.
+
+institution-codes.csv   Which agency codes belong to which POD member. Curated
+           by hand; every per-institution attribution depends on it.
 ```
 
 ## What is published

@@ -7,7 +7,7 @@ MARC `035` holds system control numbers, written `(ORGCODE)number`: the number, 
 the system the number belongs to. Records accumulate these as they move between
 union catalogues, knowledge bases and vendor platforms, so the set of namespaces on
 a record is a rough itinerary. It is also much better populated than the cataloging
-source: **99.3% to 100%** of records carry an `035`, against 86% with an `040 $a`.
+source: nearly every record carries an `035`.
 
 Two things to keep in mind:
 
@@ -104,25 +104,28 @@ provenance({sql: channels.sql, dataUrl: await channelFile.url(), dataName: "reco
 ## The namespaces themselves
 
 The raw `035` namespaces, uncategorized: the union of each institution's own twelve
-most common — a namespace must also reach 0.1% of that institution's records to earn
-a row — so a system that matters to one library isn't ranked away by the others.
+most common — a namespace must also reach a minimum share of that institution's
+records to earn a row — so a system that matters to one library isn't ranked away by
+the others.
 Cells are a share of all that institution's records, the same denominator as the
 chart above, which makes the two directly comparable.
 
 Three ways they differ, each of them a reason both charts exist:
 
 - **One category can be several namespaces.** `OCLC / WorldCat` above matches
-  `(OCoLC)` together with its variants. Five libraries write only `(OCoLC)`, so their
-  two figures agree; Stanford also writes `(OCoLC-M)` and `(OCoLC-I)`, which is why
-  it reads 98% above and 11%, 91% and 63% across three separate rows here.
+  `(OCoLC)` together with its variants — `(OCoLC-M)`, `(OCoLC-I)` and so on. A
+  library that writes only the bare form shows the same figure in both charts; one
+  that also writes the variants shows a *lower* figure here, split across several
+  rows, because this chart does not add them up. That is the most likely reason two
+  numbers you expect to match do not.
 - **One category can be a different namespace at each library.** `A local library
-  system` is `RPB` at Brown, `NCD` at Duke, `MH` at Harvard, `PU` at Penn, `NJP` at
-  Princeton, and `SIRSI` at Stanford — an institution's own code in five cases and an
-  ILS product name in the sixth. The category is what makes those one comparable row;
-  only the raw view shows what that row is made of.
+  system` resolves to whatever each institution actually writes — usually its own
+  code, sometimes a generic ILS product name shared by every library running that
+  system. The category is what makes those one comparable row; only the raw view
+  shows what any given row is made of.
 - **The categories are not exhaustive.** Nothing above collects vendor platforms,
-  special-collections databases, or other libraries' union catalogues, so ProQuest,
-  Adam Matthew Digital, the University of Toronto and the rest appear only here.
+  special-collections databases, or other libraries' union catalogues, so those
+  appear only here.
 
 Unrecognized codes pass through raw rather than being dropped or guessed at.
 

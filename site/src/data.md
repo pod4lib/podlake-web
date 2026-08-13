@@ -7,7 +7,12 @@ pre-computed **aggregates** — counts, distributions, and percentages — with 
 record identifiers, Gold Rush keys, titles, or raw field values.
 
 ```js
+import {html} from "npm:htl";
+import {orgLabel} from "./components/marc.js";
+import {provenance} from "./components/provenance.js";
 const manifest = FileAttachment("./data/manifest.json").json();
+const catFile = FileAttachment("./data/cataloging_source.json");
+const cat = catFile.json();
 ```
 
 ## What is published
@@ -38,52 +43,88 @@ share matrices, the place roll-ups), all of it in the extract:
 
 ## The institution code mapping
 
-Several views need to know **which institution a MARC agency code belongs to** — is
-`NDD` Duke? is `RPB` Brown? — and the records do not say. Codes appear in `040 $a`
-(the agency credited with the cataloging) and as `035 $a` namespaces (the systems a
-record passed through), but nothing ties a code to a POD member.
+MARC `040 $a` and `035` identify a cataloging agency by code, and nothing in the
+record says which POD member a code belongs to — so the mapping is curated by hand in
+[`institution-codes.csv`](https://github.com/sul-dlss/podlake-web/blob/main/institution-codes.csv).
 
-So the extract carries a hand-curated list, and **POD has not ratified it.** Treat
-every figure that rests on it as *attribution practice* rather than fact. Two
-properties of the data make the list unavoidable rather than merely convenient:
+It matters only where a view asks **who catalogued a record**: the "this institution"
+and "another POD member" shares on [Source of cataloging](./cataloging-source) and its
+intra-consortium flow matrix, all of [Original cataloging over
+time](./original-cataloging), and the "a local library system" / "another POD member's
+system" rows on [How records arrived](./record-channels). Every other per-institution
+figure — counts, overlap, subject and language distributions, classification, formats
+— keys on `org`, the lake's own record of which member contributed the record, and is
+unaffected by the map.
+[`tools/registry-codes.js`](https://github.com/sul-dlss/podlake-web/blob/main/tools/registry-codes.js)
+proposes rows from the [WorldCat Registry](https://registry.worldcat.org/) and a
+person decides what to keep;
+[docs/institution-codes.md](https://github.com/sul-dlss/podlake-web/blob/main/docs/institution-codes.md)
+covers maintaining it.
 
-- Members mostly self-attribute with an **OCLC symbol, not their MARC Organization
-  Code**. Duke's `NcD` appears on about 1,700 records; its `NDD` on 279,000.
-- One member can use **many symbols**. Harvard's work is spread across `MH` and its
-  sub-units (`MH-L`, `MH-HY`, …) plus `HLS`, `HUL`, `HMS`, `HBS` and others.
+**Every figure built on it is a floor.** The map holds only codes somebody has
+confirmed, so retired or unrecorded codes go uncounted — nothing here distinguishes
+"did little original cataloging" from "has codes we don't know about yet".
 
-Codes that follow a member's symbol family but that nobody has confirmed are kept
-apart in `_SELF_CODES_INFERRED` and reported separately as **"inferred"** wherever
-they appear, so the unratified part of a figure stays visible instead of being folded
-in. Codes too uncertain to attribute are left unattributed rather than guessed at.
+Below is the map exactly as this snapshot used it, split by namespace because the two
+follow different rules. Most of these codes are branch libraries that rarely or never
+appear in `040 $a`; being listed does not imply the institution uses it.
 
-| What | Where | Used for |
-| --- | --- | --- |
-| `_SELF_CODES` | `queries.py` | Codes confidently belonging to a member |
-| `_SELF_CODES_INFERRED` | `queries.py` | Codes only inferred — reported separately |
-| `_LOCAL_ILS_NS` | `queries.py` | Generic ILS namespaces (`SIRSI`, `PUVoyagerBibID`) that mean "local" for *whichever* library carries them, since they name a system rather than an institution |
-| `_CHANNEL_TESTS` | `queries.py` | The `035` channel categories themselves |
-| `NAMESPACE` | `components/marc.js` | Display names for raw codes — cosmetic only; an unmapped code still charts, just bare |
+```js
+const codeMap = cat.code_map ?? {listed: [], sql: null};
+const codeRows = (kind) =>
+  codeMap.listed
+    .filter((r) => r.kind === kind)
+    .map((r) => ({
+      institution: orgLabel(r.org),
+      code: r.code,
+      "registry name": r.registry_name,
+    }))
+    .sort(
+      (a, b) =>
+        a.institution.localeCompare(b.institution) || a.code.localeCompare(b.code)
+    );
+// Full width, or the registry names truncate — they are the field you read to judge
+// whether a row belongs to that institution.
+const codeTable = (rows) =>
+  rows.length
+    ? html`<div class="grid grid-cols-1">${Inputs.table(rows, {
+        rows: 12,
+        width: {institution: 110, code: 150},
+      })}</div>`
+    : html`<div class="note">This snapshot predates the published map — re-running the
+        extract fills this in.</div>`;
+```
 
-All of the above live in
-[`queries.py`](https://github.com/sul-dlss/podlake-web/blob/main/extract/src/podlake_web/queries.py)
-except the last, in
-[`marc.js`](https://github.com/sul-dlss/podlake-web/blob/main/site/src/components/marc.js).
-`_SELF_CODES` carries a comment recording each code's occurrence count and which
-entries are unconfirmed, so the list can be reviewed against the data.
+**MARC Organization Codes.** Hierarchical on the hyphen, so a listed code also covers
+its sub-units without the file enumerating them: `CtY` counts `CtY-BR` (Yale's
+Beinecke) too. The hyphen is required rather than a nicety — `PU-L` is Penn's Biddle
+Law Library and `PUL` is Princeton University Library, and LC's own registry publishes
+`PU-L` normalized to `pul`, which conflates the two.
 
-**Adding an institution to POD means revisiting these.** Only the first fails loudly:
-the extract refuses to build when the lake holds an institution missing from
-`_SELF_CODES`, because that member would otherwise publish a plausible-looking 0%
-self-cataloged and no consortium sharing rather than an error. The rest degrade
-quietly — a member arriving by a route no category covers simply doesn't appear in
-the `035` taxonomy, and an unlabelled namespace shows its raw code.
+```js
+codeTable(codeRows("marc"))
+```
 
-Views that depend on the mapping: [Source of cataloging](./cataloging-source) (the
-"this institution", "inferred", and "another POD member" buckets, and the whole
-intra-consortium flow matrix), [Original cataloging over time](./original-cataloging)
-(entirely), and [How records arrived](./record-channels) (the "a local library
-system" and "another POD member's system" rows).
+**OCLC symbols.** A separate namespace, and opaque — `AS#`, `4H7`, `YU#` — so these
+are matched exactly. A shared prefix between two symbols means nothing, and no
+sub-unit rule applies.
+
+```js
+codeTable(codeRows("oclc"))
+```
+
+Case is not significant in either namespace; agency codes are written every which way
+in real records, so both sides are upper-cased before comparing.
+
+Two smaller maps live in the extract rather than here: `_LOCAL_ILS_NS`, the generic ILS
+namespaces (`SIRSI`, `PUVoyagerBibID`) that mean "local" for whichever library carries
+them, and `_CHANNEL_TESTS`, the `035` channel categories. Display names for raw codes
+are in `components/marc.js` and are cosmetic — an unmapped code still charts, just
+bare.
+
+**Adding an institution means updating the CSV.** The extract refuses to build for an
+institution it has no codes for, rather than publishing a plausible-looking 0%
+self-cataloged.
 
 ## Querying the lake yourself
 

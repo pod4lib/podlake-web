@@ -248,7 +248,6 @@ const SOURCE_BUCKET = {
   self: "This institution",
   // codes that follow the institution's symbol family but aren't confirmed as
   // theirs — kept visibly separate so the chart doesn't imply more than we know
-  self_inferred: "This institution (inferred)",
   pod: "Another POD member",
   other: "Some other agency",
   none: "No agency given",
@@ -366,9 +365,13 @@ const labeler = (table) => (code) =>
   table[String(code).toLowerCase()] ?? code;
 
 // Institution code → display name. Institution codes are stored lowercase (they
-// identify the org in the lake); this capitalizes them for display, with room to
-// override any name that isn't a simple capitalization (e.g. an acronym).
-const ORG_NAMES = {};
+// identify the org in the lake), and capitalizing the first letter is right for most
+// of them — but not for acronyms, which come out as "Jhu" and "Mit". Add an entry
+// here for any org whose display name isn't a simple capitalization.
+const ORG_NAMES = {
+  jhu: "JHU",
+  mit: "MIT",
+};
 export const orgLabel = (org) =>
   ORG_NAMES[org] ??
   (org ? String(org).charAt(0).toUpperCase() + String(org).slice(1) : org);

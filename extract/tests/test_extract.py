@@ -8,7 +8,7 @@ import pytest
 from podlake import lake
 from podlake.config import Config
 
-from podlake_web import queries, record, suppress
+from podlake_web import codes, queries, record, suppress
 
 # --- fixtures / builders -----------------------------------------------------
 
@@ -445,30 +445,70 @@ def test_bucket_top_n_folds_tail_and_small_cells():
     assert suppress.small_cells(out, threshold=10) == []
 
 
-def test_self_codes_are_unambiguous():
-    # No lake needed: a code must not be claimed by two members, and one member's
-    # 'BASE-*' rule must not swallow another's exact code (the PU / PUL hazard).
-    # This is the guard for when POD adds an institution.
-    # a code must also not be both confirmed and inferred
-    for org, inferred in queries._SELF_CODES_INFERRED.items():
-        overlap = set(inferred) & set(queries._SELF_CODES.get(org, ()))
-        assert not overlap, f"{org} lists {overlap} as both confirmed and inferred"
+def test_institution_codes_map_is_loadable_and_unambiguous():
+    # The shipped map has to load and satisfy the mechanical invariants, since every
+    # per-institution attribution keys off it. Judgement (does this code really
+    # belong to that member?) is the curator's and is deliberately not tested.
+    loaded = codes.load()
+    assert loaded, "institution-codes.csv produced no codes"
+    # codes.load() runs _validate, so this asserts the file currently passes it
+    assert codes.orgs(loaded), "no institutions in the map"
+    assert all(c.code == c.code.upper() for c in loaded), (
+        "codes are compared upper-cased"
+    )
 
-    exact: dict[str, str] = {}
-    for org, codes in queries._ALL_SELF_CODES.items():
-        for code in codes:
-            if not code.endswith("-*"):
-                assert code not in exact, (
-                    f"{code} claimed by {exact.get(code)} and {org}"
-                )
-                exact[code] = org
-    for org, codes in queries._ALL_SELF_CODES.items():
-        for prefix in (c[:-1] for c in codes if c.endswith("-*")):
-            for code, owner in exact.items():
-                if owner != org:
-                    assert not code.startswith(prefix), (
-                        f"{org}'s {prefix}* pattern also matches {owner}'s {code}"
-                    )
+
+def test_institution_codes_rejects_mechanical_breakage(tmp_path):
+    # Each of these would mis-credit a member silently, so each must fail the load.
+    def write(rows):
+        path = tmp_path / f"codes-{abs(hash(str(rows)))}.csv"
+        path.write_text(
+            "pod_institution,marc_code,oclc_code,registry_name\n"
+            + "\n".join(rows)
+            + "\n"
+        )
+        return path
+
+    # one code, two owners
+    with pytest.raises(ValueError, match="two institutions"):
+        codes.load(write(["brown,,ABC,Brown", "duke,,ABC,Duke"]))
+
+    # both columns filled: which namespace did you mean?
+    with pytest.raises(ValueError, match="exactly one of"):
+        codes.load(write(["brown,RPB,RBN,Brown"]))
+
+    # neither filled
+    with pytest.raises(ValueError, match="exactly one of"):
+        codes.load(write(["brown,,,Brown"]))
+
+    # the PU/PUL hazard's cousin: one member's MARC family reaching another's code.
+    # PU-* must not be allowed to claim a code another institution lists.
+    with pytest.raises(ValueError, match="would also match"):
+        codes.load(write(["penn,PU,,Penn", "princeton,PU-L,,Princeton"]))
+
+    # ...while the same pair WITHOUT the hyphen is fine, because PUL is a different
+    # code from PU-L. This is the distinction LC's own normalization destroys.
+    ok = codes.load(write(["penn,PU,,Penn", "princeton,,PUL,Princeton"]))
+    assert {c.org for c in ok} == {"penn", "princeton"}
+
+
+def test_marc_families_expand_but_oclc_symbols_do_not(tmp_path):
+    path = tmp_path / "codes.csv"
+    path.write_text(
+        "pod_institution,marc_code,oclc_code,registry_name\n"
+        "yale,CtY,,Yale University Library\n"
+        "penn,PU,,Penn\n"
+        "brown,,RBN,Brown\n"
+    )
+    loaded = codes.load(path)
+    sql = codes.match_sql("code", loaded)
+    # a MARC code covers its hyphenated sub-units: CtY-BR (Beinecke) without listing it
+    assert "code = 'CTY'" in sql and "code LIKE 'CTY-%'" in sql
+    # but never a bare prefix, or Penn's PU would swallow Princeton's PUL
+    assert "code LIKE 'PU%'" not in sql
+    assert "code LIKE 'PU-%'" in sql
+    # OCLC symbols are opaque and not hierarchical, so no family test at all
+    assert "code = 'RBN'" in sql and "code LIKE 'RBN-%'" not in sql
 
 
 def test_cataloging_source(tmp_path):
@@ -520,12 +560,13 @@ def test_cataloging_source(tmp_path):
         # PUL is Princeton's OCLC symbol, so at Penn it must read as 'pod' — the
         # exact case a careless PU prefix rule would misfile as 'self'
         "penn": [rec("penn", "e1", "PUL"), rec("penn", "e2", "PU")],
-        # HVL is an *inferred* Harvard symbol: at Harvard it must land in
-        # self_inferred, not self; held elsewhere it still reads as 'pod'
+        # every mapped code counts the same way now. HVL is Harvard's Law School
+        # library per the WorldCat Registry; HLS is deliberately absent from the map
+        # (it is in neither registry), so it must read as 'other'.
         "harvard": [
-            rec("harvard", "h1", "MH"),  # self (confirmed)
-            rec("harvard", "h2", "HVL"),  # self_inferred
-            rec("harvard", "h3", "HLS"),  # self (confirmed)
+            rec("harvard", "h1", "MH"),
+            rec("harvard", "h2", "HVL"),
+            rec("harvard", "h3", "HMS"),
         ],
     }
     config = _build_lake(tmp_path, records)
@@ -542,14 +583,7 @@ def test_cataloging_source(tmp_path):
     # s8, s14 -> other; s9 -> none; s3 -> oclc
     # s3's $a OCoLC is no longer its own bucket -- 040 records authorship, not
     # distribution channel -- so it falls to 'other' alongside s8 and s14
-    assert counts == {
-        "lc": 6,
-        "self": 4,
-        "self_inferred": 0,
-        "pod": 1,
-        "other": 3,
-        "none": 1,
-    }
+    assert counts == {"lc": 6, "self": 4, "pod": 1, "other": 3, "none": 1}
     mix = by_org["stanford"]["mix"]
     assert mix["lc"] == round(6 / 15, 4)
     assert sum(mix.values()) == pytest.approx(1.0, abs=1e-3)
@@ -561,21 +595,17 @@ def test_cataloging_source(tmp_path):
     assert by_org["penn"]["counts"] == {
         "lc": 0,
         "self": 1,  # e2, PU
-        "self_inferred": 0,
         "pod": 1,  # e1, PUL -> Princeton
         "other": 0,
         "none": 0,
     }
-    # an inferred symbol is reported apart from confirmed self-attribution, so the
-    # unratified part of the figure stays visible instead of being folded in
-    harvard = by_org["harvard"]["counts"]
-    assert harvard["self"] == 2 and harvard["self_inferred"] == 1  # MH+HLS, HVL
-    # but flow counts both together — it measures direction, not certainty
+    # one `self` bucket: the map either claims a code or it does not
+    assert by_org["harvard"]["counts"]["self"] == 3  # MH, HVL, HMS
     assert out["dimensions"]["flow"]["matrix"]["harvard"]["harvard"] == 3
 
     # flow is asymmetric: the diagonal is self-cataloging, off-diagonal is copy
     flow = out["dimensions"]["flow"]
-    assert flow["categories"] == sorted(queries._SELF_CODES)  # full member roster
+    assert flow["categories"] == sorted(codes.orgs(queries._CODES))  # member roster
     assert flow["matrix"]["stanford"]["stanford"] == 4  # s4, s5, s6, s15
     assert flow["matrix"]["stanford"]["princeton"] == 1  # s7
     assert flow["matrix"]["princeton"]["stanford"] == 1  # p2
@@ -667,7 +697,9 @@ def test_cataloging_source_suppresses_small_cells(tmp_path):
         )
 
     records = {
-        "brown": [rec("brown", f"b{i}", "RPB") for i in range(20)]
+        # RBN and CSt because both are in institution-codes.csv; a code the map
+        # does not claim reads as 'other', which is the point of the map
+        "brown": [rec("brown", f"b{i}", "RBN") for i in range(20)]
         + [rec("brown", "b99", "CSt")]  # a single Stanford-cataloged record
     }
     config = _build_lake(tmp_path, records)
@@ -756,7 +788,6 @@ def test_cataloging_timeline(tmp_path):
     assert by_year[1985]["counts"] == {
         "lc": 0,
         "self": 21,  # 20 + z5
-        "self_inferred": 0,
         "pod": 3,
         "other": 0,
         "none": 0,
@@ -847,7 +878,7 @@ def test_self_code_probe_surfaces_what_the_matcher_will_match(tmp_path):
 
 
 def test_unmapped_org_is_refused(tmp_path):
-    # An org missing from _SELF_CODES used to degrade silently: 0% self-cataloged,
+    # An unmapped org used to degrade silently: 0% self-cataloged,
     # nothing in `pod`, and a flow row with no column — a publishable-looking claim
     # that a member does no original cataloging. Both 040 and 035 views must refuse
     # to build instead, since they share the mapping.
@@ -864,8 +895,10 @@ def test_unmapped_org_is_refused(tmp_path):
 
     records = {
         "stanford": [rec("stanford", "s1", "CSt")],
-        # a new member POD hasn't been mapped yet, using its own unknown code
-        "yale": [rec("yale", f"y{i}", "YUS") for i in range(30)],
+        # a new member POD hasn't mapped yet, using its own unknown code
+        # not a current member: every one of those is in institution-codes.csv,
+        # which is exactly what stops this happening in production
+        "mcgill": [rec("mcgill", f"y{i}", "QMM") for i in range(30)],
     }
     config = _build_lake(tmp_path, records)
     connection = lake.connect(read_only=True, config=config)
@@ -874,10 +907,10 @@ def test_unmapped_org_is_refused(tmp_path):
             with pytest.raises(ValueError) as excinfo:
                 fn(connection, threshold=1)
             message = str(excinfo.value)
-            assert "yale" in message, f"{fn.__name__} didn't name the missing org"
+            assert "mcgill" in message, f"{fn.__name__} didn't name the missing org"
             assert "stanford" not in message  # mapped orgs aren't reported
             # the error has to be actionable: name the dicts and show the probe
-            assert "_SELF_CODES" in message
+            assert "institution-codes.csv" in message
             assert "field_tag = '040'" in message
     finally:
         connection.close()
