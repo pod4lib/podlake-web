@@ -12,7 +12,7 @@ site/dist/
 
 # NOTE: site/src/data/*.json (the published aggregate snapshot) IS committed, so
 # the GitHub Pages build can run without access to the private lake. Refresh it
-# with `tools/tasks.py extract` and commit the result whenever the lake is updated.
+# with `podlake-web extract` and commit the result whenever the lake is updated.
 
 # Working files from the code-mapping workflow. institution-codes.csv IS committed
 # (it is curated input); these are its throwaway inputs — candidate rows straight from

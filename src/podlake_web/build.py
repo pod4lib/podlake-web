@@ -30,9 +30,9 @@ def _main() -> None:
     """Build public Tier-1 analytics extracts from a podlake DuckLake."""
 
 
-# The default output dir is the sibling Observable Framework data dir:
-# podlake-web/site/src/data (build.py lives at podlake-web/extract/src/podlake_web).
-DEFAULT_OUT = Path(__file__).resolve().parents[3] / "site" / "src" / "data"
+# The default output dir is the Observable Framework data dir, site/src/data
+# (build.py lives at podlake-web/src/podlake_web, hence two parents up).
+DEFAULT_OUT = Path(__file__).resolve().parents[2] / "site" / "src" / "data"
 
 # filename, human description, query function
 ARTIFACTS = [

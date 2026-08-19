@@ -19,10 +19,8 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      # The two repos have to land as siblings. extract/pyproject.toml points at
-      # podlake via `path = "../../podlake"`, which resolves relative to that file
-      # — so podlake-web/extract/../../podlake means a checkout next to this repo,
-      # not inside it.
+      # The two repos have to land as siblings: pyproject.toml points at podlake
+      # via `path = "../podlake"`, so podlake must sit next to this checkout.
       - uses: actions/checkout@v4
         with:
           path: podlake-web
@@ -39,13 +37,13 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          cache-dependency-glob: podlake-web/extract/uv.lock
+          cache-dependency-glob: podlake-web/uv.lock
 
       # ruff format --check, ruff check, ty, pytest — the same task used locally,
       # so there is one definition of "passing" rather than two that can drift.
       # The tests exercise real DuckLake attaches, so DuckDB downloads the ducklake
       # extension here; that is the one network dependency in this job.
-      - run: uv run tools/tasks.py check
+      - run: uv run podlake-web check
         working-directory: podlake-web
 
   # The site build gates what actually ships. deploy.yml runs the same build on

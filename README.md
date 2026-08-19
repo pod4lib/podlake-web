@@ -11,8 +11,8 @@ Live at <https://sul-dlss.github.io/podlake-web/>.
 The podlake DuckLake holds hundreds of millions of record-level rows and is only
 accessible to POD members. So this project splits in two along that boundary:
 
-1. **`extract/`** — a Python step that connects *read-only* to the private lake
-   and compiles a handful of small, **aggregate-only** JSON artifacts (counts,
+1. **`src/podlake_web/`** — a Python step that connects *read-only* to the private
+   lake and compiles a handful of small, **aggregate-only** JSON artifacts (counts,
    distributions, percentages — never record identifiers, titles, or raw field
    values).
 2. **`site/`** — an [Observable Framework](https://observablehq.com/framework/)
@@ -25,22 +25,22 @@ without any access to the lake, and it is why refreshing the figures is a commit
 rather than a query: see [Keeping the figures current](#keeping-the-figures-current).
 
 Because only a POD-member host can reach the lake, that refresh runs there rather
-than in CI: `tools/tasks.py refresh` below rebuilds and publishes, and
+than in CI: `podlake-web refresh` rebuilds and publishes, and
 [podlake-deploy](https://github.com/sul-dlss/podlake-deploy) provisions the host and schedules it.
 
 ## Quickstart
 
-`tools/tasks.py` wraps the common tasks. It declares its own dependencies inline,
-so `uv run` needs no setup step of its own:
+Everything is a subcommand of `podlake-web`, the same way podlake exposes
+`podlake sync-all`:
 
 ```sh
-uv run tools/tasks.py --help
+uv run podlake-web --help
 ```
 
-**One prerequisite that is easy to miss: `podlake` must be checked out as a
-sibling of this repo.** `extract/pyproject.toml` depends on it by path
-(`../../podlake`), so `check` and `extract` both fail without it — this is not
-optional, and it is why CI checks out both repositories side by side:
+**One prerequisite that is easy to miss: `podlake` must be checked out as a sibling
+of this repo.** `pyproject.toml` depends on it by path (`../podlake`), so the whole
+CLI fails to install without it — this is not optional, and it is why CI checks out
+both repositories side by side:
 
 ```sh
 git clone https://github.com/sul-dlss/podlake.git
@@ -48,36 +48,36 @@ git clone https://github.com/sul-dlss/podlake-web.git
 cd podlake-web            # podlake/ and podlake-web/ are now siblings
 ```
 
-You also need [uv](https://docs.astral.sh/uv/) for anything Python, and Node 20+
-for the `site` and `build` tasks.
+You also need [uv](https://docs.astral.sh/uv/), and Node 20+ for the `site` and
+`build` tasks.
 
 `extract` needs an explicit `--catalog` naming the lake to read — a local
 `.ducklake` file, an `s3://…/x.ducklake` object, or a `postgres:…` DSN — so it can
 run anywhere the lake is reachable:
 
 ```sh
-# one-time: install the site's npm deps (extract's Python deps are handled by uv)
-uv run tools/tasks.py install
+# one-time: install the site's npm deps (Python deps are handled by uv)
+uv run podlake-web install
 
 # 1. compile the public aggregate artifacts into site/src/data/*.json
 
 # a local podlake checkout (data path defaults to the sibling lake-data/):
-uv run tools/tasks.py extract --catalog ../../podlake/podlake.ducklake
+uv run podlake-web extract --catalog ../podlake/podlake.ducklake
 
 # a lake published to S3 by `podlake publish`:
-uv run tools/tasks.py extract --catalog s3://my-bucket/podlake/podlake.ducklake
+uv run podlake-web extract --catalog s3://my-bucket/podlake/podlake.ducklake
 
 # a Postgres-catalog lake (S3 data path is required — it can't be derived):
-uv run tools/tasks.py extract \
+uv run podlake-web extract \
   --catalog "postgres:host=… dbname=… user=… password=…" \
   --data-path s3://my-bucket/podlake/lake-data/
 
 # 2. preview the dashboard (reads the artifacts from step 1)
-uv run tools/tasks.py site      # dev server at http://127.0.0.1:3000
-uv run tools/tasks.py build     # or: produce the static site in site/dist
+uv run podlake-web site         # dev server at http://127.0.0.1:3000
+uv run podlake-web build        # or: produce the static site in site/dist
 
-# lint, type-check, and test the extract step
-uv run tools/tasks.py check
+# lint, type-check, and test
+uv run podlake-web check
 ```
 
 For file catalogs `--data-path` defaults to the catalog's sibling `lake-data/` (how
@@ -103,7 +103,7 @@ provisions the host and schedules it.
 
 ```sh
 # on the host — rebuild the artifacts, commit and push them
-uv run tools/tasks.py refresh --catalog /opt/app/pod/podlake/podlake.ducklake
+uv run podlake-web refresh --catalog /opt/app/pod/podlake/podlake.ducklake
 ```
 
 Running it *on the host* rather than over SSH is what keeps it simple: a remotely
@@ -122,15 +122,17 @@ entry for `refresh` on its own.
 ## Layout
 
 ```
-extract/   Python: aggregate queries (queries.py), disclosure control
-           (suppress.py), the institution↔code map loader (codes.py), and the
-           `podlake-web extract` / `probe` CLI (build.py). Depends on the podlake
-           checkout being a sibling of this repo.
+src/podlake_web/
+           The `podlake-web` CLI: aggregate queries (queries.py), disclosure
+           control (suppress.py), the institution↔code map loader (codes.py), the
+           extract/probe commands (build.py), and the repository tasks —
+           check/site/build/refresh (tasks.py). Depends on the podlake checkout
+           being a sibling of this repo.
+tests/     pytest; builds small DuckLakes and throwaway git repos in tmpdirs, and
+           never touches the private lake.
 site/      Observable Framework app; pages read site/src/data/*.json.
-tools/     tasks.py — the task runner and the entry point for everything below;
-           run `uv run tools/tasks.py --help`. Also registry-codes.js, a browser
-           console script that proposes rows for institution-codes.csv from the
-           WorldCat Registry.
+tools/     registry-codes.js — a browser console script that proposes rows for
+           institution-codes.csv from the WorldCat Registry.
 docs/      POD analytics use cases and user stories that motivate the views,
            plus institution-codes.md on maintaining the code map.
 
