@@ -19,7 +19,7 @@ runs them as separate steps. A wrapper would only duplicate that, with the added
 cost that the names in the docs would not match the names in the failure output.
 
 Deploying a host and scheduling the refresh on it is a different repository —
-sul-dlss/podlake-deploy — because that ordering spans podlake and podlake-web both
+pod4lib/podlake-deploy — because that ordering spans podlake and podlake-web both
 and neither can express it alone.
 """
 
@@ -199,7 +199,7 @@ def refresh(
 
     NOT the whole pipeline: it must run *after* podlake has finished syncing, or it
     publishes a comparison in which some institutions are updated and others are
-    not. sul-dlss/podlake-deploy owns that ordering — do not schedule this alone.
+    not. pod4lib/podlake-deploy owns that ordering — do not schedule this alone.
     """
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     started = datetime.now(UTC)
@@ -293,7 +293,7 @@ Produced by `podlake-web refresh`.
         typer.secho(f"\npush failed: {exc}", fg="red")
         typer.echo(
             "cron has no SSH agent, so this needs a deploy key or credential helper "
-            "on the host — see sul-dlss/podlake-deploy."
+            "on the host — see pod4lib/podlake-deploy."
         )
         raise typer.Exit(1) from None
     typer.secho(f"pushed {new} -> {branch}", fg="green")

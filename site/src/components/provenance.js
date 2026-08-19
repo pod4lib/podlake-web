@@ -10,7 +10,7 @@ import {sqlBlock} from "./sql.js";
 // build cannot check for us — `npm run build` validates internal links only — so a
 // path change here fails silently on the live site. Grep for the old path when
 // moving Python around.
-const GITHUB_BASE = "https://github.com/sul-dlss/podlake-web/blob/main";
+const GITHUB_BASE = "https://github.com/pod4lib/podlake-web/blob/main";
 const DEFAULT_SOURCE = "src/podlake_web/queries.py";
 
 // sql: a string, or [{label?, sql}]. dataUrl/dataName: the derived JSON to link.

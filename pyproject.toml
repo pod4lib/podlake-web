@@ -24,7 +24,7 @@ podlake-web = "podlake_web:app"
 
 [tool.uv.sources]
 # podlake is a sibling checkout of this repo: ../podlake. On a deploy target this
-# can point at the git repo instead (podlake = { git = "https://github.com/sul-dlss/podlake" }).
+# can point at the git repo instead (podlake = { git = "https://github.com/pod4lib/podlake" }).
 podlake = { path = "../podlake", editable = true }
 
 [build-system]

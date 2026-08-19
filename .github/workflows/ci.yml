@@ -31,7 +31,7 @@ jobs:
       # more noise than signal.
       - uses: actions/checkout@v4
         with:
-          repository: sul-dlss/podlake
+          repository: pod4lib/podlake
           path: podlake
 
       - uses: astral-sh/setup-uv@v5

@@ -1,10 +1,10 @@
 # podlake-web
 
 A public, client-side dashboard that showcases the consortial collection
-analytics possible with [podlake](https://github.com/sul-dlss/podlake) for the
+analytics possible with [podlake](https://github.com/pod4lib/podlake) for the
 [POD](https://pod.stanford.edu/) community.
 
-Live at <https://sul-dlss.github.io/podlake-web/>.
+Live at <https://pod4lib.github.io/podlake-web/>.
 
 ## Design
 
@@ -26,7 +26,7 @@ rather than a query: see [Keeping the figures current](#keeping-the-figures-curr
 
 Because only a POD-member host can reach the lake, that refresh runs there rather
 than in CI: `podlake-web refresh` rebuilds and publishes, and
-[podlake-deploy](https://github.com/sul-dlss/podlake-deploy) provisions the host and schedules it.
+[podlake-deploy](https://github.com/pod4lib/podlake-deploy) provisions the host and schedules it.
 
 ## Quickstart
 
@@ -43,8 +43,8 @@ CLI fails to install without it — this is not optional, and it is why CI check
 both repositories side by side:
 
 ```sh
-git clone https://github.com/sul-dlss/podlake.git
-git clone https://github.com/sul-dlss/podlake-web.git
+git clone https://github.com/pod4lib/podlake.git
+git clone https://github.com/pod4lib/podlake-web.git
 cd podlake-web            # podlake/ and podlake-web/ are now siblings
 ```
 
@@ -102,7 +102,7 @@ The repository's **Settings → Pages → Source** must be set to **"GitHub Acti
 ### Keeping the figures current
 
 Because CI can't reach the lake, the refresh runs on a host that can. This repo
-provides the command; **[sul-dlss/podlake-deploy](https://github.com/sul-dlss/podlake-deploy)**
+provides the command; **[pod4lib/podlake-deploy](https://github.com/pod4lib/podlake-deploy)**
 provisions the host and schedules it.
 
 ```sh
