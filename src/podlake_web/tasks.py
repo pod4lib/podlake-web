@@ -5,13 +5,18 @@ These sit on the same ``podlake-web`` CLI as ``extract`` and ``probe``, so one
 command covers everything this repo does — mirroring how ``podlake`` exposes
 ``sync-all``:
 
-    uv run podlake-web check                     # lint, type-check, test
     uv run podlake-web site                      # dev server
+    uv run podlake-web build                     # static site into site/dist
     uv run podlake-web refresh --catalog …       # extract, commit, push
 
 They replace a Makefile. Living in the package rather than in a standalone script
 means they are importable, so the logic deciding whether to publish is covered by
 tests instead of only being exercised at 4:30 on a Monday.
+
+Lint, type-check and tests are deliberately NOT wrapped here — `uv run pytest`,
+`uv run ruff check .` and `uv run ty check .` are the ordinary invocations, and CI
+runs them as separate steps. A wrapper would only duplicate that, with the added
+cost that the names in the docs would not match the names in the failure output.
 
 Deploying a host and scheduling the refresh on it is a different repository —
 sul-dlss/podlake-deploy — because that ordering spans podlake and podlake-web both
@@ -70,18 +75,6 @@ def _run(cmd: list[str], *, cwd: Path = ROOT) -> None:
 
 
 # --- development tasks --------------------------------------------------------
-
-
-@app.command()
-def check() -> None:
-    """Lint, type-check, and test."""
-    for cmd in (
-        ["uv", "run", "ruff", "format", "--check", "."],
-        ["uv", "run", "ruff", "check", "."],
-        ["uv", "run", "ty", "check", "."],
-        ["uv", "run", "pytest", "-q"],
-    ):
-        _run(cmd)
 
 
 @app.command()
@@ -175,10 +168,10 @@ def refresh(
         help="Branch to push. main is what deploys the live site; a branch name "
         "stages the change for review instead.",
     ),
-    check_first: bool = typer.Option(
+    run_tests: bool = typer.Option(
         True,
-        "--check/--no-check",
-        help="Run the check task first, so a broken checkout fails in seconds "
+        "--test/--no-test",
+        help="Run the test suite first, so a broken checkout fails in seconds "
         "rather than an hour later.",
     ),
     allow_timestamp_only: bool = typer.Option(
@@ -235,8 +228,13 @@ def refresh(
     head = git("rev-parse", "--short", "HEAD").strip()
     typer.echo(f"code: {head} {git('log', '-1', '--format=%s').strip()}")
 
-    if check_first:
-        check()
+    # Tests only, not the linters. A failing test means this code does not work
+    # against this environment, which should stop a publish. Formatting and typing
+    # are gated by CI on the way to main, and have nothing to say about whether the
+    # data should go out — coupling them here would let a stray blank line block a
+    # week of updates.
+    if run_tests:
+        _run(["uv", "run", "pytest", "-q"])
     # Called directly rather than through the CLI. Every argument is passed
     # explicitly because typer leaves OptionInfo objects as the defaults — relying
     # on them here would hand DuckDB an OptionInfo instead of a path.

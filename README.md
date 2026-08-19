@@ -76,9 +76,13 @@ uv run podlake-web extract \
 uv run podlake-web site         # dev server at http://127.0.0.1:3000
 uv run podlake-web build        # or: produce the static site in site/dist
 
-# lint, type-check, and test
-uv run podlake-web check
+# test
+uv run pytest -q
 ```
+
+Formatting and typing are not wrapped in a task: CI runs `ruff format --check .`,
+`ruff check .` and `ty check .` as separate steps, so forgetting them locally costs
+a red build rather than a broken main.
 
 For file catalogs `--data-path` defaults to the catalog's sibling `lake-data/` (how
 `podlake publish` lays a lake out); pass it explicitly to override. S3 access uses

@@ -39,11 +39,18 @@ jobs:
           enable-cache: true
           cache-dependency-glob: podlake-web/uv.lock
 
-      # ruff format --check, ruff check, ty, pytest — the same task used locally,
-      # so there is one definition of "passing" rather than two that can drift.
+      # Separate steps rather than one wrapper command: the step name in a failed
+      # run then says which gate broke, and these are the same invocations a
+      # developer types, so there is nothing to keep in sync.
+      - run: uv run ruff format --check .
+        working-directory: podlake-web
+      - run: uv run ruff check .
+        working-directory: podlake-web
+      - run: uv run ty check .
+        working-directory: podlake-web
       # The tests exercise real DuckLake attaches, so DuckDB downloads the ducklake
       # extension here; that is the one network dependency in this job.
-      - run: uv run podlake-web check
+      - run: uv run pytest -q
         working-directory: podlake-web
 
   # The site build gates what actually ships. deploy.yml runs the same build on
