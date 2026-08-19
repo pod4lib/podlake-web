@@ -9,7 +9,7 @@ Live at <https://sul-dlss.github.io/podlake-web/>.
 ## Design
 
 The podlake DuckLake holds hundreds of millions of record-level rows and is only
-accessible to POD members. So this project has two components:
+accessible to POD members. So this project splits in two along that boundary:
 
 1. **`extract/`** — a Python step that connects *read-only* to the private lake
    and compiles a handful of small, **aggregate-only** JSON artifacts (counts,
@@ -20,40 +20,67 @@ accessible to POD members. So this project has two components:
    serverless: the built files deploy to GitHub Pages, with no database to reach.
 
 The aggregate artifacts in `site/src/data/*.json` are **committed** — they are the
-published snapshot the site is built from. Refreshing the figures means re-running
-`extract` against the lake and committing the updated JSON.
+published snapshot the site is built from. That is what lets the public site build
+without any access to the lake, and it is why refreshing the figures is a commit
+rather than a query: see [Keeping the figures current](#keeping-the-figures-current).
+
+Because only a POD-member host can reach the lake, that refresh runs there rather
+than in CI: `tools/tasks.py refresh` below rebuilds and publishes, and
+[podlake-deploy](https://github.com/sul-dlss/podlake-deploy) provisions the host and schedules it.
 
 ## Quickstart
 
-The `Makefile` wraps the common tasks. `extract` needs an explicit `CATALOG`
-naming the lake to read — a local `.ducklake` file, an `s3://…/x.ducklake`
-object, or a `postgres:…` DSN — so it can run anywhere the lake is reachable:
+`tools/tasks.py` wraps the common tasks. It declares its own dependencies inline,
+so `uv run` needs no setup step of its own:
+
+```sh
+uv run tools/tasks.py --help
+```
+
+**One prerequisite that is easy to miss: `podlake` must be checked out as a
+sibling of this repo.** `extract/pyproject.toml` depends on it by path
+(`../../podlake`), so `check` and `extract` both fail without it — this is not
+optional, and it is why CI checks out both repositories side by side:
+
+```sh
+git clone https://github.com/sul-dlss/podlake.git
+git clone https://github.com/sul-dlss/podlake-web.git
+cd podlake-web            # podlake/ and podlake-web/ are now siblings
+```
+
+You also need [uv](https://docs.astral.sh/uv/) for anything Python, and Node 20+
+for the `site` and `build` tasks.
+
+`extract` needs an explicit `--catalog` naming the lake to read — a local
+`.ducklake` file, an `s3://…/x.ducklake` object, or a `postgres:…` DSN — so it can
+run anywhere the lake is reachable:
 
 ```sh
 # one-time: install the site's npm deps (extract's Python deps are handled by uv)
-cd site && npm install && cd ..
+uv run tools/tasks.py install
 
 # 1. compile the public aggregate artifacts into site/src/data/*.json
 
 # a local podlake checkout (data path defaults to the sibling lake-data/):
-make extract CATALOG=../../podlake/podlake.ducklake
+uv run tools/tasks.py extract --catalog ../../podlake/podlake.ducklake
 
 # a lake published to S3 by `podlake publish`:
-make extract CATALOG=s3://my-bucket/podlake/podlake.ducklake
+uv run tools/tasks.py extract --catalog s3://my-bucket/podlake/podlake.ducklake
 
 # a Postgres-catalog lake (S3 data path is required — it can't be derived):
-make extract CATALOG="postgres:host=… dbname=… user=… password=…" \
-             DATA_PATH=s3://my-bucket/podlake/lake-data/
+uv run tools/tasks.py extract \
+  --catalog "postgres:host=… dbname=… user=… password=…" \
+  --data-path s3://my-bucket/podlake/lake-data/
 
 # 2. preview the dashboard (reads the artifacts from step 1)
-make site            # dev server at http://127.0.0.1:3000
-make build           # or: produce the static site in site/dist
+uv run tools/tasks.py site      # dev server at http://127.0.0.1:3000
+uv run tools/tasks.py build     # or: produce the static site in site/dist
 
 # lint, type-check, and test the extract step
-make check
+uv run tools/tasks.py check
 ```
 
-For file catalogs `DATA_PATH` defaults to the catalog's sibling `lake-data/` (how
+For file catalogs `--data-path` defaults to the catalog's sibling `lake-data/` (how
 `podlake publish` lays a lake out); pass it explicitly to override. S3 access uses
 DuckDB's credential chain (standard `AWS_*` env vars, shared config, or an assumed
 role).
@@ -63,21 +90,47 @@ role).
 `.github/workflows/deploy.yml` deploys the site to GitHub Pages on every push to
 `main`: it runs `npm run build` and publishes `site/dist`. **The build uses the
 committed `site/src/data/*.json` snapshot — CI never touches the private lake.**
-So updating the live figures is a two-step commit: `make extract CATALOG=…`, then
-commit the changed artifacts.
+So a push that changes those artifacts is what updates the live figures.
 
 The repository's **Settings → Pages → Source** must be set to **"GitHub Actions"**
 (not "Deploy from a branch"); the workflow already handles the build and upload.
+
+### Keeping the figures current
+
+Because CI can't reach the lake, the refresh runs on a host that can. This repo
+provides the command; **[sul-dlss/podlake-deploy](https://github.com/sul-dlss/podlake-deploy)**
+provisions the host and schedules it.
+
+```sh
+# on the host — rebuild the artifacts, commit and push them
+uv run tools/tasks.py refresh --catalog /opt/app/pod/podlake/podlake.ducklake
+```
+
+Running it *on the host* rather than over SSH is what keeps it simple: a remotely
+driven refresh would have to survive an hour-long job outliving its connection, a
+forwarded SSH agent expiring with it, and a Duo prompt no script can answer. Under
+cron, none of that arises. It pushes only when the numbers actually moved — every
+artifact carries a `generated_at`, so a re-run always produces a diff, and that
+isn't news.
+
+**The schedule is not ours to set.** `refresh` must run *after* podlake has finished
+syncing the lake, or it publishes a comparison in which some institutions are
+updated and others aren't — wrong in a way that looks plausible. That ordering spans
+two repositories, so `podlake-deploy` owns it as a single pipeline. Don't add a cron
+entry for `refresh` on its own.
 
 ## Layout
 
 ```
 extract/   Python: aggregate queries (queries.py), disclosure control
            (suppress.py), the institution↔code map loader (codes.py), and the
-           `podlake-web extract` / `probe` CLI (build.py).
+           `podlake-web extract` / `probe` CLI (build.py). Depends on the podlake
+           checkout being a sibling of this repo.
 site/      Observable Framework app; pages read site/src/data/*.json.
-tools/     registry-codes.js — browser console script that proposes rows for
-           institution-codes.csv from the WorldCat Registry.
+tools/     tasks.py — the task runner and the entry point for everything below;
+           run `uv run tools/tasks.py --help`. Also registry-codes.js, a browser
+           console script that proposes rows for institution-codes.csv from the
+           WorldCat Registry.
 docs/      POD analytics use cases and user stories that motivate the views,
            plus institution-codes.md on maintaining the code map.
 

@@ -29,7 +29,7 @@ jobs:
       # podlake is public, so this needs no token. It tracks main deliberately:
       # this repo consumes podlake's lake.connect / lake.load_pair, and a
       # breaking change there should redden CI here rather than wait to be
-      # discovered during a manual `make extract`. Pin `ref:` if that becomes
+      # discovered during a manual extract. Pin `ref:` if that becomes
       # more noise than signal.
       - uses: actions/checkout@v4
         with:
@@ -41,11 +41,11 @@ jobs:
           enable-cache: true
           cache-dependency-glob: podlake-web/extract/uv.lock
 
-      # ruff format --check, ruff check, ty, pytest — the same target used locally,
+      # ruff format --check, ruff check, ty, pytest — the same task used locally,
       # so there is one definition of "passing" rather than two that can drift.
       # The tests exercise real DuckLake attaches, so DuckDB downloads the ducklake
       # extension here; that is the one network dependency in this job.
-      - run: make check
+      - run: uv run tools/tasks.py check
         working-directory: podlake-web
 
   # The site build gates what actually ships. deploy.yml runs the same build on
