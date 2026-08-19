@@ -6,9 +6,12 @@
 import {html} from "npm:htl";
 import {sqlBlock} from "./sql.js";
 
-// The repo isn't published yet; update if the canonical home changes.
+// Deep links into the repo on GitHub. These are the one class of link Observable's
+// build cannot check for us — `npm run build` validates internal links only — so a
+// path change here fails silently on the live site. Grep for the old path when
+// moving Python around.
 const GITHUB_BASE = "https://github.com/sul-dlss/podlake-web/blob/main";
-const DEFAULT_SOURCE = "extract/src/podlake_web/queries.py";
+const DEFAULT_SOURCE = "src/podlake_web/queries.py";
 
 // sql: a string, or [{label?, sql}]. dataUrl/dataName: the derived JSON to link.
 export function provenance({sql, dataUrl, dataName, source = DEFAULT_SOURCE} = {}) {

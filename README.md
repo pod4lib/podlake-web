@@ -130,7 +130,7 @@ src/podlake_web/
            The `podlake-web` CLI: aggregate queries (queries.py), disclosure
            control (suppress.py), the institution↔code map loader (codes.py), the
            extract/probe commands (build.py), and the repository tasks —
-           check/site/build/refresh (tasks.py). Depends on the podlake checkout
+           site/build/install/refresh (tasks.py). Depends on the podlake checkout
            being a sibling of this repo.
 tests/     pytest; builds small DuckLakes and throwaway git repos in tmpdirs, and
            never touches the private lake.

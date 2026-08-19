@@ -40,7 +40,7 @@ The queries are nothing fancier than SQL over the two tables described under [th
 schema](#the-schema); the raw counts are then shaped in Python (small-cell
 suppression, the comparison share matrices, the place roll-ups), all of it in the
 extract:
-[`extract/src/podlake_web`](https://github.com/sul-dlss/podlake-web/tree/main/extract/src/podlake_web).
+[`src/podlake_web`](https://github.com/sul-dlss/podlake-web/tree/main/src/podlake_web).
 
 ## Querying the lake yourself
 
