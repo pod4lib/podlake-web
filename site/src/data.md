@@ -40,7 +40,7 @@ The queries are nothing fancier than SQL over the two tables described under [th
 schema](#the-schema); the raw counts are then shaped in Python (small-cell
 suppression, the comparison share matrices, the place roll-ups), all of it in the
 extract:
-[`extract/src/podlake_web`](https://github.com/sul-dlss/podlake-web/tree/main/extract/src/podlake_web).
+[`src/podlake_web`](https://github.com/pod4lib/podlake-web/tree/main/src/podlake_web).
 
 ## Querying the lake yourself
 
@@ -54,7 +54,7 @@ full SQL, no limits.
 **Access.** The shared POD lake is private, so querying it needs read-only
 credentials issued to authorized partners (a self-serve, per-user signed-key app
 is planned — for now access is arranged manually). You can also build and query
-your **own** lake with [podlake](https://github.com/sul-dlss/podlake); everything
+your **own** lake with [podlake](https://github.com/pod4lib/podlake); everything
 below works exactly the same against it.
 
 </div>
@@ -199,7 +199,7 @@ that works today.
 
 MARC `040 $a` and `035` identify a cataloging agency by code, and nothing in the
 record says which POD member a code belongs to — so the mapping is curated by hand in
-[`institution-codes.csv`](https://github.com/sul-dlss/podlake-web/blob/main/institution-codes.csv).
+[`institution-codes.csv`](https://github.com/pod4lib/podlake-web/blob/main/institution-codes.csv).
 
 It matters only where a view asks **who catalogued a record**: the "this institution"
 and "another POD member" shares on [Source of cataloging](./cataloging-source) and its
@@ -209,10 +209,10 @@ system" rows on [How records arrived](./record-channels). Every other per-instit
 figure — counts, overlap, subject and language distributions, classification, formats
 — keys on `org`, the lake's own record of which member contributed the record, and is
 unaffected by the map.
-[`tools/registry-codes.js`](https://github.com/sul-dlss/podlake-web/blob/main/tools/registry-codes.js)
+[`tools/registry-codes.js`](https://github.com/pod4lib/podlake-web/blob/main/tools/registry-codes.js)
 proposes rows from the [WorldCat Registry](https://registry.worldcat.org/) and a
 person decides what to keep;
-[docs/institution-codes.md](https://github.com/sul-dlss/podlake-web/blob/main/docs/institution-codes.md)
+[docs/institution-codes.md](https://github.com/pod4lib/podlake-web/blob/main/docs/institution-codes.md)
 covers maintaining it.
 
 **Every figure built on it is a floor.** The map holds only codes somebody has

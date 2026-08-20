@@ -8,7 +8,7 @@ not execute yet. See "Sequencing" below.
 The near-term priority is **not** Tier 2. It is to confirm that the Tier‑1
 "each institution within the whole" visualizations and presentation hold up:
 
-1. Verify Tier 1 on the **full dataset** once it is built (a `make extract` +
+1. Verify Tier 1 on the **full dataset** once it is built (a full extract +
    rebuild). Watch the two heavy queries (`coverage`'s per-record group-by and
    the `pairwise` self-join), the 13×N chart/heatmap rendering, suppression
    against real long tails, and artifact sizes.

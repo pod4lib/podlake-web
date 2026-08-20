@@ -80,7 +80,7 @@ would move Princeton's records to Penn.
 
 ## Checking your work
 
-`make probe CATALOG=…` dumps every agency code each institution actually uses, with
+`podlake-web probe --catalog …` dumps every agency code each institution uses, with
 how concentrated each is. Sort by `pct_at_this_org`: a code used almost exclusively at
 one member is worth a look. It isn't proof — single-subscriber vendor namespaces look
 identical — but it's how you find codes the registries don't know about.

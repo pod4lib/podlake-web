@@ -331,7 +331,7 @@ wheels = [
 [[package]]
 name = "podlake"
 version = "0.1.0"
-source = { editable = "../../podlake" }
+source = { editable = "../podlake" }
 dependencies = [
     { name = "boto3" },
     { name = "duckdb" },
@@ -394,7 +394,7 @@ dev = [
 requires-dist = [
     { name = "boto3-stubs", extras = ["s3", "sts"], specifier = ">=1.38.24" },
     { name = "duckdb", specifier = ">=1.5.2" },
-    { name = "podlake", editable = "../../podlake" },
+    { name = "podlake", editable = "../podlake" },
     { name = "typer", specifier = ">=0.16.0" },
 ]
 

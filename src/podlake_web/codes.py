@@ -36,8 +36,8 @@ from pathlib import Path
 
 # The map lives at the repo root, next to the README: it is curated input that POD
 # members need to find, not an implementation detail. codes.py sits at
-# extract/src/podlake_web/, hence three parents up.
-DEFAULT_PATH = Path(__file__).resolve().parents[3] / "institution-codes.csv"
+# src/podlake_web/, hence two parents up.
+DEFAULT_PATH = Path(__file__).resolve().parents[2] / "institution-codes.csv"
 
 REQUIRED_COLUMNS = {"pod_institution", "marc_code", "oclc_code"}
 
