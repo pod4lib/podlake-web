@@ -36,6 +36,14 @@ const overview = overviewFile.json();
   </div>
 </div>
 
+<p style="color: var(--theme-foreground-muted); font-size: 0.85rem;">
+  These figures were compiled from the lake on
+  <strong>${overview.generated_at.slice(0, 10)}</strong> and are a fixed
+  snapshot: refreshing them means re-running the extract. When each institution
+  last contributed records is a separate date, in the table below. See
+  <a href="./data">about the data</a> for the full published surface.
+</p>
+
 ## Records by institution
 
 ```js
