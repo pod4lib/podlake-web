@@ -1,6 +1,6 @@
 # Overview
 
-The podlake site site provides a view into the MARC records collected as part
+The podlake site provides a view into the MARC records collected as part
 of the [POD](https://pod.stanford.edu/) project. It provides some initial
 insight into what the participating institutions hold, where they overlap, and
 how their metadata compares.
