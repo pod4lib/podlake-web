@@ -40,7 +40,7 @@
         "code": "CGU",
         "kind": "oclc",
         "org": "chicago",
-        "records": 463375,
+        "records": 463383,
         "registry_name": "University of Chicago"
       },
       {
@@ -131,7 +131,7 @@
         "code": "NNC-RB",
         "kind": "marc",
         "org": "columbia",
-        "records": 4813,
+        "records": 4815,
         "registry_name": "Columbia University in the City of New York \u2014 Bakhmeteff Archive"
       },
       {
@@ -208,7 +208,7 @@
         "code": "ZCU",
         "kind": "oclc",
         "org": "columbia",
-        "records": 317167,
+        "records": 317273,
         "registry_name": "Columbia University in the City of New York \u2014 Columbia University Libraries"
       },
       {
@@ -236,7 +236,7 @@
         "code": "COO",
         "kind": "oclc",
         "org": "cornell",
-        "records": 91039,
+        "records": 91071,
         "registry_name": "Cornell University Library"
       },
       {
@@ -250,7 +250,7 @@
         "code": "NIC",
         "kind": "marc",
         "org": "cornell",
-        "records": 1084455,
+        "records": 1084507,
         "registry_name": "Cornell University Library"
       },
       {
@@ -411,7 +411,7 @@
         "code": "HFL",
         "kind": "oclc",
         "org": "harvard",
-        "records": 27780,
+        "records": 27781,
         "registry_name": "Harvard University \u2014 Fine Arts Library, Harvard University"
       },
       {
@@ -453,14 +453,14 @@
         "code": "HMU",
         "kind": "oclc",
         "org": "harvard",
-        "records": 30857,
+        "records": 30856,
         "registry_name": "Harvard University \u2014 Loeb Music Library"
       },
       {
         "code": "HMZ",
         "kind": "oclc",
         "org": "harvard",
-        "records": 59348,
+        "records": 59350,
         "registry_name": "Harvard University \u2014 Ernst Mayr Library of the Museum of Comparative Zoology and Harvard Botany Libraries"
       },
       {
@@ -481,7 +481,7 @@
         "code": "HUL",
         "kind": "oclc",
         "org": "harvard",
-        "records": 198433,
+        "records": 198513,
         "registry_name": "Harvard University \u2014 Harvard Library"
       },
       {
@@ -495,7 +495,7 @@
         "code": "HVL",
         "kind": "oclc",
         "org": "harvard",
-        "records": 272218,
+        "records": 272229,
         "registry_name": "Harvard Law School Library \u2014 HLS Library"
       },
       {
@@ -544,7 +544,7 @@
         "code": "MCS",
         "kind": "oclc",
         "org": "harvard",
-        "records": 8476,
+        "records": 8475,
         "registry_name": "Harvard University \u2014 Arnold Arboretum"
       },
       {
@@ -558,7 +558,7 @@
         "code": "MH-A",
         "kind": "marc",
         "org": "harvard",
-        "records": 63,
+        "records": 64,
         "registry_name": "Harvard University \u2014 Arnold Arboretum"
       },
       {
@@ -698,14 +698,14 @@
         "code": "JHE",
         "kind": "oclc",
         "org": "jhu",
-        "records": 6793,
+        "records": 6795,
         "registry_name": "Johns Hopkins University \u2014 Sheridan Libraries and the Milton S. Eisenhower Library"
       },
       {
         "code": "JHP",
         "kind": "oclc",
         "org": "jhu",
-        "records": 4699,
+        "records": 4678,
         "registry_name": "Peabody Institute of the Johns Hopkins University"
       },
       {
@@ -740,7 +740,7 @@
         "code": "MDBPC",
         "kind": "marc",
         "org": "jhu",
-        "records": 10413,
+        "records": 10405,
         "registry_name": "Peabody Conservatory of Music"
       },
       {
@@ -901,7 +901,7 @@
         "code": "NJP",
         "kind": "marc",
         "org": "princeton",
-        "records": 528090,
+        "records": 528077,
         "registry_name": "Princeton University Library \u2014 Firestone Library"
       },
       {
@@ -922,7 +922,7 @@
         "code": "PUL",
         "kind": "oclc",
         "org": "princeton",
-        "records": 210612,
+        "records": 210645,
         "registry_name": "Princeton University Library \u2014 Firestone Library"
       },
       {
@@ -943,7 +943,7 @@
         "code": "CST",
         "kind": "marc",
         "org": "stanford",
-        "records": 717892,
+        "records": 717915,
         "registry_name": "Stanford University \u2014 Cecil H. Green Library"
       },
       {
@@ -964,7 +964,7 @@
         "code": "HIN",
         "kind": "oclc",
         "org": "stanford",
-        "records": 14405,
+        "records": 14406,
         "registry_name": "Stanford University \u2014 Hoover Institution Library & Archives"
       },
       {
@@ -992,7 +992,7 @@
         "code": "STF",
         "kind": "oclc",
         "org": "stanford",
-        "records": 224479,
+        "records": 224520,
         "registry_name": "Stanford University \u2014 Cecil H. Green Library"
       },
       {
@@ -1209,7 +1209,7 @@
         "code": "YUS",
         "kind": "oclc",
         "org": "yale",
-        "records": 412033,
+        "records": 412077,
         "registry_name": "Yale University Library"
       },
       {
@@ -1394,19 +1394,19 @@
       {
         "code": "NNC-EA-",
         "org": "columbia",
-        "parent": "NNC-EA",
+        "parent": "NNC",
         "records": null
       },
       {
         "code": "NNC-EA-CNNC-EA",
         "org": "columbia",
-        "parent": "NNC-EA",
+        "parent": "NNC",
         "records": null
       },
       {
         "code": "NNC-EA-NNC-EA",
         "org": "columbia",
-        "parent": "NNC-EA",
+        "parent": "NNC",
         "records": null
       },
       {
@@ -1550,13 +1550,13 @@
       {
         "code": "NNC-M-",
         "org": "columbia",
-        "parent": "NNC-M",
+        "parent": "NNC",
         "records": null
       },
       {
         "code": "NNC-M-NNC-M",
         "org": "columbia",
-        "parent": "NNC-M",
+        "parent": "NNC",
         "records": null
       },
       {
@@ -1761,7 +1761,7 @@
         "code": "MH-EA",
         "org": "harvard",
         "parent": "MH",
-        "records": 70
+        "records": 71
       },
       {
         "code": "MH-EB",
@@ -2006,13 +2006,13 @@
       {
         "code": "MH-L-",
         "org": "harvard",
-        "parent": "MH-L",
+        "parent": "MH",
         "records": null
       },
       {
         "code": "MH-L-CMH-L",
         "org": "harvard",
-        "parent": "MH-L",
+        "parent": "MH",
         "records": null
       },
       {
@@ -2228,7 +2228,7 @@
       {
         "code": "PU-AR-",
         "org": "penn",
-        "parent": "PU",
+        "parent": "PU-AR",
         "records": null
       },
       {
@@ -2655,7 +2655,7 @@
         "code": "CST-L",
         "org": "stanford",
         "parent": "CST",
-        "records": 90
+        "records": 91
       },
       {
         "code": "CST-LA",
@@ -2859,7 +2859,7 @@
         "code": "CTY-BR",
         "org": "yale",
         "parent": "CTY",
-        "records": 134569
+        "records": 134570
       },
       {
         "code": "CTY-BR B ENG",
@@ -3080,19 +3080,19 @@
       {
         "code": "CTY-M-",
         "org": "yale",
-        "parent": "CTY-M",
+        "parent": "CTY",
         "records": null
       },
       {
         "code": "CTY-M-CCTY-M",
         "org": "yale",
-        "parent": "CTY-M",
+        "parent": "CTY",
         "records": null
       },
       {
         "code": "CTY-M-CTY-M",
         "org": "yale",
-        "parent": "CTY-M",
+        "parent": "CTY",
         "records": null
       },
       {
@@ -3413,7 +3413,7 @@
           "CU-RIVES": 2618,
           "DARTMOUTH COLLEGE LIB": 106,
           "DGPO/DLC": 3009,
-          "DLC": 880480,
+          "DLC": 880481,
           "DLC-R": 4239,
           "DLC/ICU": 9369,
           "DNLM/DLC": 9635,
@@ -3425,7 +3425,7 @@
           "HMM": 15432,
           "HMS": 17,
           "HMY": 832,
-          "HUL": 1814,
+          "HUL": 1816,
           "HVL": 155,
           "ICU": 810,
           "ISJEAIW": 130,
@@ -3436,7 +3436,7 @@
           "MIAAPQ": 43,
           "MIGCL": null,
           "MIU": 4312,
-          "MWA": 44089,
+          "MWA": 44090,
           "MYG": 552,
           "N$T": null,
           "NAXOS": null,
@@ -3451,7 +3451,7 @@
           "NNC": 2962,
           "NNC-L": 75,
           "NYNYMAR": null,
-          "OHX": 17823,
+          "OHX": 17829,
           "OTU": 342,
           "PU": 3263,
           "PUL": 7129,
@@ -3478,10 +3478,10 @@
         "chicago": {
           "AGL": 3535,
           "BTCTA": 28725,
-          "C3L": 29364,
-          "CGU": 463375,
+          "C3L": 29360,
+          "CGU": 463383,
           "CONGRESSIONAL INFORMATION SERVICE": null,
-          "COO": 44335,
+          "COO": 44285,
           "CST": 9295,
           "CST-H": 2543,
           "CTY": 5745,
@@ -3490,8 +3490,8 @@
           "CTY-MUS": 104,
           "CU-RIVES": 29321,
           "DARTMOUTH COLLEGE LIB": null,
-          "DGPO/DLC": 21210,
-          "DLC": 2518215,
+          "DGPO/DLC": 21209,
+          "DLC": 2518149,
           "DLC-R": 32396,
           "DLC/ICU": 24825,
           "DNLM/DLC": 33260,
@@ -3499,15 +3499,15 @@
           "EAA": 23404,
           "GMOME": 1648,
           "GPO": 214525,
-          "HLS": 52194,
+          "HLS": 52195,
           "HMM": 483,
           "HMS": 98,
           "HMY": 8401,
-          "HUL": 11471,
+          "HUL": 11485,
           "HVL": 2124,
           "ICU": 269856,
           "ISJEAIW": 258,
-          "ITFIC": 64223,
+          "ITFIC": 64224,
           "LEXISNEXIS": 0,
           "MDBJ": 259,
           "MDBPC": 10,
@@ -3515,51 +3515,51 @@
           "MIGCL": 81422,
           "MIU": 7038,
           "MWA": 14472,
-          "MYG": 2029,
-          "N$T": 187505,
+          "MYG": 2030,
+          "N$T": 187485,
           "NAXOS": 145875,
-          "NDD": 15210,
+          "NDD": 15211,
           "NHD": 610,
           "NIC": 5048,
           "NJHACI": 0,
           "NJP": 3601,
           "NJROCCCS": 1527,
-          "NLC": 21204,
-          "NLM": 48964,
+          "NLC": 21205,
+          "NLM": 48963,
           "NNC": 6628,
           "NNC-L": 334,
           "NYNYMAR": 35,
-          "OHX": 102325,
+          "OHX": 102402,
           "OTU": 330,
           "PU": 1910,
-          "PUL": 22802,
-          "RBN": 11870,
+          "PUL": 22808,
+          "RBN": 11863,
           "RPB": 819,
           "RPJCB": 23,
           "RQB": 74,
-          "STF": 20904,
+          "STF": 20896,
           "TZT": 29721,
           "UK-CBPIL": 47335,
           "UK-ES": 146739,
           "UKM": 61392,
           "UKMBAM-D": 355261,
-          "UKMGB": 29822,
-          "UMI": 413936,
+          "UKMGB": 29808,
+          "UMI": 413438,
           "UTORBLW": 13599,
           "VAALASP": 52049,
           "VAALCD": 377333,
-          "YDX": 108751,
-          "YDXCP": 31132,
-          "YUS": 16208,
+          "YDX": 108667,
+          "YDXCP": 31130,
+          "YUS": 16213,
           "ZCU": 23818
         },
         "columbia": {
           "AGL": 1194,
           "BTCTA": 33809,
-          "C3L": 31257,
-          "CGU": 44670,
+          "C3L": 31258,
+          "CGU": 44672,
           "CONGRESSIONAL INFORMATION SERVICE": null,
-          "COO": 31951,
+          "COO": 31952,
           "CST": 22761,
           "CST-H": 7129,
           "CTY": 18920,
@@ -3569,19 +3569,19 @@
           "CU-RIVES": 64463,
           "DARTMOUTH COLLEGE LIB": 382,
           "DGPO/DLC": 6258,
-          "DLC": 1892185,
+          "DLC": 1892244,
           "DLC-R": 48425,
           "DLC/ICU": 12641,
-          "DNLM/DLC": 36650,
-          "DRB": 9140,
+          "DNLM/DLC": 36651,
+          "DRB": 9142,
           "EAA": 22754,
           "GMOME": 122,
           "GPO": 51104,
-          "HLS": 55304,
-          "HMM": 319,
+          "HLS": 55309,
+          "HMM": 317,
           "HMS": 321,
           "HMY": 9236,
-          "HUL": 18505,
+          "HUL": 18507,
           "HVL": 2649,
           "ICU": 2890,
           "ISJEAIW": 565,
@@ -3590,46 +3590,46 @@
           "MDBJ": 2016,
           "MDBPC": 179,
           "MIAAPQ": null,
-          "MIGCL": 84281,
+          "MIGCL": 84275,
           "MIU": 19468,
           "MWA": 10992,
           "MYG": 2207,
           "N$T": 2225,
           "NAXOS": null,
-          "NDD": 14340,
+          "NDD": 14342,
           "NHD": 2954,
           "NIC": 19518,
           "NJHACI": 0,
           "NJP": 27999,
           "NJROCCCS": 123053,
-          "NLC": 11568,
-          "NLM": 22248,
+          "NLC": 11569,
+          "NLM": 22249,
           "NNC": 787815,
           "NNC-L": 77274,
           "NYNYMAR": 39,
-          "OHX": 118820,
+          "OHX": 118846,
           "OTU": 260,
           "PU": 10763,
-          "PUL": 33935,
-          "RBN": 9338,
+          "PUL": 33937,
+          "RBN": 9340,
           "RPB": 4261,
           "RPJCB": 233,
           "RQB": 36,
-          "STF": 60754,
+          "STF": 60756,
           "TZT": 15484,
           "UK-CBPIL": 0,
           "UK-ES": 99949,
-          "UKM": 63431,
+          "UKM": 63432,
           "UKMBAM-D": 11,
-          "UKMGB": 25706,
-          "UMI": 6449,
+          "UKMGB": 25719,
+          "UMI": 6448,
           "UTORBLW": 12760,
           "VAALASP": 0,
           "VAALCD": 0,
-          "YDX": 53163,
+          "YDX": 53185,
           "YDXCP": 24765,
-          "YUS": 21180,
-          "ZCU": 317167
+          "YUS": 21251,
+          "ZCU": 317273
         },
         "cornell": {
           "AGL": 2431,
@@ -3637,7 +3637,7 @@
           "C3L": 17257,
           "CGU": 20789,
           "CONGRESSIONAL INFORMATION SERVICE": 28449,
-          "COO": 91039,
+          "COO": 91071,
           "CST": 17973,
           "CST-H": 4432,
           "CTY": 19121,
@@ -3647,8 +3647,8 @@
           "CU-RIVES": 12581,
           "DARTMOUTH COLLEGE LIB": 1287,
           "DGPO/DLC": 35141,
-          "DLC": 1663142,
-          "DLC-R": 26903,
+          "DLC": 1663166,
+          "DLC-R": 26904,
           "DLC/ICU": 9991,
           "DNLM/DLC": 23275,
           "DRB": 4799,
@@ -3659,8 +3659,8 @@
           "HMM": 139,
           "HMS": 29,
           "HMY": 10217,
-          "HUL": 5202,
-          "HVL": 992,
+          "HUL": 5203,
+          "HVL": 993,
           "ICU": 2901,
           "ISJEAIW": 505,
           "ITFIC": 44619,
@@ -3676,7 +3676,7 @@
           "NAXOS": 0,
           "NDD": 8000,
           "NHD": 4195,
-          "NIC": 1084455,
+          "NIC": 1084507,
           "NJHACI": 0,
           "NJP": 17752,
           "NJROCCCS": 0,
@@ -3688,12 +3688,12 @@
           "OHX": 50117,
           "OTU": 397,
           "PU": 23034,
-          "PUL": 11532,
+          "PUL": 11536,
           "RBN": 4201,
           "RPB": 6478,
           "RPJCB": 388,
           "RQB": 18,
-          "STF": 44652,
+          "STF": 44653,
           "TZT": 14539,
           "UK-CBPIL": 0,
           "UK-ES": 30,
@@ -3704,7 +3704,7 @@
           "UTORBLW": null,
           "VAALASP": 0,
           "VAALCD": 0,
-          "YDX": 28040,
+          "YDX": 28043,
           "YDXCP": 16438,
           "YUS": 11431,
           "ZCU": 11493
@@ -3868,10 +3868,10 @@
         "harvard": {
           "AGL": 5973,
           "BTCTA": 41189,
-          "C3L": 144994,
-          "CGU": 55680,
+          "C3L": 145048,
+          "CGU": 55678,
           "CONGRESSIONAL INFORMATION SERVICE": 0,
-          "COO": 64708,
+          "COO": 64709,
           "CST": 43956,
           "CST-H": 1713,
           "CTY": 14722,
@@ -3881,23 +3881,23 @@
           "CU-RIVES": 1995,
           "DARTMOUTH COLLEGE LIB": 40,
           "DGPO/DLC": 5251,
-          "DLC": 3595352,
-          "DLC-R": 44686,
+          "DLC": 3595409,
+          "DLC-R": 44692,
           "DLC/ICU": 11806,
           "DNLM/DLC": 34718,
           "DRB": 20527,
           "EAA": 23285,
           "GMOME": 100,
           "GPO": 57715,
-          "HLS": 715001,
+          "HLS": 715004,
           "HMM": 17668,
           "HMS": 137322,
           "HMY": 121288,
-          "HUL": 198433,
-          "HVL": 272218,
+          "HUL": 198513,
+          "HVL": 272229,
           "ICU": 5108,
-          "ISJEAIW": 348346,
-          "ITFIC": 144069,
+          "ISJEAIW": 348345,
+          "ITFIC": 144038,
           "LEXISNEXIS": 0,
           "MDBJ": 472,
           "MDBPC": 460,
@@ -3914,15 +3914,15 @@
           "NJHACI": null,
           "NJP": 24439,
           "NJROCCCS": 31,
-          "NLC": 39480,
+          "NLC": 39483,
           "NLM": 69101,
           "NNC": 4205,
           "NNC-L": 2884,
-          "NYNYMAR": 126422,
+          "NYNYMAR": 126404,
           "OHX": 146048,
           "OTU": 227,
           "PU": 4457,
-          "PUL": 63597,
+          "PUL": 63604,
           "RBN": 22941,
           "RPB": 1897,
           "RPJCB": 80,
@@ -3931,22 +3931,22 @@
           "TZT": 52211,
           "UK-CBPIL": 0,
           "UK-ES": 703,
-          "UKM": 133294,
+          "UKM": 133295,
           "UKMBAM-D": 11,
-          "UKMGB": 38089,
+          "UKMGB": 38105,
           "UMI": 5500,
           "UTORBLW": 692,
           "VAALASP": 0,
           "VAALCD": 0,
-          "YDX": 67663,
+          "YDX": 67674,
           "YDXCP": 32596,
-          "YUS": 36116,
-          "ZCU": 47873
+          "YUS": 36123,
+          "ZCU": 47880
         },
         "jhu": {
           "AGL": 746,
           "BTCTA": 12761,
-          "C3L": 22806,
+          "C3L": 22807,
           "CGU": 4797,
           "CONGRESSIONAL INFORMATION SERVICE": 0,
           "COO": 4257,
@@ -3959,7 +3959,7 @@
           "CU-RIVES": 0,
           "DARTMOUTH COLLEGE LIB": 107,
           "DGPO/DLC": 2093,
-          "DLC": 521581,
+          "DLC": 521774,
           "DLC-R": 1111,
           "DLC/ICU": 1305,
           "DNLM/DLC": 13603,
@@ -3967,18 +3967,18 @@
           "EAA": 0,
           "GMOME": 0,
           "GPO": 9514,
-          "HLS": 5822,
+          "HLS": 5823,
           "HMM": null,
           "HMS": 14,
           "HMY": 119,
-          "HUL": 1383,
+          "HUL": 1385,
           "HVL": 69,
           "ICU": 599,
           "ISJEAIW": 20,
-          "ITFIC": 6579,
+          "ITFIC": 6577,
           "LEXISNEXIS": 0,
           "MDBJ": 123953,
-          "MDBPC": 10413,
+          "MDBPC": 10405,
           "MIAAPQ": null,
           "MIGCL": 0,
           "MIU": 3181,
@@ -3992,32 +3992,32 @@
           "NJHACI": 0,
           "NJP": 2819,
           "NJROCCCS": 0,
-          "NLC": 4682,
+          "NLC": 4690,
           "NLM": 5298,
           "NNC": 1352,
           "NNC-L": 18,
           "NYNYMAR": null,
-          "OHX": 31120,
-          "OTU": 18973,
+          "OHX": 31127,
+          "OTU": 18972,
           "PU": 2128,
           "PUL": 4435,
           "RBN": 1821,
           "RPB": 1442,
           "RPJCB": null,
           "RQB": null,
-          "STF": 1493,
+          "STF": 1494,
           "TZT": 7650,
           "UK-CBPIL": null,
           "UK-ES": 0,
           "UKM": 32470,
           "UKMBAM-D": 0,
-          "UKMGB": 7139,
+          "UKMGB": 7223,
           "UMI": null,
           "UTORBLW": null,
           "VAALASP": null,
           "VAALCD": 0,
-          "YDX": 20942,
-          "YDXCP": 9260,
+          "YDX": 21039,
+          "YDXCP": 9262,
           "YUS": 1851,
           "ZCU": 2697
         },
@@ -4180,36 +4180,36 @@
         "princeton": {
           "AGL": 890,
           "BTCTA": 39456,
-          "C3L": 42789,
+          "C3L": 42791,
           "CGU": 32059,
           "CONGRESSIONAL INFORMATION SERVICE": null,
-          "COO": 29593,
+          "COO": 29594,
           "CST": 22147,
           "CST-H": 8041,
-          "CTY": 24363,
+          "CTY": 24362,
           "CTY-BR": 708,
           "CTY-D": 387,
           "CTY-MUS": 2083,
           "CU-RIVES": 229,
           "DARTMOUTH COLLEGE LIB": 117,
           "DGPO/DLC": 8084,
-          "DLC": 1713664,
-          "DLC-R": 45331,
+          "DLC": 1713665,
+          "DLC-R": 45332,
           "DLC/ICU": 12735,
           "DNLM/DLC": 11866,
           "DRB": 10851,
           "EAA": 68,
           "GMOME": 0,
-          "GPO": 31927,
-          "HLS": 51535,
+          "GPO": 31929,
+          "HLS": 51534,
           "HMM": 25,
           "HMS": 18,
           "HMY": 7771,
-          "HUL": 21737,
+          "HUL": 21747,
           "HVL": 2670,
           "ICU": 3013,
           "ISJEAIW": 757,
-          "ITFIC": 154663,
+          "ITFIC": 154659,
           "LEXISNEXIS": 0,
           "MDBJ": 2403,
           "MDBPC": 331,
@@ -4224,70 +4224,70 @@
           "NHD": 3450,
           "NIC": 22264,
           "NJHACI": null,
-          "NJP": 528090,
+          "NJP": 528077,
           "NJROCCCS": 0,
           "NLC": 20542,
           "NLM": 12080,
-          "NNC": 16574,
+          "NNC": 16573,
           "NNC-L": 475,
           "NYNYMAR": 1504,
-          "OHX": 124574,
+          "OHX": 124592,
           "OTU": 340,
           "PU": 12492,
-          "PUL": 210612,
-          "RBN": 9642,
+          "PUL": 210645,
+          "RBN": 9643,
           "RPB": 5150,
           "RPJCB": 252,
           "RQB": 29,
-          "STF": 67555,
+          "STF": 67557,
           "TZT": 24711,
           "UK-CBPIL": 0,
           "UK-ES": 115,
           "UKM": 51277,
           "UKMBAM-D": 0,
-          "UKMGB": 43641,
+          "UKMGB": 43643,
           "UMI": 10995,
           "UTORBLW": 13,
           "VAALASP": 0,
           "VAALCD": 0,
-          "YDX": 103579,
-          "YDXCP": 28856,
-          "YUS": 19009,
-          "ZCU": 28081
+          "YDX": 103581,
+          "YDXCP": 28858,
+          "YUS": 19010,
+          "ZCU": 28083
         },
         "stanford": {
-          "AGL": 6527,
-          "BTCTA": 28359,
+          "AGL": 6528,
+          "BTCTA": 28360,
           "C3L": 19630,
           "CGU": 29924,
           "CONGRESSIONAL INFORMATION SERVICE": null,
-          "COO": 42549,
-          "CST": 717892,
+          "COO": 42550,
+          "CST": 717915,
           "CST-H": 147915,
           "CTY": 24270,
-          "CTY-BR": 647,
+          "CTY-BR": 648,
           "CTY-D": 470,
           "CTY-MUS": 4755,
-          "CU-RIVES": 85,
+          "CU-RIVES": 86,
           "DARTMOUTH COLLEGE LIB": 511,
           "DGPO/DLC": 15212,
-          "DLC": 1521530,
-          "DLC-R": 40941,
+          "DLC": 1521581,
+          "DLC-R": 40944,
           "DLC/ICU": 9484,
           "DNLM/DLC": 9158,
-          "DRB": 5606,
+          "DRB": 5607,
           "EAA": null,
           "GMOME": 137,
-          "GPO": 435908,
+          "GPO": 435910,
           "HLS": 59995,
           "HMM": 299,
           "HMS": 16,
-          "HMY": 12961,
-          "HUL": 20459,
-          "HVL": 2282,
+          "HMY": 12962,
+          "HUL": 20468,
+          "HVL": 2283,
           "ICU": 3104,
           "ISJEAIW": 1071,
-          "ITFIC": 120664,
+          "ITFIC": 120705,
           "LEXISNEXIS": 0,
           "MDBJ": 4187,
           "MDBPC": 676,
@@ -4299,61 +4299,61 @@
           "N$T": 169217,
           "NAXOS": 147403,
           "NDD": 12088,
-          "NHD": 3377,
+          "NHD": 3378,
           "NIC": 29480,
           "NJHACI": 0,
           "NJP": 24033,
           "NJROCCCS": 2293,
-          "NLC": 17289,
+          "NLC": 17293,
           "NLM": 9148,
           "NNC": 16745,
           "NNC-L": 1495,
           "NYNYMAR": 1445,
-          "OHX": 87353,
+          "OHX": 87354,
           "OTU": 381,
-          "PU": 11630,
-          "PUL": 18577,
+          "PU": 11631,
+          "PUL": 18596,
           "RBN": 5454,
           "RPB": 5198,
           "RPJCB": 237,
           "RQB": 60,
-          "STF": 224479,
+          "STF": 224520,
           "TZT": 25484,
           "UK-CBPIL": 15912,
           "UK-ES": 92,
-          "UKM": 49521,
+          "UKM": 49522,
           "UKMBAM-D": 140149,
-          "UKMGB": 31538,
+          "UKMGB": 31544,
           "UMI": 26265,
           "UTORBLW": 1861,
           "VAALASP": 73945,
           "VAALCD": 0,
-          "YDX": 110618,
+          "YDX": 110636,
           "YDXCP": 31538,
-          "YUS": 18193,
-          "ZCU": 28529
+          "YUS": 18194,
+          "ZCU": 28532
         },
         "yale": {
           "AGL": 3407,
-          "BTCTA": 16537,
+          "BTCTA": 16538,
           "C3L": 60481,
           "CGU": 31319,
           "CONGRESSIONAL INFORMATION SERVICE": null,
-          "COO": 41967,
+          "COO": 41968,
           "CST": 29886,
           "CST-H": 10659,
           "CTY": 550278,
-          "CTY-BR": 134569,
+          "CTY-BR": 134570,
           "CTY-D": 49420,
           "CTY-MUS": 50674,
           "CU-RIVES": 847,
           "DARTMOUTH COLLEGE LIB": 239,
           "DGPO/DLC": 5054,
-          "DLC": 1938157,
+          "DLC": 1938196,
           "DLC-R": 49320,
           "DLC/ICU": 12216,
           "DNLM/DLC": 30645,
-          "DRB": 11643,
+          "DRB": 11644,
           "EAA": 213,
           "GMOME": 0,
           "GPO": 23318,
@@ -4365,7 +4365,7 @@
           "HVL": 1466,
           "ICU": 3999,
           "ISJEAIW": 581,
-          "ITFIC": 115180,
+          "ITFIC": 115181,
           "LEXISNEXIS": 0,
           "MDBJ": 2712,
           "MDBPC": 923,
@@ -4383,32 +4383,32 @@
           "NJP": 39149,
           "NJROCCCS": 0,
           "NLC": 17802,
-          "NLM": 23465,
-          "NNC": 19208,
+          "NLM": 23467,
+          "NNC": 19209,
           "NNC-L": 591,
           "NYNYMAR": 255,
-          "OHX": 93912,
+          "OHX": 93914,
           "OTU": 564,
           "PU": 13523,
           "PUL": 14476,
           "RBN": 10241,
-          "RPB": 6464,
+          "RPB": 6465,
           "RPJCB": 511,
           "RQB": 54,
-          "STF": 21347,
+          "STF": 21348,
           "TZT": 53045,
           "UK-CBPIL": 0,
           "UK-ES": 922,
-          "UKM": 57395,
+          "UKM": 57398,
           "UKMBAM-D": 0,
-          "UKMGB": 9535,
+          "UKMGB": 9539,
           "UMI": 43,
           "UTORBLW": 18,
           "VAALASP": 0,
           "VAALCD": 0,
           "YDX": 8215,
-          "YDXCP": 9901,
-          "YUS": 412033,
+          "YDXCP": 9902,
+          "YUS": 412077,
           "ZCU": 26066
         }
       },
@@ -4427,19 +4427,19 @@
         }
       ],
       "totals": {
-        "brown": 2276648,
-        "chicago": 9454598,
-        "columbia": 7245834,
-        "cornell": 5249899,
+        "brown": 2276662,
+        "chicago": 9446872,
+        "columbia": 7246728,
+        "cornell": 5250106,
         "dartmouth": 1397070,
         "duke": 7343916,
-        "harvard": 12111125,
-        "jhu": 1315590,
+        "harvard": 12111605,
+        "jhu": 1316112,
         "mit": 1396243,
         "penn": 6827156,
-        "princeton": 5692128,
-        "stanford": 7883078,
-        "yale": 6280297
+        "princeton": 5692280,
+        "stanford": 7883506,
+        "yale": 6280372
       }
     },
     "flow": {
@@ -4481,7 +4481,7 @@
           "cornell": 14540,
           "dartmouth": 6252,
           "duke": 3973,
-          "harvard": 23590,
+          "harvard": 23592,
           "jhu": 2308,
           "mit": 679,
           "penn": 6374,
@@ -4490,48 +4490,48 @@
           "yale": 10526
         },
         "chicago": {
-          "brown": 11893,
-          "chicago": 759600,
+          "brown": 11886,
+          "chicago": 759608,
           "columbia": 39174,
-          "cornell": 49438,
+          "cornell": 49388,
           "dartmouth": 12281,
-          "duke": 17369,
-          "harvard": 34415,
+          "duke": 17370,
+          "harvard": 34428,
           "jhu": 4911,
-          "mit": 2512,
-          "penn": 15013,
-          "princeton": 31226,
-          "stanford": 35269,
-          "yale": 25239
+          "mit": 2513,
+          "penn": 15016,
+          "princeton": 31232,
+          "stanford": 35261,
+          "yale": 25244
         },
         "columbia": {
-          "brown": 9571,
-          "chicago": 50605,
-          "columbia": 1236819,
-          "cornell": 51594,
-          "dartmouth": 9140,
-          "duke": 17200,
-          "harvard": 67608,
+          "brown": 9573,
+          "chicago": 50607,
+          "columbia": 1236927,
+          "cornell": 51595,
+          "dartmouth": 9142,
+          "duke": 17202,
+          "harvard": 67609,
           "jhu": 7359,
           "mit": 2472,
-          "penn": 23523,
-          "princeton": 66423,
-          "stanford": 97290,
-          "yale": 47426
+          "penn": 23529,
+          "princeton": 66425,
+          "stanford": 97292,
+          "yale": 47497
         },
         "cornell": {
           "brown": 4589,
           "chicago": 25983,
           "columbia": 30316,
-          "cornell": 1177357,
+          "cornell": 1177441,
           "dartmouth": 4799,
           "duke": 10614,
-          "harvard": 32155,
+          "harvard": 32157,
           "jhu": 5114,
           "mit": 1544,
           "penn": 28080,
-          "princeton": 32494,
-          "stanford": 70963,
+          "princeton": 32498,
+          "stanford": 70964,
           "yale": 38836
         },
         "dartmouth": {
@@ -4566,18 +4566,18 @@
         },
         "harvard": {
           "brown": 23021,
-          "chicago": 62354,
-          "columbia": 78483,
-          "cornell": 78036,
+          "chicago": 62352,
+          "columbia": 78490,
+          "cornell": 78037,
           "dartmouth": 20527,
           "duke": 33647,
-          "harvard": 1481469,
+          "harvard": 1481563,
           "jhu": 10874,
           "mit": 4158,
-          "penn": 28942,
-          "princeton": 89316,
+          "penn": 28943,
+          "princeton": 89323,
           "stanford": 106403,
-          "yale": 59055
+          "yale": 59062
         },
         "jhu": {
           "brown": 1830,
@@ -4585,13 +4585,13 @@
           "columbia": 4494,
           "cornell": 7720,
           "dartmouth": 1373,
-          "duke": 2797,
+          "duke": 2796,
           "harvard": 5501,
-          "jhu": 145946,
+          "jhu": 145919,
           "mit": 557,
           "penn": 3956,
           "princeton": 7269,
-          "stanford": 4658,
+          "stanford": 4659,
           "yale": 6289
         },
         "mit": {
@@ -4625,49 +4625,49 @@
           "yale": 33378
         },
         "princeton": {
-          "brown": 9894,
+          "brown": 9895,
           "chicago": 38368,
-          "columbia": 50523,
-          "cornell": 51869,
+          "columbia": 50525,
+          "cornell": 51870,
           "dartmouth": 10851,
           "duke": 12129,
-          "harvard": 67411,
+          "harvard": 67422,
           "jhu": 6147,
           "mit": 1788,
-          "penn": 24264,
-          "princeton": 788382,
-          "stanford": 101085,
+          "penn": 24266,
+          "princeton": 788402,
+          "stanford": 101087,
           "yale": 49499
         },
         "stanford": {
           "brown": 5691,
           "chicago": 35834,
-          "columbia": 52333,
-          "cornell": 72046,
-          "dartmouth": 5606,
+          "columbia": 52336,
+          "cornell": 72047,
+          "dartmouth": 5607,
           "duke": 15420,
-          "harvard": 66879,
-          "jhu": 6849,
-          "mit": 6536,
-          "penn": 21790,
-          "princeton": 46376,
-          "stanford": 1152039,
-          "yale": 51082
+          "harvard": 66890,
+          "jhu": 6850,
+          "mit": 6537,
+          "penn": 21791,
+          "princeton": 46395,
+          "stanford": 1152105,
+          "yale": 51084
         },
         "yale": {
           "brown": 10752,
           "chicago": 38148,
-          "columbia": 51708,
-          "cornell": 73852,
-          "dartmouth": 11643,
+          "columbia": 51709,
+          "cornell": 73853,
+          "dartmouth": 11644,
           "duke": 17446,
-          "harvard": 66526,
+          "harvard": 66527,
           "jhu": 7542,
           "mit": 1699,
           "penn": 22090,
           "princeton": 59292,
-          "stanford": 65255,
-          "yale": 1257450
+          "stanford": 65256,
+          "yale": 1257495
         }
       },
       "sql": [
@@ -4708,40 +4708,40 @@
       ],
       "matrix": {
         "brown": {
-          "0": 412515,
-          "1": 642291,
-          "10+": 178470,
-          "2": 589997,
-          "3-4": 420344,
-          "5-9": 269842,
-          "no_040": 75234
+          "0": 412513,
+          "1": 642290,
+          "10+": 178477,
+          "2": 589985,
+          "3-4": 420354,
+          "5-9": 269854,
+          "no_040": 75238
         },
         "chicago": {
-          "0": 2762280,
-          "1": 2225278,
-          "10+": 743074,
-          "2": 1488616,
-          "3-4": 1318524,
-          "5-9": 1059105,
+          "0": 2760722,
+          "1": 2224961,
+          "10+": 742311,
+          "2": 1487101,
+          "3-4": 1317650,
+          "5-9": 1056406,
           "no_040": 43133
         },
         "columbia": {
-          "0": 2278574,
-          "1": 2339791,
-          "10+": 113081,
-          "2": 1496765,
-          "3-4": 1117374,
-          "5-9": 560257,
-          "no_040": 228224
+          "0": 2279259,
+          "1": 2339843,
+          "10+": 113031,
+          "2": 1496782,
+          "3-4": 1117466,
+          "5-9": 560354,
+          "no_040": 228397
         },
         "cornell": {
-          "0": 1407833,
-          "1": 2257079,
-          "10+": 101074,
-          "2": 1206587,
-          "3-4": 723207,
-          "5-9": 438149,
-          "no_040": 67126
+          "0": 1407901,
+          "1": 2257103,
+          "10+": 101086,
+          "2": 1206596,
+          "3-4": 723261,
+          "5-9": 438184,
+          "no_040": 67043
         },
         "dartmouth": {
           "0": 277542,
@@ -4762,22 +4762,22 @@
           "no_040": 1422877
         },
         "harvard": {
-          "0": 4292289,
-          "1": 3593219,
-          "10+": 286385,
-          "2": 1866318,
-          "3-4": 1308411,
-          "5-9": 1085592,
-          "no_040": 1593927
+          "0": 4291972,
+          "1": 3593117,
+          "10+": 286701,
+          "2": 1866078,
+          "3-4": 1308444,
+          "5-9": 1086375,
+          "no_040": 1594261
         },
         "jhu": {
-          "0": 459398,
-          "1": 388936,
-          "10+": 112389,
-          "2": 294641,
-          "3-4": 183613,
-          "5-9": 185939,
-          "no_040": 90379
+          "0": 459356,
+          "1": 388961,
+          "10+": 112477,
+          "2": 294709,
+          "3-4": 183806,
+          "5-9": 186124,
+          "no_040": 89887
         },
         "mit": {
           "0": 209484,
@@ -4786,7 +4786,7 @@
           "2": 305968,
           "3-4": 247480,
           "5-9": 189198,
-          "no_040": 13612
+          "no_040": 13613
         },
         "penn": {
           "0": 3063831,
@@ -4798,31 +4798,31 @@
           "no_040": 331235
         },
         "princeton": {
-          "0": 1516823,
-          "1": 1855109,
-          "10+": 114372,
-          "2": 1102554,
-          "3-4": 955504,
-          "5-9": 642335,
-          "no_040": 104363
+          "0": 1516834,
+          "1": 1855098,
+          "10+": 114386,
+          "2": 1102575,
+          "3-4": 955551,
+          "5-9": 642383,
+          "no_040": 104330
         },
         "stanford": {
-          "0": 915495,
-          "1": 2682101,
-          "10+": 594156,
-          "2": 2194791,
-          "3-4": 1513001,
-          "5-9": 918097,
-          "no_040": 146258
+          "0": 915642,
+          "1": 2682135,
+          "10+": 594202,
+          "2": 2194826,
+          "3-4": 1513078,
+          "5-9": 918206,
+          "no_040": 146259
         },
         "yale": {
-          "0": 1904758,
-          "1": 2170963,
-          "10+": 67875,
-          "2": 1294021,
-          "3-4": 1012359,
-          "5-9": 401145,
-          "no_040": 201720
+          "0": 1904774,
+          "1": 2170959,
+          "10+": 67890,
+          "2": 1294020,
+          "3-4": 1012377,
+          "5-9": 401179,
+          "no_040": 201719
         }
       },
       "sql": [
@@ -4836,30 +4836,30 @@
         }
       ],
       "totals": {
-        "brown": 2588693,
-        "chicago": 9640010,
-        "columbia": 8134066,
-        "cornell": 6201055,
+        "brown": 2588711,
+        "chicago": 9632284,
+        "columbia": 8135132,
+        "cornell": 6201174,
         "dartmouth": 1701373,
         "duke": 8957886,
-        "harvard": 14026141,
-        "jhu": 1715295,
-        "mit": 1447260,
+        "harvard": 14026948,
+        "jhu": 1715320,
+        "mit": 1447261,
         "penn": 7830623,
-        "princeton": 6291060,
-        "stanford": 8963899,
-        "yale": 7052841
+        "princeton": 6291157,
+        "stanford": 8964348,
+        "yale": 7052918
       }
     }
   },
-  "generated_at": "2026-08-21T09:23:44.101395+00:00",
+  "generated_at": "2026-08-22T12:01:07.918619+00:00",
   "per_org": [
     {
       "counts": {
-        "lc": 884739,
-        "none": 312045,
-        "other": 1106150,
-        "pod": 106764,
+        "lc": 884740,
+        "none": 312049,
+        "other": 1106161,
+        "pod": 106766,
         "self": 178995
       },
       "mix": {
@@ -4870,51 +4870,51 @@
         "self": 0.0691
       },
       "org": "brown",
-      "records": 2588693
+      "records": 2588711
     },
     {
       "counts": {
-        "lc": 2550787,
+        "lc": 2550721,
         "none": 185412,
-        "other": 5865471,
-        "pod": 278740,
-        "self": 759600
+        "other": 5857839,
+        "pod": 278704,
+        "self": 759608
       },
       "mix": {
-        "lc": 0.2646,
+        "lc": 0.2648,
         "none": 0.0192,
-        "other": 0.6085,
+        "other": 0.6081,
         "pod": 0.0289,
-        "self": 0.0788
+        "self": 0.0789
       },
       "org": "chicago",
-      "records": 9640010
+      "records": 9632284
     },
     {
       "counts": {
-        "lc": 1940860,
-        "none": 888232,
-        "other": 3617944,
-        "pod": 450211,
-        "self": 1236819
+        "lc": 1940919,
+        "none": 888404,
+        "other": 3618580,
+        "pod": 450302,
+        "self": 1236927
       },
       "mix": {
         "lc": 0.2386,
         "none": 0.1092,
         "other": 0.4448,
-        "pod": 0.0553,
-        "self": 0.1521
+        "pod": 0.0554,
+        "self": 0.152
       },
       "org": "columbia",
-      "records": 8134066
+      "records": 8135132
     },
     {
       "counts": {
-        "lc": 1690143,
-        "none": 951156,
-        "other": 2096912,
-        "pod": 285487,
-        "self": 1177357
+        "lc": 1690168,
+        "none": 951068,
+        "other": 2097003,
+        "pod": 285494,
+        "self": 1177441
       },
       "mix": {
         "lc": 0.2726,
@@ -4924,7 +4924,7 @@
         "self": 0.1899
       },
       "org": "cornell",
-      "records": 6201055
+      "records": 6201174
     },
     {
       "counts": {
@@ -4964,11 +4964,11 @@
     },
     {
       "counts": {
-        "lc": 3640066,
-        "none": 1915016,
-        "other": 6394774,
-        "pod": 594816,
-        "self": 1481469
+        "lc": 3640129,
+        "none": 1915343,
+        "other": 6395076,
+        "pod": 594837,
+        "self": 1481563
       },
       "mix": {
         "lc": 0.2595,
@@ -4978,30 +4978,30 @@
         "self": 0.1056
       },
       "org": "harvard",
-      "records": 14026141
+      "records": 14026948
     },
     {
       "counts": {
-        "lc": 522713,
-        "none": 399705,
-        "other": 595072,
+        "lc": 522906,
+        "none": 399208,
+        "other": 595428,
         "pod": 51859,
-        "self": 145946
+        "self": 145919
       },
       "mix": {
-        "lc": 0.3047,
-        "none": 0.233,
-        "other": 0.3469,
+        "lc": 0.3048,
+        "none": 0.2327,
+        "other": 0.3471,
         "pod": 0.0302,
         "self": 0.0851
       },
       "org": "jhu",
-      "records": 1715295
+      "records": 1715320
     },
     {
       "counts": {
         "lc": 668677,
-        "none": 51017,
+        "none": 51018,
         "other": 490139,
         "pod": 25908,
         "self": 211519
@@ -5014,7 +5014,7 @@
         "self": 0.1462
       },
       "org": "mit",
-      "records": 1447260
+      "records": 1447261
     },
     {
       "counts": {
@@ -5036,11 +5036,11 @@
     },
     {
       "counts": {
-        "lc": 1759129,
-        "none": 598932,
-        "other": 2720789,
-        "pod": 423828,
-        "self": 788382
+        "lc": 1759131,
+        "none": 598877,
+        "other": 2720900,
+        "pod": 423847,
+        "self": 788402
       },
       "mix": {
         "lc": 0.2796,
@@ -5050,15 +5050,15 @@
         "self": 0.1253
       },
       "org": "princeton",
-      "records": 6291060
+      "records": 6291157
     },
     {
       "counts": {
-        "lc": 1562738,
-        "none": 1080821,
-        "other": 4781859,
-        "pod": 386442,
-        "self": 1152039
+        "lc": 1562792,
+        "none": 1080842,
+        "other": 4782127,
+        "pod": 386482,
+        "self": 1152105
       },
       "mix": {
         "lc": 0.1743,
@@ -5068,15 +5068,15 @@
         "self": 0.1285
       },
       "org": "stanford",
-      "records": 8963899
+      "records": 8964348
     },
     {
       "counts": {
-        "lc": 1987551,
-        "none": 772544,
-        "other": 2609343,
-        "pod": 425953,
-        "self": 1257450
+        "lc": 1987590,
+        "none": 772546,
+        "other": 2609329,
+        "pod": 425958,
+        "self": 1257495
       },
       "mix": {
         "lc": 0.2818,
@@ -5086,7 +5086,7 @@
         "self": 0.1783
       },
       "org": "yale",
-      "records": 7052841
+      "records": 7052918
     }
   ],
   "sql": [
@@ -5104,7 +5104,7 @@
     "per_org": [
       {
         "org": "brown",
-        "unplaced": 12504,
+        "unplaced": 12508,
         "values": [
           {
             "counts": {
@@ -5286,22 +5286,22 @@
             "counts": {
               "lc": 8496,
               "none": 15232,
-              "other": 38187,
+              "other": 38188,
               "pod": 1281,
               "self": 1002
             },
-            "total": 64198,
+            "total": 64199,
             "year": 1982
           },
           {
             "counts": {
               "lc": 8461,
               "none": 19617,
-              "other": 35811,
+              "other": 35810,
               "pod": 1634,
               "self": 803
             },
-            "total": 66326,
+            "total": 66325,
             "year": 1983
           },
           {
@@ -5350,13 +5350,13 @@
           },
           {
             "counts": {
-              "lc": 8973,
+              "lc": 8972,
               "none": 26808,
               "other": 28217,
               "pod": 13410,
               "self": 2901
             },
-            "total": 80309,
+            "total": 80308,
             "year": 1988
           },
           {
@@ -5407,11 +5407,11 @@
             "counts": {
               "lc": 22587,
               "none": 2778,
-              "other": 25840,
+              "other": 25841,
               "pod": 4019,
               "self": 1201
             },
-            "total": 56425,
+            "total": 56426,
             "year": 1993
           },
           {
@@ -5561,11 +5561,11 @@
             "counts": {
               "lc": 11211,
               "none": 74,
-              "other": 17089,
+              "other": 17090,
               "pod": 1369,
               "self": 5128
             },
-            "total": 34871,
+            "total": 34872,
             "year": 2007
           },
           {
@@ -5693,11 +5693,11 @@
             "counts": {
               "lc": 3673,
               "none": 0,
-              "other": 13360,
+              "other": 13361,
               "pod": 1078,
               "self": 1585
             },
-            "total": 19696,
+            "total": 19697,
             "year": 2019
           },
           {
@@ -5737,44 +5737,44 @@
             "counts": {
               "lc": 1554,
               "none": 233,
-              "other": 7798,
+              "other": 7797,
               "pod": 568,
               "self": 1584
             },
-            "total": 11737,
+            "total": 11736,
             "year": 2023
           },
           {
             "counts": {
               "lc": 1571,
               "none": 178,
-              "other": 7172,
+              "other": 7173,
               "pod": 673,
               "self": 618
             },
-            "total": 10212,
+            "total": 10213,
             "year": 2024
           },
           {
             "counts": {
-              "lc": 744,
+              "lc": 745,
               "none": 197,
-              "other": 5564,
-              "pod": 437,
+              "other": 5567,
+              "pod": 438,
               "self": 769
             },
-            "total": 7711,
+            "total": 7716,
             "year": 2025
           },
           {
             "counts": {
-              "lc": 59,
+              "lc": 60,
               "none": 186,
-              "other": 949,
-              "pod": 138,
+              "other": 954,
+              "pod": 139,
               "self": 794
             },
-            "total": 2126,
+            "total": 2133,
             "year": 2026
           }
         ]
@@ -5818,13 +5818,13 @@
           },
           {
             "counts": {
-              "lc": 12624,
+              "lc": 12623,
               "none": 43,
               "other": 787,
               "pod": 0,
               "self": 0
             },
-            "total": 13454,
+            "total": 13453,
             "year": 1969
           },
           {
@@ -5864,99 +5864,99 @@
             "counts": {
               "lc": 36367,
               "none": 3318,
-              "other": 15680,
+              "other": 15681,
               "pod": 1010,
               "self": 45
             },
-            "total": 56420,
+            "total": 56421,
             "year": 1973
           },
           {
             "counts": {
-              "lc": 45254,
+              "lc": 45255,
               "none": 4915,
               "other": 22929,
               "pod": 3126,
               "self": 5015
             },
-            "total": 81239,
+            "total": 81240,
             "year": 1974
           },
           {
             "counts": {
               "lc": 81561,
               "none": 7443,
-              "other": 41297,
+              "other": 41298,
               "pod": 2784,
               "self": 8422
             },
-            "total": 141507,
+            "total": 141508,
             "year": 1975
           },
           {
             "counts": {
-              "lc": 86424,
+              "lc": 86423,
               "none": 2062,
               "other": 26563,
               "pod": 2144,
               "self": 7498
             },
-            "total": 124691,
+            "total": 124690,
             "year": 1976
           },
           {
             "counts": {
-              "lc": 89831,
+              "lc": 89832,
               "none": 1619,
               "other": 28105,
               "pod": 2255,
               "self": 6475
             },
-            "total": 128285,
+            "total": 128286,
             "year": 1977
           },
           {
             "counts": {
               "lc": 83509,
               "none": 2145,
-              "other": 42524,
+              "other": 42525,
               "pod": 2198,
               "self": 6661
             },
-            "total": 137037,
+            "total": 137038,
             "year": 1978
           },
           {
             "counts": {
-              "lc": 88103,
+              "lc": 88104,
               "none": 1657,
-              "other": 92217,
+              "other": 92218,
               "pod": 4960,
               "self": 10525
             },
-            "total": 197462,
+            "total": 197464,
             "year": 1979
           },
           {
             "counts": {
-              "lc": 80721,
+              "lc": 80722,
               "none": 1365,
-              "other": 60355,
+              "other": 60357,
               "pod": 2454,
               "self": 9991
             },
-            "total": 154886,
+            "total": 154889,
             "year": 1980
           },
           {
             "counts": {
               "lc": 54415,
               "none": 901,
-              "other": 69872,
+              "other": 69873,
               "pod": 1704,
               "self": 8409
             },
-            "total": 135301,
+            "total": 135302,
             "year": 1981
           },
           {
@@ -5972,35 +5972,35 @@
           },
           {
             "counts": {
-              "lc": 54985,
+              "lc": 54984,
               "none": 1837,
               "other": 51616,
               "pod": 2399,
               "self": 6348
             },
-            "total": 117185,
+            "total": 117184,
             "year": 1983
           },
           {
             "counts": {
-              "lc": 59482,
+              "lc": 59483,
               "none": 1104,
               "other": 65993,
               "pod": 4399,
               "self": 6770
             },
-            "total": 137748,
+            "total": 137749,
             "year": 1984
           },
           {
             "counts": {
-              "lc": 71303,
+              "lc": 71304,
               "none": 863,
-              "other": 87033,
-              "pod": 4678,
+              "other": 87034,
+              "pod": 4679,
               "self": 6593
             },
-            "total": 170470,
+            "total": 170473,
             "year": 1985
           },
           {
@@ -6027,13 +6027,13 @@
           },
           {
             "counts": {
-              "lc": 50548,
+              "lc": 50547,
               "none": 6118,
-              "other": 84448,
-              "pod": 3845,
+              "other": 84449,
+              "pod": 3846,
               "self": 7819
             },
-            "total": 152778,
+            "total": 152779,
             "year": 1988
           },
           {
@@ -6051,88 +6051,88 @@
             "counts": {
               "lc": 78558,
               "none": 3707,
-              "other": 82799,
+              "other": 82798,
               "pod": 8526,
               "self": 9654
             },
-            "total": 183244,
+            "total": 183243,
             "year": 1990
           },
           {
             "counts": {
               "lc": 60602,
               "none": 4005,
-              "other": 131014,
+              "other": 131015,
               "pod": 9573,
               "self": 17134
             },
-            "total": 222328,
+            "total": 222329,
             "year": 1991
           },
           {
             "counts": {
               "lc": 52952,
               "none": 9666,
-              "other": 78581,
+              "other": 78580,
               "pod": 11374,
               "self": 15677
             },
-            "total": 168250,
+            "total": 168249,
             "year": 1992
           },
           {
             "counts": {
               "lc": 51121,
               "none": 19648,
-              "other": 81183,
+              "other": 81182,
               "pod": 10285,
               "self": 14269
             },
-            "total": 176506,
+            "total": 176505,
             "year": 1993
           },
           {
             "counts": {
               "lc": 67158,
               "none": 11552,
-              "other": 83312,
+              "other": 83313,
               "pod": 11174,
               "self": 14652
             },
-            "total": 187848,
+            "total": 187849,
             "year": 1994
           },
           {
             "counts": {
-              "lc": 69173,
+              "lc": 69170,
               "none": 10946,
-              "other": 132917,
+              "other": 132914,
               "pod": 8609,
               "self": 15898
             },
-            "total": 237543,
+            "total": 237537,
             "year": 1995
           },
           {
             "counts": {
               "lc": 57760,
               "none": 16986,
-              "other": 81510,
+              "other": 81512,
               "pod": 7911,
               "self": 14203
             },
-            "total": 178370,
+            "total": 178372,
             "year": 1996
           },
           {
             "counts": {
               "lc": 47710,
               "none": 3889,
-              "other": 77600,
+              "other": 77599,
               "pod": 6592,
-              "self": 30744
+              "self": 30743
             },
-            "total": 166535,
+            "total": 166533,
             "year": 1997
           },
           {
@@ -6150,308 +6150,308 @@
             "counts": {
               "lc": 40818,
               "none": 7220,
-              "other": 58680,
-              "pod": 6432,
+              "other": 58678,
+              "pod": 6433,
               "self": 88557
             },
-            "total": 201707,
+            "total": 201706,
             "year": 1999
           },
           {
             "counts": {
               "lc": 40576,
               "none": 2874,
-              "other": 68303,
+              "other": 68301,
               "pod": 8399,
               "self": 46412
             },
-            "total": 166564,
+            "total": 166562,
             "year": 2000
           },
           {
             "counts": {
-              "lc": 38359,
+              "lc": 38357,
               "none": 948,
-              "other": 70065,
+              "other": 70064,
               "pod": 6455,
               "self": 18025
             },
-            "total": 133852,
+            "total": 133849,
             "year": 2001
           },
           {
             "counts": {
-              "lc": 40120,
+              "lc": 40119,
               "none": 864,
-              "other": 87718,
+              "other": 87709,
               "pod": 6802,
               "self": 18819
             },
-            "total": 154323,
+            "total": 154313,
             "year": 2002
           },
           {
             "counts": {
               "lc": 36257,
               "none": 487,
-              "other": 74798,
+              "other": 74795,
               "pod": 7377,
               "self": 14892
             },
-            "total": 133811,
+            "total": 133808,
             "year": 2003
           },
           {
             "counts": {
-              "lc": 35764,
+              "lc": 35761,
               "none": 2364,
-              "other": 80855,
+              "other": 80848,
               "pod": 7509,
               "self": 12476
             },
-            "total": 138968,
+            "total": 138958,
             "year": 2004
           },
           {
             "counts": {
-              "lc": 36066,
+              "lc": 36062,
               "none": 1266,
-              "other": 82843,
+              "other": 82831,
               "pod": 7965,
               "self": 16187
             },
-            "total": 144327,
+            "total": 144311,
             "year": 2005
           },
           {
             "counts": {
-              "lc": 37636,
+              "lc": 37633,
               "none": 489,
-              "other": 123783,
+              "other": 123777,
               "pod": 6150,
               "self": 15980
             },
-            "total": 184038,
+            "total": 184029,
             "year": 2006
           },
           {
             "counts": {
               "lc": 36383,
               "none": 5920,
-              "other": 245258,
+              "other": 245195,
               "pod": 6201,
               "self": 18140
             },
-            "total": 311902,
+            "total": 311839,
             "year": 2007
           },
           {
             "counts": {
               "lc": 39020,
               "none": 4474,
-              "other": 235031,
-              "pod": 8777,
+              "other": 235024,
+              "pod": 8776,
               "self": 21023
             },
-            "total": 308325,
+            "total": 308317,
             "year": 2008
           },
           {
             "counts": {
-              "lc": 37508,
+              "lc": 37506,
               "none": 2245,
-              "other": 141859,
+              "other": 141777,
               "pod": 6663,
               "self": 20437
             },
-            "total": 208712,
+            "total": 208628,
             "year": 2009
           },
           {
             "counts": {
-              "lc": 34080,
+              "lc": 34077,
               "none": 2412,
-              "other": 140998,
+              "other": 140947,
               "pod": 4817,
               "self": 13924
             },
-            "total": 196231,
+            "total": 196177,
             "year": 2010
           },
           {
             "counts": {
-              "lc": 31676,
+              "lc": 31675,
               "none": 2335,
-              "other": 167554,
-              "pod": 3832,
+              "other": 167518,
+              "pod": 3831,
               "self": 13706
             },
-            "total": 219103,
+            "total": 219065,
             "year": 2011
           },
           {
             "counts": {
-              "lc": 28534,
+              "lc": 28533,
               "none": 2404,
-              "other": 155560,
-              "pod": 3111,
+              "other": 155339,
+              "pod": 3110,
               "self": 10194
             },
-            "total": 199803,
+            "total": 199580,
             "year": 2012
           },
           {
             "counts": {
-              "lc": 28271,
+              "lc": 28270,
               "none": 2054,
-              "other": 184048,
-              "pod": 3001,
+              "other": 183855,
+              "pod": 3000,
               "self": 9398
             },
-            "total": 226772,
+            "total": 226577,
             "year": 2013
           },
           {
             "counts": {
-              "lc": 25574,
+              "lc": 25573,
               "none": 127,
-              "other": 156488,
+              "other": 156205,
               "pod": 4212,
               "self": 9039
             },
-            "total": 195440,
+            "total": 195156,
             "year": 2014
           },
           {
             "counts": {
-              "lc": 27642,
+              "lc": 27636,
               "none": 241,
-              "other": 120827,
-              "pod": 4311,
+              "other": 120684,
+              "pod": 4289,
               "self": 6209
             },
-            "total": 159230,
+            "total": 159059,
             "year": 2015
           },
           {
             "counts": {
-              "lc": 26377,
+              "lc": 26370,
               "none": 516,
-              "other": 130057,
-              "pod": 3919,
+              "other": 129884,
+              "pod": 3914,
               "self": 6912
             },
-            "total": 167781,
+            "total": 167596,
             "year": 2016
           },
           {
             "counts": {
-              "lc": 26918,
+              "lc": 26907,
               "none": 379,
-              "other": 195161,
-              "pod": 4226,
+              "other": 195032,
+              "pod": 4216,
               "self": 6476
             },
-            "total": 233160,
+            "total": 233010,
             "year": 2017
           },
           {
             "counts": {
-              "lc": 21925,
+              "lc": 21915,
               "none": 285,
-              "other": 167669,
-              "pod": 4457,
+              "other": 167216,
+              "pod": 4447,
               "self": 6651
             },
-            "total": 200987,
+            "total": 200514,
             "year": 2018
           },
           {
             "counts": {
-              "lc": 20806,
+              "lc": 20800,
               "none": 115,
-              "other": 166290,
-              "pod": 4023,
+              "other": 165934,
+              "pod": 4017,
               "self": 5112
             },
-            "total": 196346,
+            "total": 195978,
             "year": 2019
           },
           {
             "counts": {
-              "lc": 18821,
+              "lc": 18804,
               "none": 187,
-              "other": 127251,
-              "pod": 3597,
+              "other": 126483,
+              "pod": 3596,
               "self": 2997
             },
-            "total": 152853,
+            "total": 152067,
             "year": 2020
           },
           {
             "counts": {
-              "lc": 21093,
+              "lc": 21086,
               "none": 87,
-              "other": 134789,
-              "pod": 5428,
+              "other": 134097,
+              "pod": 5427,
               "self": 3750
             },
-            "total": 165147,
+            "total": 164447,
             "year": 2021
           },
           {
             "counts": {
-              "lc": 21917,
+              "lc": 21915,
               "none": 364,
-              "other": 169502,
-              "pod": 4632,
+              "other": 168806,
+              "pod": 4628,
               "self": 4380
             },
-            "total": 200795,
+            "total": 200093,
             "year": 2022
           },
           {
             "counts": {
-              "lc": 19486,
+              "lc": 19483,
               "none": 6113,
-              "other": 444242,
-              "pod": 3870,
+              "other": 443181,
+              "pod": 3871,
               "self": 3043
             },
-            "total": 476754,
+            "total": 475691,
             "year": 2023
           },
           {
             "counts": {
-              "lc": 14020,
+              "lc": 14017,
               "none": 135,
-              "other": 111234,
-              "pod": 4343,
+              "other": 110342,
+              "pod": 4342,
               "self": 3539
             },
-            "total": 133271,
+            "total": 132375,
             "year": 2024
           },
           {
             "counts": {
-              "lc": 5336,
+              "lc": 5345,
               "none": 122,
-              "other": 172203,
-              "pod": 2933,
+              "other": 171171,
+              "pod": 2949,
               "self": 4356
             },
-            "total": 184950,
+            "total": 183943,
             "year": 2025
           },
           {
             "counts": {
-              "lc": 588,
+              "lc": 608,
               "none": 161,
-              "other": 23573,
-              "pod": 629,
-              "self": 3382
+              "other": 23308,
+              "pod": 637,
+              "self": 3391
             },
-            "total": 28333,
+            "total": 28105,
             "year": 2026
           }
         ]
@@ -6508,11 +6508,11 @@
             "counts": {
               "lc": 21113,
               "none": 1995,
-              "other": 478,
+              "other": 479,
               "pod": 0,
               "self": 101
             },
-            "total": 23687,
+            "total": 23688,
             "year": 1970
           },
           {
@@ -6528,13 +6528,13 @@
           },
           {
             "counts": {
-              "lc": 45239,
+              "lc": 45240,
               "none": 13971,
               "other": 18847,
               "pod": 613,
               "self": 551
             },
-            "total": 79221,
+            "total": 79222,
             "year": 1972
           },
           {
@@ -6550,35 +6550,35 @@
           },
           {
             "counts": {
-              "lc": 40816,
+              "lc": 40817,
               "none": 15717,
               "other": 21791,
               "pod": 4017,
               "self": 672
             },
-            "total": 83013,
+            "total": 83014,
             "year": 1974
           },
           {
             "counts": {
-              "lc": 70757,
+              "lc": 70760,
               "none": 21041,
-              "other": 45259,
+              "other": 45261,
               "pod": 3403,
               "self": 1411
             },
-            "total": 141871,
+            "total": 141876,
             "year": 1975
           },
           {
             "counts": {
-              "lc": 68811,
+              "lc": 68812,
               "none": 5191,
               "other": 27276,
               "pod": 2870,
-              "self": 1555
+              "self": 1556
             },
-            "total": 105703,
+            "total": 105705,
             "year": 1976
           },
           {
@@ -6594,35 +6594,35 @@
           },
           {
             "counts": {
-              "lc": 56328,
+              "lc": 56331,
               "none": 23036,
               "other": 42754,
               "pod": 2742,
               "self": 2223
             },
-            "total": 127083,
+            "total": 127086,
             "year": 1978
           },
           {
             "counts": {
               "lc": 55051,
               "none": 20940,
-              "other": 82287,
+              "other": 82296,
               "pod": 5856,
               "self": 2629
             },
-            "total": 166763,
+            "total": 166772,
             "year": 1979
           },
           {
             "counts": {
               "lc": 44763,
               "none": 23757,
-              "other": 63642,
-              "pod": 3157,
+              "other": 63650,
+              "pod": 3158,
               "self": 6639
             },
-            "total": 141958,
+            "total": 141967,
             "year": 1980
           },
           {
@@ -6638,134 +6638,134 @@
           },
           {
             "counts": {
-              "lc": 21997,
+              "lc": 21999,
               "none": 43935,
-              "other": 67584,
-              "pod": 9824,
+              "other": 67586,
+              "pod": 9825,
               "self": 15276
             },
-            "total": 158616,
+            "total": 158621,
             "year": 1982
           },
           {
             "counts": {
-              "lc": 25744,
+              "lc": 25745,
               "none": 42593,
-              "other": 64399,
-              "pod": 12914,
+              "other": 64406,
+              "pod": 12916,
               "self": 17193
             },
-            "total": 162843,
+            "total": 162853,
             "year": 1983
           },
           {
             "counts": {
               "lc": 24979,
               "none": 55214,
-              "other": 70456,
-              "pod": 18102,
+              "other": 70459,
+              "pod": 18103,
               "self": 17391
             },
-            "total": 186142,
+            "total": 186146,
             "year": 1984
           },
           {
             "counts": {
               "lc": 30806,
               "none": 71417,
-              "other": 101502,
+              "other": 101503,
               "pod": 16702,
               "self": 26862
             },
-            "total": 247289,
+            "total": 247290,
             "year": 1985
           },
           {
             "counts": {
-              "lc": 28996,
-              "none": 70306,
-              "other": 91683,
+              "lc": 28998,
+              "none": 70305,
+              "other": 91685,
               "pod": 17901,
               "self": 44044
             },
-            "total": 252930,
+            "total": 252933,
             "year": 1986
           },
           {
             "counts": {
               "lc": 27614,
               "none": 53786,
-              "other": 73077,
+              "other": 73080,
               "pod": 9728,
               "self": 27127
             },
-            "total": 191332,
+            "total": 191335,
             "year": 1987
           },
           {
             "counts": {
               "lc": 28031,
               "none": 45381,
-              "other": 72414,
-              "pod": 10801,
-              "self": 20943
+              "other": 72416,
+              "pod": 10803,
+              "self": 20942
             },
-            "total": 177570,
+            "total": 177573,
             "year": 1988
           },
           {
             "counts": {
               "lc": 38011,
               "none": 61654,
-              "other": 89648,
-              "pod": 13151,
+              "other": 89652,
+              "pod": 13153,
               "self": 21317
             },
-            "total": 223781,
+            "total": 223787,
             "year": 1989
           },
           {
             "counts": {
               "lc": 46026,
               "none": 31586,
-              "other": 83029,
+              "other": 83033,
               "pod": 13443,
               "self": 20690
             },
-            "total": 194774,
+            "total": 194778,
             "year": 1990
           },
           {
             "counts": {
               "lc": 59034,
               "none": 31497,
-              "other": 94706,
+              "other": 94708,
               "pod": 13985,
               "self": 31536
             },
-            "total": 230758,
+            "total": 230760,
             "year": 1991
           },
           {
             "counts": {
               "lc": 55537,
               "none": 62331,
-              "other": 87942,
+              "other": 87948,
               "pod": 13548,
               "self": 37751
             },
-            "total": 257109,
+            "total": 257115,
             "year": 1992
           },
           {
             "counts": {
-              "lc": 44825,
+              "lc": 44828,
               "none": 8845,
-              "other": 68839,
+              "other": 68840,
               "pod": 12934,
               "self": 28840
             },
-            "total": 164283,
+            "total": 164287,
             "year": 1993
           },
           {
@@ -6773,87 +6773,87 @@
               "lc": 47802,
               "none": 20145,
               "other": 79460,
-              "pod": 13313,
+              "pod": 13314,
               "self": 29546
             },
-            "total": 190266,
+            "total": 190267,
             "year": 1994
           },
           {
             "counts": {
-              "lc": 44313,
+              "lc": 44314,
               "none": 11233,
-              "other": 70265,
+              "other": 70266,
               "pod": 10531,
               "self": 21487
             },
-            "total": 157829,
+            "total": 157831,
             "year": 1995
           },
           {
             "counts": {
               "lc": 44704,
               "none": 6142,
-              "other": 57670,
-              "pod": 9306,
+              "other": 57671,
+              "pod": 9307,
               "self": 33186
             },
-            "total": 151008,
+            "total": 151010,
             "year": 1996
           },
           {
             "counts": {
               "lc": 48470,
               "none": 22420,
-              "other": 74862,
+              "other": 74864,
               "pod": 10296,
               "self": 25611
             },
-            "total": 181659,
+            "total": 181661,
             "year": 1997
           },
           {
             "counts": {
               "lc": 44402,
               "none": 2528,
-              "other": 58374,
+              "other": 58377,
               "pod": 13827,
               "self": 22745
             },
-            "total": 141876,
+            "total": 141879,
             "year": 1998
           },
           {
             "counts": {
               "lc": 48247,
               "none": 6522,
-              "other": 64271,
+              "other": 64274,
               "pod": 13149,
               "self": 31922
             },
-            "total": 164111,
+            "total": 164114,
             "year": 1999
           },
           {
             "counts": {
               "lc": 43812,
               "none": 2178,
-              "other": 57092,
-              "pod": 9743,
+              "other": 57093,
+              "pod": 9745,
               "self": 33392
             },
-            "total": 146217,
+            "total": 146220,
             "year": 2000
           },
           {
             "counts": {
               "lc": 41023,
               "none": 18813,
-              "other": 64601,
-              "pod": 10060,
+              "other": 64602,
+              "pod": 10063,
               "self": 29096
             },
-            "total": 163593,
+            "total": 163597,
             "year": 2001
           },
           {
@@ -6871,44 +6871,44 @@
             "counts": {
               "lc": 37268,
               "none": 3293,
-              "other": 66308,
+              "other": 66309,
               "pod": 8788,
               "self": 21876
             },
-            "total": 137533,
+            "total": 137534,
             "year": 2003
           },
           {
             "counts": {
               "lc": 35168,
               "none": 2203,
-              "other": 87958,
+              "other": 87960,
               "pod": 8011,
               "self": 26713
             },
-            "total": 160053,
+            "total": 160055,
             "year": 2004
           },
           {
             "counts": {
               "lc": 34163,
               "none": 2670,
-              "other": 83041,
+              "other": 83043,
               "pod": 7544,
               "self": 21884
             },
-            "total": 149302,
+            "total": 149304,
             "year": 2005
           },
           {
             "counts": {
               "lc": 36053,
               "none": 2127,
-              "other": 61159,
-              "pod": 7792,
+              "other": 61161,
+              "pod": 7793,
               "self": 25496
             },
-            "total": 132627,
+            "total": 132630,
             "year": 2006
           },
           {
@@ -6926,11 +6926,11 @@
             "counts": {
               "lc": 31552,
               "none": 1111,
-              "other": 64999,
-              "pod": 6322,
+              "other": 64996,
+              "pod": 6323,
               "self": 30778
             },
-            "total": 134762,
+            "total": 134760,
             "year": 2008
           },
           {
@@ -6948,66 +6948,66 @@
             "counts": {
               "lc": 29562,
               "none": 555,
-              "other": 77534,
-              "pod": 7214,
+              "other": 77528,
+              "pod": 7216,
               "self": 28028
             },
-            "total": 142893,
+            "total": 142889,
             "year": 2010
           },
           {
             "counts": {
               "lc": 28272,
               "none": 1824,
-              "other": 75435,
+              "other": 75416,
               "pod": 9422,
               "self": 25729
             },
-            "total": 140682,
+            "total": 140663,
             "year": 2011
           },
           {
             "counts": {
               "lc": 24850,
               "none": 617,
-              "other": 75573,
+              "other": 75551,
               "pod": 6021,
               "self": 23611
             },
-            "total": 130672,
+            "total": 130650,
             "year": 2012
           },
           {
             "counts": {
-              "lc": 25391,
+              "lc": 25392,
               "none": 460,
-              "other": 78134,
+              "other": 78118,
               "pod": 4866,
               "self": 21902
             },
-            "total": 130753,
+            "total": 130738,
             "year": 2013
           },
           {
             "counts": {
-              "lc": 24052,
+              "lc": 24053,
               "none": 431,
-              "other": 81761,
+              "other": 81735,
               "pod": 7349,
               "self": 25281
             },
-            "total": 138874,
+            "total": 138849,
             "year": 2014
           },
           {
             "counts": {
               "lc": 24906,
               "none": 4556,
-              "other": 80146,
+              "other": 80145,
               "pod": 6170,
               "self": 23585
             },
-            "total": 139363,
+            "total": 139362,
             "year": 2015
           },
           {
@@ -7025,11 +7025,11 @@
             "counts": {
               "lc": 22783,
               "none": 420,
-              "other": 75978,
+              "other": 75979,
               "pod": 7662,
               "self": 23944
             },
-            "total": 130787,
+            "total": 130788,
             "year": 2017
           },
           {
@@ -7047,95 +7047,95 @@
             "counts": {
               "lc": 13772,
               "none": 731,
-              "other": 68851,
+              "other": 68853,
               "pod": 5378,
               "self": 38632
             },
-            "total": 127364,
+            "total": 127366,
             "year": 2019
           },
           {
             "counts": {
-              "lc": 9996,
+              "lc": 9997,
               "none": 974,
-              "other": 56489,
+              "other": 56490,
               "pod": 4945,
               "self": 27406
             },
-            "total": 99810,
+            "total": 99812,
             "year": 2020
           },
           {
             "counts": {
               "lc": 11807,
               "none": 940,
-              "other": 66137,
+              "other": 66138,
               "pod": 8299,
               "self": 22651
             },
-            "total": 109834,
+            "total": 109835,
             "year": 2021
           },
           {
             "counts": {
-              "lc": 13781,
+              "lc": 13782,
               "none": 731,
-              "other": 61226,
+              "other": 61228,
               "pod": 6579,
               "self": 22928
             },
-            "total": 105245,
+            "total": 105248,
             "year": 2022
           },
           {
             "counts": {
               "lc": 13160,
               "none": 1473,
-              "other": 64187,
+              "other": 64186,
               "pod": 6217,
-              "self": 25711
+              "self": 25710
             },
-            "total": 110748,
+            "total": 110746,
             "year": 2023
           },
           {
             "counts": {
-              "lc": 8792,
-              "none": 1801,
-              "other": 59032,
+              "lc": 8796,
+              "none": 1791,
+              "other": 59045,
               "pod": 4740,
               "self": 17233
             },
-            "total": 91598,
+            "total": 91605,
             "year": 2024
           },
           {
             "counts": {
-              "lc": 3808,
-              "none": 3427,
-              "other": 53191,
-              "pod": 3705,
-              "self": 14173
+              "lc": 3833,
+              "none": 3418,
+              "other": 53288,
+              "pod": 3775,
+              "self": 14168
             },
-            "total": 78304,
+            "total": 78482,
             "year": 2025
           },
           {
             "counts": {
-              "lc": 563,
-              "none": 5485,
-              "other": 14866,
-              "pod": 1016,
-              "self": 9374
+              "lc": 571,
+              "none": 5677,
+              "other": 15403,
+              "pod": 1017,
+              "self": 9488
             },
-            "total": 31304,
+            "total": 32156,
             "year": 2026
           }
         ]
       },
       {
         "org": "cornell",
-        "unplaced": 18560,
+        "unplaced": 18557,
         "values": [
           {
             "counts": {
@@ -7326,90 +7326,90 @@
           },
           {
             "counts": {
-              "lc": 11570,
+              "lc": 11571,
               "none": 49053,
               "other": 40428,
               "pod": 11110,
               "self": 25988
             },
-            "total": 138149,
+            "total": 138150,
             "year": 1983
           },
           {
             "counts": {
-              "lc": 14855,
+              "lc": 14856,
               "none": 50482,
-              "other": 49253,
+              "other": 49254,
               "pod": 14402,
               "self": 23733
             },
-            "total": 152725,
+            "total": 152727,
             "year": 1984
           },
           {
             "counts": {
               "lc": 17642,
               "none": 85097,
-              "other": 83366,
+              "other": 83367,
               "pod": 13848,
               "self": 54935
             },
-            "total": 254888,
+            "total": 254889,
             "year": 1985
           },
           {
             "counts": {
               "lc": 18895,
-              "none": 88165,
+              "none": 88163,
               "other": 78350,
               "pod": 16180,
-              "self": 70965
+              "self": 70958
             },
-            "total": 272555,
+            "total": 272546,
             "year": 1986
           },
           {
             "counts": {
               "lc": 16499,
               "none": 65829,
-              "other": 59085,
+              "other": 59086,
               "pod": 7131,
               "self": 44570
             },
-            "total": 193114,
+            "total": 193115,
             "year": 1987
           },
           {
             "counts": {
               "lc": 16240,
               "none": 114924,
-              "other": 41506,
+              "other": 41507,
               "pod": 5940,
               "self": 32327
             },
-            "total": 210937,
+            "total": 210938,
             "year": 1988
           },
           {
             "counts": {
               "lc": 36845,
-              "none": 98540,
+              "none": 98539,
               "other": 46962,
               "pod": 6348,
               "self": 33210
             },
-            "total": 221905,
+            "total": 221904,
             "year": 1989
           },
           {
             "counts": {
               "lc": 54170,
-              "none": 43886,
+              "none": 43884,
               "other": 46444,
               "pod": 8890,
               "self": 43165
             },
-            "total": 196555,
+            "total": 196553,
             "year": 1990
           },
           {
@@ -7427,11 +7427,11 @@
             "counts": {
               "lc": 60733,
               "none": 22431,
-              "other": 77778,
+              "other": 77779,
               "pod": 10064,
               "self": 58810
             },
-            "total": 229816,
+            "total": 229817,
             "year": 1992
           },
           {
@@ -7493,22 +7493,22 @@
             "counts": {
               "lc": 41417,
               "none": 2561,
-              "other": 45825,
+              "other": 45826,
               "pod": 7584,
               "self": 15688
             },
-            "total": 113075,
+            "total": 113076,
             "year": 1998
           },
           {
             "counts": {
               "lc": 49062,
               "none": 3042,
-              "other": 48432,
+              "other": 48433,
               "pod": 8940,
               "self": 30358
             },
-            "total": 139834,
+            "total": 139835,
             "year": 1999
           },
           {
@@ -7548,22 +7548,22 @@
             "counts": {
               "lc": 33726,
               "none": 1010,
-              "other": 43271,
+              "other": 43272,
               "pod": 4585,
               "self": 34424
             },
-            "total": 117016,
+            "total": 117017,
             "year": 2003
           },
           {
             "counts": {
               "lc": 31565,
               "none": 1395,
-              "other": 40250,
+              "other": 40253,
               "pod": 4102,
               "self": 26748
             },
-            "total": 104060,
+            "total": 104063,
             "year": 2004
           },
           {
@@ -7590,13 +7590,13 @@
           },
           {
             "counts": {
-              "lc": 31010,
+              "lc": 31011,
               "none": 338,
               "other": 40270,
               "pod": 2680,
               "self": 21530
             },
-            "total": 95828,
+            "total": 95829,
             "year": 2007
           },
           {
@@ -7614,11 +7614,11 @@
             "counts": {
               "lc": 28494,
               "none": 318,
-              "other": 40662,
+              "other": 40663,
               "pod": 5061,
-              "self": 15254
+              "self": 15255
             },
-            "total": 89789,
+            "total": 89791,
             "year": 2009
           },
           {
@@ -7658,22 +7658,22 @@
             "counts": {
               "lc": 23793,
               "none": 165,
-              "other": 33056,
+              "other": 33059,
               "pod": 3523,
               "self": 9762
             },
-            "total": 70299,
+            "total": 70302,
             "year": 2013
           },
           {
             "counts": {
               "lc": 21603,
               "none": 159,
-              "other": 33220,
+              "other": 33221,
               "pod": 1922,
               "self": 8613
             },
-            "total": 65517,
+            "total": 65518,
             "year": 2014
           },
           {
@@ -7713,40 +7713,40 @@
             "counts": {
               "lc": 16814,
               "none": 525,
-              "other": 30649,
-              "pod": 2147,
+              "other": 30650,
+              "pod": 2148,
               "self": 9959
             },
-            "total": 60094,
+            "total": 60096,
             "year": 2018
           },
           {
             "counts": {
               "lc": 12238,
               "none": 385,
-              "other": 25834,
+              "other": 25835,
               "pod": 2210,
               "self": 8811
             },
-            "total": 49478,
+            "total": 49479,
             "year": 2019
           },
           {
             "counts": {
               "lc": 7531,
               "none": 157,
-              "other": 14767,
+              "other": 14768,
               "pod": 2182,
               "self": 2742
             },
-            "total": 27379,
+            "total": 27380,
             "year": 2020
           },
           {
             "counts": {
               "lc": 9905,
-              "none": 95,
-              "other": 20308,
+              "none": 94,
+              "other": 20309,
               "pod": 2061,
               "self": 7153
             },
@@ -7755,57 +7755,57 @@
           },
           {
             "counts": {
-              "lc": 11136,
+              "lc": 11137,
               "none": 111,
-              "other": 18387,
+              "other": 18388,
               "pod": 1783,
               "self": 10633
             },
-            "total": 42050,
+            "total": 42052,
             "year": 2022
           },
           {
             "counts": {
               "lc": 8811,
               "none": 444,
-              "other": 17362,
-              "pod": 1426,
+              "other": 17365,
+              "pod": 1428,
               "self": 12482
             },
-            "total": 40525,
+            "total": 40530,
             "year": 2023
           },
           {
             "counts": {
-              "lc": 5316,
-              "none": 1001,
-              "other": 14988,
-              "pod": 1198,
+              "lc": 5319,
+              "none": 923,
+              "other": 14991,
+              "pod": 1200,
               "self": 12285
             },
-            "total": 34788,
+            "total": 34718,
             "year": 2024
           },
           {
             "counts": {
-              "lc": 2303,
+              "lc": 2306,
               "none": 160,
-              "other": 10713,
-              "pod": 775,
-              "self": 12524
+              "other": 10724,
+              "pod": 776,
+              "self": 12522
             },
-            "total": 26475,
+            "total": 26488,
             "year": 2025
           },
           {
             "counts": {
-              "lc": 441,
-              "none": 294,
-              "other": 2416,
-              "pod": 210,
-              "self": 7123
+              "lc": 456,
+              "none": 295,
+              "other": 2469,
+              "pod": 211,
+              "self": 7213
             },
-            "total": 10484,
+            "total": 10644,
             "year": 2026
           }
         ]
@@ -9133,7 +9133,7 @@
       },
       {
         "org": "harvard",
-        "unplaced": 6226,
+        "unplaced": 6221,
         "values": [
           {
             "counts": {
@@ -9269,31 +9269,31 @@
           },
           {
             "counts": {
-              "lc": 135294,
+              "lc": 135295,
               "none": 6575,
               "other": 72619,
               "pod": 7131,
               "self": 2147
             },
-            "total": 223766,
+            "total": 223767,
             "year": 1978
           },
           {
             "counts": {
-              "lc": 143742,
+              "lc": 143741,
               "none": 6915,
               "other": 93324,
               "pod": 12672,
               "self": 3318
             },
-            "total": 259971,
+            "total": 259970,
             "year": 1979
           },
           {
             "counts": {
               "lc": 120815,
-              "none": 7980,
-              "other": 99317,
+              "none": 7979,
+              "other": 99318,
               "pod": 5923,
               "self": 4448
             },
@@ -9304,62 +9304,62 @@
             "counts": {
               "lc": 77044,
               "none": 7181,
-              "other": 103635,
+              "other": 103636,
               "pod": 3826,
               "self": 4092
             },
-            "total": 195778,
+            "total": 195779,
             "year": 1981
           },
           {
             "counts": {
-              "lc": 79299,
+              "lc": 79300,
               "none": 18683,
               "other": 116670,
               "pod": 7093,
               "self": 6347
             },
-            "total": 228092,
+            "total": 228093,
             "year": 1982
           },
           {
             "counts": {
               "lc": 93905,
-              "none": 32150,
+              "none": 32149,
               "other": 113264,
               "pod": 9692,
               "self": 8203
             },
-            "total": 257214,
+            "total": 257213,
             "year": 1983
           },
           {
             "counts": {
-              "lc": 88827,
-              "none": 61236,
-              "other": 128982,
+              "lc": 88828,
+              "none": 61226,
+              "other": 128986,
               "pod": 15541,
               "self": 9161
             },
-            "total": 303747,
+            "total": 303742,
             "year": 1984
           },
           {
             "counts": {
-              "lc": 99611,
-              "none": 44870,
-              "other": 149708,
+              "lc": 99614,
+              "none": 44869,
+              "other": 149709,
               "pod": 15702,
               "self": 12494
             },
-            "total": 322385,
+            "total": 322388,
             "year": 1985
           },
           {
             "counts": {
               "lc": 88018,
-              "none": 43539,
-              "other": 143873,
+              "none": 43537,
+              "other": 143875,
               "pod": 15026,
               "self": 14063
             },
@@ -9368,21 +9368,21 @@
           },
           {
             "counts": {
-              "lc": 87475,
-              "none": 47404,
-              "other": 160293,
+              "lc": 87476,
+              "none": 47403,
+              "other": 160294,
               "pod": 8486,
               "self": 10594
             },
-            "total": 314252,
+            "total": 314253,
             "year": 1987
           },
           {
             "counts": {
               "lc": 80550,
               "none": 89595,
-              "other": 141740,
-              "pod": 8946,
+              "other": 141741,
+              "pod": 8945,
               "self": 18638
             },
             "total": 339469,
@@ -9390,35 +9390,35 @@
           },
           {
             "counts": {
-              "lc": 83160,
-              "none": 56881,
-              "other": 145139,
+              "lc": 83161,
+              "none": 56880,
+              "other": 145141,
               "pod": 13955,
               "self": 12438
             },
-            "total": 311573,
+            "total": 311575,
             "year": 1989
           },
           {
             "counts": {
               "lc": 90478,
-              "none": 80334,
-              "other": 120659,
+              "none": 80333,
+              "other": 120661,
               "pod": 19690,
               "self": 15902
             },
-            "total": 327063,
+            "total": 327064,
             "year": 1990
           },
           {
             "counts": {
               "lc": 81629,
               "none": 77838,
-              "other": 121643,
-              "pod": 24055,
+              "other": 121645,
+              "pod": 24054,
               "self": 18026
             },
-            "total": 323191,
+            "total": 323192,
             "year": 1991
           },
           {
@@ -9434,46 +9434,46 @@
           },
           {
             "counts": {
-              "lc": 79553,
+              "lc": 79554,
               "none": 63094,
               "other": 262582,
               "pod": 20470,
               "self": 136100
             },
-            "total": 561799,
+            "total": 561800,
             "year": 1993
           },
           {
             "counts": {
               "lc": 89641,
-              "none": 57474,
+              "none": 57470,
               "other": 234395,
               "pod": 18779,
               "self": 261289
             },
-            "total": 661578,
+            "total": 661574,
             "year": 1994
           },
           {
             "counts": {
-              "lc": 84512,
+              "lc": 84513,
               "none": 51589,
-              "other": 244533,
+              "other": 244534,
               "pod": 14787,
               "self": 245313
             },
-            "total": 640734,
+            "total": 640736,
             "year": 1995
           },
           {
             "counts": {
-              "lc": 66398,
-              "none": 69627,
+              "lc": 66399,
+              "none": 69626,
               "other": 216708,
               "pod": 12067,
-              "self": 216637
+              "self": 216636
             },
-            "total": 581437,
+            "total": 581436,
             "year": 1996
           },
           {
@@ -9491,29 +9491,29 @@
             "counts": {
               "lc": 63983,
               "none": 39970,
-              "other": 112500,
-              "pod": 11206,
+              "other": 112501,
+              "pod": 11207,
               "self": 12991
             },
-            "total": 240650,
+            "total": 240652,
             "year": 1998
           },
           {
             "counts": {
               "lc": 62984,
               "none": 35314,
-              "other": 109888,
+              "other": 109892,
               "pod": 12223,
               "self": 11612
             },
-            "total": 232021,
+            "total": 232025,
             "year": 1999
           },
           {
             "counts": {
-              "lc": 59721,
+              "lc": 59720,
               "none": 32551,
-              "other": 103214,
+              "other": 103215,
               "pod": 11317,
               "self": 11506
             },
@@ -9522,13 +9522,13 @@
           },
           {
             "counts": {
-              "lc": 61681,
-              "none": 46433,
-              "other": 106112,
+              "lc": 61683,
+              "none": 46431,
+              "other": 106111,
               "pod": 12328,
               "self": 9610
             },
-            "total": 236164,
+            "total": 236163,
             "year": 2001
           },
           {
@@ -9545,8 +9545,8 @@
           {
             "counts": {
               "lc": 54932,
-              "none": 47523,
-              "other": 107596,
+              "none": 47522,
+              "other": 107597,
               "pod": 14394,
               "self": 9153
             },
@@ -9557,20 +9557,20 @@
             "counts": {
               "lc": 52500,
               "none": 40457,
-              "other": 111788,
+              "other": 111789,
               "pod": 12444,
               "self": 11993
             },
-            "total": 229182,
+            "total": 229183,
             "year": 2004
           },
           {
             "counts": {
               "lc": 51326,
               "none": 45154,
-              "other": 121117,
+              "other": 121118,
               "pod": 12213,
-              "self": 10646
+              "self": 10645
             },
             "total": 240456,
             "year": 2005
@@ -9579,11 +9579,11 @@
             "counts": {
               "lc": 54239,
               "none": 51043,
-              "other": 120625,
+              "other": 120626,
               "pod": 12896,
               "self": 11028
             },
-            "total": 249831,
+            "total": 249832,
             "year": 2006
           },
           {
@@ -9601,11 +9601,11 @@
             "counts": {
               "lc": 47814,
               "none": 26453,
-              "other": 138112,
+              "other": 138111,
               "pod": 11562,
               "self": 7361
             },
-            "total": 231302,
+            "total": 231301,
             "year": 2008
           },
           {
@@ -9622,119 +9622,119 @@
           {
             "counts": {
               "lc": 47188,
-              "none": 19451,
-              "other": 129366,
+              "none": 19450,
+              "other": 129368,
               "pod": 11548,
-              "self": 7491
+              "self": 7492
             },
-            "total": 215044,
+            "total": 215046,
             "year": 2010
           },
           {
             "counts": {
               "lc": 42823,
               "none": 25286,
-              "other": 195281,
+              "other": 195282,
               "pod": 14234,
               "self": 11947
             },
-            "total": 289571,
+            "total": 289572,
             "year": 2011
           },
           {
             "counts": {
-              "lc": 38121,
+              "lc": 38122,
               "none": 37866,
-              "other": 173852,
+              "other": 173853,
               "pod": 8900,
-              "self": 12695
+              "self": 12694
             },
-            "total": 271434,
+            "total": 271435,
             "year": 2012
           },
           {
             "counts": {
               "lc": 38715,
               "none": 18466,
-              "other": 124792,
+              "other": 124791,
               "pod": 9273,
-              "self": 8803
+              "self": 8804
             },
             "total": 200049,
             "year": 2013
           },
           {
             "counts": {
-              "lc": 34776,
-              "none": 20318,
-              "other": 166688,
+              "lc": 34775,
+              "none": 20316,
+              "other": 166690,
               "pod": 13721,
               "self": 7605
             },
-            "total": 243108,
+            "total": 243107,
             "year": 2014
           },
           {
             "counts": {
               "lc": 37346,
-              "none": 21645,
-              "other": 122968,
+              "none": 21644,
+              "other": 122966,
               "pod": 8125,
               "self": 12084
             },
-            "total": 202168,
+            "total": 202165,
             "year": 2015
           },
           {
             "counts": {
-              "lc": 32167,
+              "lc": 32168,
               "none": 18058,
-              "other": 128549,
-              "pod": 8437,
+              "other": 128550,
+              "pod": 8438,
               "self": 11957
             },
-            "total": 199168,
+            "total": 199171,
             "year": 2016
           },
           {
             "counts": {
               "lc": 32870,
-              "none": 18020,
-              "other": 129405,
+              "none": 18019,
+              "other": 129409,
               "pod": 9671,
               "self": 9715
             },
-            "total": 199681,
+            "total": 199684,
             "year": 2017
           },
           {
             "counts": {
-              "lc": 32277,
-              "none": 24813,
-              "other": 106010,
-              "pod": 11840,
-              "self": 9597
+              "lc": 32279,
+              "none": 24811,
+              "other": 106009,
+              "pod": 11842,
+              "self": 9598
             },
-            "total": 184537,
+            "total": 184539,
             "year": 2018
           },
           {
             "counts": {
               "lc": 33209,
               "none": 21741,
-              "other": 104624,
-              "pod": 12177,
-              "self": 19080
+              "other": 104622,
+              "pod": 12178,
+              "self": 19082
             },
-            "total": 190831,
+            "total": 190832,
             "year": 2019
           },
           {
             "counts": {
               "lc": 22571,
               "none": 35433,
-              "other": 71989,
-              "pod": 6667,
+              "other": 71988,
+              "pod": 6668,
               "self": 17597
             },
             "total": 154257,
@@ -9742,20 +9742,20 @@
           },
           {
             "counts": {
-              "lc": 28021,
+              "lc": 28022,
               "none": 20878,
-              "other": 77848,
-              "pod": 8860,
-              "self": 26867
+              "other": 77847,
+              "pod": 8861,
+              "self": 26868
             },
-            "total": 162474,
+            "total": 162476,
             "year": 2021
           },
           {
             "counts": {
-              "lc": 28503,
-              "none": 16986,
-              "other": 91981,
+              "lc": 28507,
+              "none": 16983,
+              "other": 91980,
               "pod": 9567,
               "self": 34742
             },
@@ -9764,53 +9764,53 @@
           },
           {
             "counts": {
-              "lc": 25703,
+              "lc": 25704,
               "none": 10342,
-              "other": 73620,
-              "pod": 8077,
-              "self": 40629
+              "other": 73622,
+              "pod": 8079,
+              "self": 40626
             },
-            "total": 158371,
+            "total": 158373,
             "year": 2023
           },
           {
             "counts": {
-              "lc": 16831,
-              "none": 21099,
-              "other": 71291,
-              "pod": 7578,
-              "self": 32503
+              "lc": 16837,
+              "none": 21094,
+              "other": 71280,
+              "pod": 7582,
+              "self": 32508
             },
-            "total": 149302,
+            "total": 149301,
             "year": 2024
           },
           {
             "counts": {
-              "lc": 7780,
-              "none": 22269,
-              "other": 61328,
-              "pod": 4280,
-              "self": 36416
+              "lc": 7794,
+              "none": 22258,
+              "other": 61486,
+              "pod": 4283,
+              "self": 36421
             },
-            "total": 132073,
+            "total": 132242,
             "year": 2025
           },
           {
             "counts": {
-              "lc": 1500,
-              "none": 10527,
-              "other": 23537,
-              "pod": 1404,
-              "self": 19010
+              "lc": 1523,
+              "none": 10911,
+              "other": 23662,
+              "pod": 1411,
+              "self": 19094
             },
-            "total": 55978,
+            "total": 56601,
             "year": 2026
           }
         ]
       },
       {
         "org": "jhu",
-        "unplaced": 5365,
+        "unplaced": 5362,
         "values": [
           {
             "counts": {
@@ -9827,11 +9827,11 @@
             "counts": {
               "lc": 0,
               "none": 0,
-              "other": 3769,
+              "other": 3768,
               "pod": 0,
               "self": 36
             },
-            "total": 3805,
+            "total": 3804,
             "year": 1967
           },
           {
@@ -9847,8 +9847,8 @@
           },
           {
             "counts": {
-              "lc": 1741,
-              "none": 4528,
+              "lc": 1742,
+              "none": 4527,
               "other": 1168,
               "pod": 0,
               "self": 61
@@ -9935,8 +9935,8 @@
           },
           {
             "counts": {
-              "lc": 13860,
-              "none": 1549,
+              "lc": 13862,
+              "none": 1547,
               "other": 8663,
               "pod": 677,
               "self": 725
@@ -9990,24 +9990,24 @@
           },
           {
             "counts": {
-              "lc": 3691,
+              "lc": 3692,
               "none": 72769,
               "other": 7648,
               "pod": 688,
               "self": 1952
             },
-            "total": 86748,
+            "total": 86749,
             "year": 1982
           },
           {
             "counts": {
               "lc": 4263,
-              "none": 75884,
+              "none": 75882,
               "other": 8051,
               "pod": 909,
               "self": 2139
             },
-            "total": 91246,
+            "total": 91244,
             "year": 1983
           },
           {
@@ -10056,8 +10056,8 @@
           },
           {
             "counts": {
-              "lc": 4267,
-              "none": 13395,
+              "lc": 4268,
+              "none": 13394,
               "other": 11819,
               "pod": 2314,
               "self": 18901
@@ -10067,21 +10067,21 @@
           },
           {
             "counts": {
-              "lc": 4896,
+              "lc": 4897,
               "none": 16840,
               "other": 12639,
               "pod": 1760,
               "self": 8741
             },
-            "total": 44876,
+            "total": 44877,
             "year": 1989
           },
           {
             "counts": {
-              "lc": 15184,
+              "lc": 15185,
               "none": 12667,
               "other": 14065,
-              "pod": 2227,
+              "pod": 2226,
               "self": 13897
             },
             "total": 58040,
@@ -10090,34 +10090,34 @@
           {
             "counts": {
               "lc": 26921,
-              "none": 6653,
+              "none": 6652,
               "other": 15095,
-              "pod": 2403,
+              "pod": 2402,
               "self": 22741
             },
-            "total": 73813,
+            "total": 73811,
             "year": 1991
           },
           {
             "counts": {
               "lc": 17256,
               "none": 3827,
-              "other": 15198,
+              "other": 15197,
               "pod": 1602,
               "self": 14149
             },
-            "total": 52032,
+            "total": 52031,
             "year": 1992
           },
           {
             "counts": {
-              "lc": 18276,
+              "lc": 18277,
               "none": 3790,
-              "other": 15797,
+              "other": 15798,
               "pod": 2012,
-              "self": 4861
+              "self": 4860
             },
-            "total": 44736,
+            "total": 44737,
             "year": 1993
           },
           {
@@ -10126,20 +10126,20 @@
               "none": 1564,
               "other": 15594,
               "pod": 2107,
-              "self": 4522
+              "self": 4521
             },
-            "total": 41433,
+            "total": 41432,
             "year": 1994
           },
           {
             "counts": {
-              "lc": 18506,
+              "lc": 18508,
               "none": 922,
               "other": 15520,
-              "pod": 1982,
+              "pod": 1981,
               "self": 876
             },
-            "total": 37806,
+            "total": 37807,
             "year": 1995
           },
           {
@@ -10148,9 +10148,9 @@
               "none": 691,
               "other": 16438,
               "pod": 1812,
-              "self": 828
+              "self": 824
             },
-            "total": 37325,
+            "total": 37321,
             "year": 1996
           },
           {
@@ -10159,9 +10159,9 @@
               "none": 534,
               "other": 13759,
               "pod": 1130,
-              "self": 687
+              "self": 686
             },
-            "total": 33239,
+            "total": 33238,
             "year": 1997
           },
           {
@@ -10177,13 +10177,13 @@
           },
           {
             "counts": {
-              "lc": 17170,
+              "lc": 17169,
               "none": 225,
               "other": 15258,
               "pod": 1106,
               "self": 306
             },
-            "total": 34065,
+            "total": 34064,
             "year": 1999
           },
           {
@@ -10192,9 +10192,9 @@
               "none": 140,
               "other": 14953,
               "pod": 862,
-              "self": 475
+              "self": 474
             },
-            "total": 33619,
+            "total": 33618,
             "year": 2000
           },
           {
@@ -10214,9 +10214,9 @@
               "none": 0,
               "other": 15340,
               "pod": 998,
-              "self": 412
+              "self": 411
             },
-            "total": 33323,
+            "total": 33322,
             "year": 2002
           },
           {
@@ -10225,9 +10225,9 @@
               "none": 12,
               "other": 13820,
               "pod": 1142,
-              "self": 330
+              "self": 327
             },
-            "total": 29850,
+            "total": 29847,
             "year": 2003
           },
           {
@@ -10236,31 +10236,31 @@
               "none": 23,
               "other": 13173,
               "pod": 1033,
-              "self": 319
+              "self": 318
             },
-            "total": 28464,
+            "total": 28463,
             "year": 2004
           },
           {
             "counts": {
               "lc": 12518,
               "none": 10,
-              "other": 13578,
+              "other": 13579,
               "pod": 1028,
               "self": 231
             },
-            "total": 27365,
+            "total": 27366,
             "year": 2005
           },
           {
             "counts": {
-              "lc": 10647,
+              "lc": 10648,
               "none": 42,
               "other": 13125,
               "pod": 985,
               "self": 312
             },
-            "total": 25111,
+            "total": 25112,
             "year": 2006
           },
           {
@@ -10269,9 +10269,9 @@
               "none": 11,
               "other": 13016,
               "pod": 616,
-              "self": 371
+              "self": 370
             },
-            "total": 23609,
+            "total": 23608,
             "year": 2007
           },
           {
@@ -10298,22 +10298,22 @@
           },
           {
             "counts": {
-              "lc": 7617,
+              "lc": 7618,
               "none": 0,
-              "other": 10087,
+              "other": 10088,
               "pod": 603,
-              "self": 281
+              "self": 280
             },
-            "total": 18588,
+            "total": 18589,
             "year": 2010
           },
           {
             "counts": {
-              "lc": 7512,
+              "lc": 7513,
               "none": 0,
               "other": 9366,
               "pod": 589,
-              "self": 297
+              "self": 296
             },
             "total": 17764,
             "year": 2011
@@ -10324,20 +10324,20 @@
               "none": 0,
               "other": 9086,
               "pod": 411,
-              "self": 358
+              "self": 357
             },
-            "total": 16812,
+            "total": 16811,
             "year": 2012
           },
           {
             "counts": {
               "lc": 6256,
               "none": 0,
-              "other": 9586,
+              "other": 9585,
               "pod": 295,
-              "self": 359
+              "self": 358
             },
-            "total": 16496,
+            "total": 16494,
             "year": 2013
           },
           {
@@ -10355,22 +10355,22 @@
             "counts": {
               "lc": 6205,
               "none": 0,
-              "other": 10414,
+              "other": 10415,
               "pod": 272,
-              "self": 560
+              "self": 557
             },
-            "total": 17451,
+            "total": 17449,
             "year": 2015
           },
           {
             "counts": {
-              "lc": 4169,
+              "lc": 4168,
               "none": 0,
               "other": 10121,
               "pod": 378,
               "self": 265
             },
-            "total": 14933,
+            "total": 14932,
             "year": 2016
           },
           {
@@ -10379,16 +10379,16 @@
               "none": 0,
               "other": 9765,
               "pod": 560,
-              "self": 437
+              "self": 432
             },
-            "total": 14848,
+            "total": 14843,
             "year": 2017
           },
           {
             "counts": {
-              "lc": 2661,
+              "lc": 2660,
               "none": 0,
-              "other": 9600,
+              "other": 9601,
               "pod": 634,
               "self": 402
             },
@@ -10397,90 +10397,90 @@
           },
           {
             "counts": {
-              "lc": 2048,
+              "lc": 2051,
               "none": 0,
               "other": 8084,
               "pod": 400,
               "self": 283
             },
-            "total": 10815,
+            "total": 10818,
             "year": 2019
           },
           {
             "counts": {
-              "lc": 1777,
+              "lc": 1778,
               "none": 0,
-              "other": 5697,
+              "other": 5698,
               "pod": 208,
               "self": 199
             },
-            "total": 7881,
+            "total": 7883,
             "year": 2020
           },
           {
             "counts": {
-              "lc": 2501,
+              "lc": 2503,
               "none": 0,
-              "other": 7932,
+              "other": 7933,
               "pod": 542,
               "self": 171
             },
-            "total": 11146,
+            "total": 11149,
             "year": 2021
           },
           {
             "counts": {
-              "lc": 2737,
+              "lc": 2739,
               "none": 0,
-              "other": 8617,
+              "other": 8619,
               "pod": 579,
               "self": 316
             },
-            "total": 12249,
+            "total": 12253,
             "year": 2022
           },
           {
             "counts": {
               "lc": 2560,
               "none": 68,
-              "other": 8870,
+              "other": 8874,
               "pod": 460,
-              "self": 566
+              "self": 565
             },
-            "total": 12524,
+            "total": 12527,
             "year": 2023
           },
           {
             "counts": {
-              "lc": 2212,
+              "lc": 2224,
               "none": 19,
-              "other": 8781,
-              "pod": 601,
+              "other": 8791,
+              "pod": 602,
               "self": 414
             },
-            "total": 12027,
+            "total": 12050,
             "year": 2024
           },
           {
             "counts": {
-              "lc": 1401,
+              "lc": 1471,
               "none": 29,
-              "other": 7297,
+              "other": 7494,
               "pod": 473,
               "self": 555
             },
-            "total": 9755,
+            "total": 10022,
             "year": 2025
           },
           {
             "counts": {
-              "lc": 181,
-              "none": 1439,
-              "other": 1717,
-              "pod": 114,
+              "lc": 274,
+              "none": 949,
+              "other": 1859,
+              "pod": 116,
               "self": 471
             },
-            "total": 3922,
+            "total": 3669,
             "year": 2026
           }
         ]
@@ -11152,12 +11152,12 @@
           {
             "counts": {
               "lc": 125,
-              "none": 214,
+              "none": 215,
               "other": 310,
               "pod": 0,
               "self": 263
             },
-            "total": 912,
+            "total": 913,
             "year": 2026
           }
         ]
@@ -11841,7 +11841,7 @@
       },
       {
         "org": "princeton",
-        "unplaced": 35623,
+        "unplaced": 35604,
         "values": [
           {
             "counts": {
@@ -11933,13 +11933,13 @@
           },
           {
             "counts": {
-              "lc": 47822,
+              "lc": 47821,
               "none": 6686,
-              "other": 22547,
+              "other": 22546,
               "pod": 4260,
               "self": 101
             },
-            "total": 81416,
+            "total": 81414,
             "year": 1974
           },
           {
@@ -11966,24 +11966,24 @@
           },
           {
             "counts": {
-              "lc": 71759,
+              "lc": 71758,
               "none": 1228,
               "other": 23167,
               "pod": 2229,
               "self": 3830
             },
-            "total": 102213,
+            "total": 102212,
             "year": 1977
           },
           {
             "counts": {
-              "lc": 64931,
+              "lc": 64929,
               "none": 1313,
-              "other": 25576,
+              "other": 25575,
               "pod": 1824,
               "self": 2321
             },
-            "total": 95965,
+            "total": 95962,
             "year": 1978
           },
           {
@@ -11999,101 +11999,101 @@
           },
           {
             "counts": {
-              "lc": 32242,
-              "none": 24857,
+              "lc": 32243,
+              "none": 24853,
               "other": 28972,
               "pod": 2428,
               "self": 7402
             },
-            "total": 95901,
+            "total": 95898,
             "year": 1980
           },
           {
             "counts": {
               "lc": 16529,
-              "none": 20829,
+              "none": 20828,
               "other": 26898,
               "pod": 2688,
               "self": 6403
             },
-            "total": 73347,
+            "total": 73346,
             "year": 1981
           },
           {
             "counts": {
               "lc": 13860,
-              "none": 30292,
+              "none": 30287,
               "other": 34811,
               "pod": 9872,
               "self": 9075
             },
-            "total": 97910,
+            "total": 97905,
             "year": 1982
           },
           {
             "counts": {
               "lc": 14376,
-              "none": 41215,
-              "other": 43884,
+              "none": 41211,
+              "other": 43885,
               "pod": 16016,
-              "self": 19172
+              "self": 19171
             },
-            "total": 134663,
+            "total": 134659,
             "year": 1983
           },
           {
             "counts": {
               "lc": 14765,
-              "none": 30447,
-              "other": 41161,
+              "none": 30445,
+              "other": 41159,
               "pod": 15812,
               "self": 15169
             },
-            "total": 117354,
+            "total": 117350,
             "year": 1984
           },
           {
             "counts": {
               "lc": 15019,
-              "none": 23550,
-              "other": 38733,
-              "pod": 12859,
+              "none": 23549,
+              "other": 38732,
+              "pod": 12860,
               "self": 14062
             },
-            "total": 104223,
+            "total": 104222,
             "year": 1985
           },
           {
             "counts": {
               "lc": 12395,
-              "none": 37144,
+              "none": 37142,
               "other": 43076,
               "pod": 14964,
               "self": 12471
             },
-            "total": 120050,
+            "total": 120048,
             "year": 1986
           },
           {
             "counts": {
               "lc": 11242,
-              "none": 37695,
+              "none": 37693,
               "other": 42400,
               "pod": 8050,
               "self": 18085
             },
-            "total": 117472,
+            "total": 117470,
             "year": 1987
           },
           {
             "counts": {
               "lc": 8947,
-              "none": 36678,
+              "none": 36677,
               "other": 41164,
-              "pod": 8203,
+              "pod": 8202,
               "self": 14837
             },
-            "total": 109829,
+            "total": 109827,
             "year": 1988
           },
           {
@@ -12120,156 +12120,156 @@
           },
           {
             "counts": {
-              "lc": 33052,
+              "lc": 33050,
               "none": 10522,
-              "other": 37608,
-              "pod": 10610,
+              "other": 37607,
+              "pod": 10612,
               "self": 17903
             },
-            "total": 109695,
+            "total": 109694,
             "year": 1991
           },
           {
             "counts": {
-              "lc": 39776,
+              "lc": 39771,
               "none": 8016,
               "other": 37708,
               "pod": 10827,
               "self": 17963
             },
-            "total": 114290,
+            "total": 114285,
             "year": 1992
           },
           {
             "counts": {
-              "lc": 37656,
+              "lc": 37653,
               "none": 6550,
               "other": 37416,
               "pod": 8777,
               "self": 20309
             },
-            "total": 110708,
+            "total": 110705,
             "year": 1993
           },
           {
             "counts": {
-              "lc": 39146,
+              "lc": 39145,
               "none": 5593,
               "other": 42210,
               "pod": 10600,
-              "self": 21706
+              "self": 21705
             },
-            "total": 119255,
+            "total": 119253,
             "year": 1994
           },
           {
             "counts": {
-              "lc": 38971,
+              "lc": 38969,
               "none": 7295,
               "other": 40383,
               "pod": 10684,
-              "self": 19707
+              "self": 19706
             },
-            "total": 117040,
+            "total": 117037,
             "year": 1995
           },
           {
             "counts": {
               "lc": 38216,
               "none": 5337,
-              "other": 40933,
+              "other": 40932,
               "pod": 10501,
               "self": 15990
             },
-            "total": 110977,
+            "total": 110976,
             "year": 1996
           },
           {
             "counts": {
-              "lc": 39290,
+              "lc": 39289,
               "none": 6304,
-              "other": 44278,
-              "pod": 10138,
-              "self": 14193
+              "other": 44279,
+              "pod": 10137,
+              "self": 14192
             },
-            "total": 114203,
+            "total": 114201,
             "year": 1997
           },
           {
             "counts": {
-              "lc": 49107,
-              "none": 5035,
+              "lc": 49109,
+              "none": 5034,
               "other": 52597,
-              "pod": 13721,
+              "pod": 13722,
               "self": 29013
             },
-            "total": 149473,
+            "total": 149475,
             "year": 1998
           },
           {
             "counts": {
               "lc": 63216,
               "none": 4666,
-              "other": 62107,
+              "other": 62108,
               "pod": 15986,
               "self": 57923
             },
-            "total": 203898,
+            "total": 203899,
             "year": 1999
           },
           {
             "counts": {
-              "lc": 36421,
+              "lc": 36419,
               "none": 5859,
-              "other": 41119,
+              "other": 41121,
               "pod": 8293,
-              "self": 46768
+              "self": 46769
             },
-            "total": 138460,
+            "total": 138461,
             "year": 2000
           },
           {
             "counts": {
               "lc": 33278,
               "none": 3418,
-              "other": 50493,
+              "other": 50496,
               "pod": 9630,
               "self": 13142
             },
-            "total": 109961,
+            "total": 109964,
             "year": 2001
           },
           {
             "counts": {
               "lc": 38636,
               "none": 2059,
-              "other": 45975,
+              "other": 45982,
               "pod": 8055,
               "self": 12751
             },
-            "total": 107476,
+            "total": 107483,
             "year": 2002
           },
           {
             "counts": {
               "lc": 31218,
               "none": 1928,
-              "other": 45809,
+              "other": 45811,
               "pod": 7911,
               "self": 17155
             },
-            "total": 104021,
+            "total": 104023,
             "year": 2003
           },
           {
             "counts": {
               "lc": 28868,
               "none": 1964,
-              "other": 50094,
+              "other": 50097,
               "pod": 7215,
-              "self": 17241
+              "self": 17240
             },
-            "total": 105382,
+            "total": 105384,
             "year": 2004
           },
           {
@@ -12285,24 +12285,24 @@
           },
           {
             "counts": {
-              "lc": 34265,
-              "none": 39655,
+              "lc": 34266,
+              "none": 39654,
               "other": 59565,
-              "pod": 8106,
+              "pod": 8107,
               "self": 36223
             },
-            "total": 177814,
+            "total": 177815,
             "year": 2006
           },
           {
             "counts": {
               "lc": 33478,
               "none": 2257,
-              "other": 60165,
+              "other": 60164,
               "pod": 6789,
               "self": 14417
             },
-            "total": 117106,
+            "total": 117105,
             "year": 2007
           },
           {
@@ -12320,44 +12320,44 @@
             "counts": {
               "lc": 31202,
               "none": 5172,
-              "other": 67092,
-              "pod": 8586,
-              "self": 11846
+              "other": 67091,
+              "pod": 8587,
+              "self": 11845
             },
-            "total": 123898,
+            "total": 123897,
             "year": 2009
           },
           {
             "counts": {
-              "lc": 32127,
+              "lc": 32126,
               "none": 8234,
-              "other": 67666,
+              "other": 67669,
               "pod": 6963,
               "self": 10738
             },
-            "total": 125728,
+            "total": 125730,
             "year": 2010
           },
           {
             "counts": {
-              "lc": 31453,
+              "lc": 31454,
               "none": 42416,
-              "other": 69194,
+              "other": 69196,
               "pod": 7169,
               "self": 18583
             },
-            "total": 168815,
+            "total": 168818,
             "year": 2011
           },
           {
             "counts": {
-              "lc": 28330,
+              "lc": 28331,
               "none": 1682,
               "other": 68045,
               "pod": 5157,
               "self": 8010
             },
-            "total": 111224,
+            "total": 111225,
             "year": 2012
           },
           {
@@ -12386,33 +12386,33 @@
             "counts": {
               "lc": 25794,
               "none": 565,
-              "other": 72369,
+              "other": 72367,
               "pod": 5434,
-              "self": 5387
+              "self": 5388
             },
-            "total": 109549,
+            "total": 109548,
             "year": 2015
           },
           {
             "counts": {
-              "lc": 22575,
+              "lc": 22576,
               "none": 883,
               "other": 75866,
               "pod": 5981,
               "self": 5355
             },
-            "total": 110660,
+            "total": 110661,
             "year": 2016
           },
           {
             "counts": {
-              "lc": 23244,
+              "lc": 23245,
               "none": 776,
-              "other": 81108,
+              "other": 81105,
               "pod": 7060,
-              "self": 38670
+              "self": 38667
             },
-            "total": 150858,
+            "total": 150853,
             "year": 2017
           },
           {
@@ -12428,35 +12428,35 @@
           },
           {
             "counts": {
-              "lc": 16949,
+              "lc": 16950,
               "none": 5677,
-              "other": 76004,
+              "other": 76005,
               "pod": 9635,
               "self": 8400
             },
-            "total": 116665,
+            "total": 116667,
             "year": 2019
           },
           {
             "counts": {
               "lc": 12938,
               "none": 341,
-              "other": 63744,
+              "other": 63745,
               "pod": 7146,
               "self": 6759
             },
-            "total": 90928,
+            "total": 90929,
             "year": 2020
           },
           {
             "counts": {
-              "lc": 15480,
+              "lc": 15482,
               "none": 887,
-              "other": 73354,
+              "other": 73355,
               "pod": 9379,
               "self": 6843
             },
-            "total": 105943,
+            "total": 105946,
             "year": 2021
           },
           {
@@ -12472,46 +12472,46 @@
           },
           {
             "counts": {
-              "lc": 14472,
+              "lc": 14475,
               "none": 1455,
-              "other": 70822,
+              "other": 70819,
               "pod": 7453,
-              "self": 11260
+              "self": 11258
             },
-            "total": 105462,
+            "total": 105460,
             "year": 2023
           },
           {
             "counts": {
-              "lc": 11716,
-              "none": 850,
+              "lc": 11717,
+              "none": 848,
               "other": 65302,
               "pod": 6295,
               "self": 14612
             },
-            "total": 98775,
+            "total": 98774,
             "year": 2024
           },
           {
             "counts": {
-              "lc": 7829,
-              "none": 2667,
-              "other": 63627,
-              "pod": 4588,
+              "lc": 7834,
+              "none": 2657,
+              "other": 63637,
+              "pod": 4590,
               "self": 16828
             },
-            "total": 95539,
+            "total": 95546,
             "year": 2025
           },
           {
             "counts": {
-              "lc": 1931,
+              "lc": 1934,
               "none": 3398,
-              "other": 20969,
-              "pod": 1288,
-              "self": 9920
+              "other": 21059,
+              "pod": 1301,
+              "self": 9949
             },
-            "total": 37506,
+            "total": 37641,
             "year": 2026
           }
         ]
@@ -12567,12 +12567,12 @@
           {
             "counts": {
               "lc": 22436,
-              "none": 2153,
+              "none": 2154,
               "other": 502,
               "pod": 0,
               "self": 104
             },
-            "total": 25195,
+            "total": 25196,
             "year": 1970
           },
           {
@@ -12588,68 +12588,68 @@
           },
           {
             "counts": {
-              "lc": 41843,
+              "lc": 41844,
               "none": 17466,
-              "other": 10148,
+              "other": 10149,
               "pod": 222,
               "self": 440
             },
-            "total": 70119,
+            "total": 70121,
             "year": 1972
           },
           {
             "counts": {
               "lc": 25079,
-              "none": 22471,
+              "none": 22473,
               "other": 7088,
               "pod": 408,
               "self": 526
             },
-            "total": 55572,
+            "total": 55574,
             "year": 1973
           },
           {
             "counts": {
               "lc": 25092,
-              "none": 59468,
+              "none": 59469,
               "other": 10815,
               "pod": 1689,
               "self": 2477
             },
-            "total": 99541,
+            "total": 99542,
             "year": 1974
           },
           {
             "counts": {
-              "lc": 44982,
+              "lc": 44983,
               "none": 65954,
               "other": 24982,
               "pod": 1866,
               "self": 5144
             },
-            "total": 142928,
+            "total": 142929,
             "year": 1975
           },
           {
             "counts": {
-              "lc": 42871,
+              "lc": 42872,
               "none": 37291,
               "other": 29585,
               "pod": 2686,
               "self": 7705
             },
-            "total": 120138,
+            "total": 120139,
             "year": 1976
           },
           {
             "counts": {
-              "lc": 42689,
-              "none": 43042,
+              "lc": 42690,
+              "none": 43043,
               "other": 31995,
-              "pod": 2761,
+              "pod": 2762,
               "self": 9105
             },
-            "total": 129592,
+            "total": 129595,
             "year": 1977
           },
           {
@@ -12665,13 +12665,13 @@
           },
           {
             "counts": {
-              "lc": 34776,
-              "none": 69706,
-              "other": 47645,
+              "lc": 34778,
+              "none": 69708,
+              "other": 47648,
               "pod": 5990,
-              "self": 38021
+              "self": 38026
             },
-            "total": 196138,
+            "total": 196150,
             "year": 1979
           },
           {
@@ -12687,222 +12687,222 @@
           },
           {
             "counts": {
-              "lc": 15363,
+              "lc": 15364,
               "none": 31477,
               "other": 51361,
-              "pod": 4262,
+              "pod": 4263,
               "self": 22163
             },
-            "total": 124626,
+            "total": 124628,
             "year": 1981
           },
           {
             "counts": {
               "lc": 14230,
               "none": 27153,
-              "other": 55843,
+              "other": 55845,
               "pod": 3802,
               "self": 20520
             },
-            "total": 121548,
+            "total": 121550,
             "year": 1982
           },
           {
             "counts": {
               "lc": 15499,
               "none": 41454,
-              "other": 64088,
-              "pod": 7070,
+              "other": 64091,
+              "pod": 7071,
               "self": 28026
             },
-            "total": 156137,
+            "total": 156141,
             "year": 1983
           },
           {
             "counts": {
-              "lc": 14063,
+              "lc": 14065,
               "none": 48357,
-              "other": 69734,
+              "other": 69737,
               "pod": 9662,
               "self": 35132
             },
-            "total": 176948,
+            "total": 176953,
             "year": 1984
           },
           {
             "counts": {
               "lc": 16969,
               "none": 76277,
-              "other": 77964,
+              "other": 77966,
               "pod": 10076,
               "self": 43517
             },
-            "total": 224803,
+            "total": 224805,
             "year": 1985
           },
           {
             "counts": {
               "lc": 15142,
               "none": 72148,
-              "other": 77013,
-              "pod": 10291,
+              "other": 77016,
+              "pod": 10292,
               "self": 44873
             },
-            "total": 219467,
+            "total": 219471,
             "year": 1986
           },
           {
             "counts": {
-              "lc": 14244,
+              "lc": 14245,
               "none": 53297,
-              "other": 80297,
+              "other": 80299,
               "pod": 8591,
               "self": 29901
             },
-            "total": 186330,
+            "total": 186333,
             "year": 1987
           },
           {
             "counts": {
-              "lc": 14958,
+              "lc": 14959,
               "none": 47237,
-              "other": 65042,
+              "other": 65044,
               "pod": 8306,
               "self": 28603
             },
-            "total": 164146,
+            "total": 164149,
             "year": 1988
           },
           {
             "counts": {
-              "lc": 21134,
-              "none": 52432,
-              "other": 67174,
-              "pod": 8347,
+              "lc": 21135,
+              "none": 52433,
+              "other": 67180,
+              "pod": 8350,
               "self": 22459
             },
-            "total": 171546,
+            "total": 171557,
             "year": 1989
           },
           {
             "counts": {
               "lc": 43515,
               "none": 52366,
-              "other": 71827,
+              "other": 71829,
               "pod": 10370,
-              "self": 29204
+              "self": 29205
             },
-            "total": 207282,
+            "total": 207285,
             "year": 1990
           },
           {
             "counts": {
               "lc": 37118,
-              "none": 23947,
-              "other": 57579,
-              "pod": 8116,
+              "none": 23950,
+              "other": 57583,
+              "pod": 8117,
               "self": 31148
             },
-            "total": 157908,
+            "total": 157916,
             "year": 1991
           },
           {
             "counts": {
-              "lc": 39955,
+              "lc": 39958,
               "none": 15036,
-              "other": 56732,
+              "other": 56734,
               "pod": 7094,
               "self": 58487
             },
-            "total": 177304,
+            "total": 177309,
             "year": 1992
           },
           {
             "counts": {
-              "lc": 34887,
-              "none": 12201,
-              "other": 60242,
-              "pod": 8184,
+              "lc": 34888,
+              "none": 12203,
+              "other": 60270,
+              "pod": 8185,
               "self": 33042
             },
-            "total": 148556,
+            "total": 148588,
             "year": 1993
           },
           {
             "counts": {
-              "lc": 32433,
+              "lc": 32434,
               "none": 9429,
-              "other": 60743,
+              "other": 60753,
               "pod": 9124,
               "self": 22124
             },
-            "total": 133853,
+            "total": 133864,
             "year": 1994
           },
           {
             "counts": {
-              "lc": 36785,
-              "none": 21596,
-              "other": 59608,
+              "lc": 36786,
+              "none": 21597,
+              "other": 59613,
               "pod": 8519,
               "self": 17573
             },
-            "total": 144081,
+            "total": 144088,
             "year": 1995
           },
           {
             "counts": {
               "lc": 32511,
-              "none": 15741,
-              "other": 48567,
+              "none": 15742,
+              "other": 48571,
               "pod": 8573,
               "self": 66885
             },
-            "total": 172277,
+            "total": 172282,
             "year": 1996
           },
           {
             "counts": {
               "lc": 33494,
               "none": 7828,
-              "other": 53506,
-              "pod": 8752,
+              "other": 53508,
+              "pod": 8753,
               "self": 3186
             },
-            "total": 106766,
+            "total": 106769,
             "year": 1997
           },
           {
             "counts": {
               "lc": 35745,
-              "none": 9405,
-              "other": 63226,
+              "none": 9407,
+              "other": 63229,
               "pod": 11882,
               "self": 3804
             },
-            "total": 124062,
+            "total": 124067,
             "year": 1998
           },
           {
             "counts": {
               "lc": 33504,
-              "none": 8982,
-              "other": 62477,
+              "none": 8983,
+              "other": 62480,
               "pod": 10655,
               "self": 4613
             },
-            "total": 120231,
+            "total": 120235,
             "year": 1999
           },
           {
             "counts": {
               "lc": 32512,
               "none": 3194,
-              "other": 64896,
+              "other": 64897,
               "pod": 7935,
               "self": 5865
             },
-            "total": 114402,
+            "total": 114403,
             "year": 2000
           },
           {
@@ -12918,178 +12918,178 @@
           },
           {
             "counts": {
-              "lc": 34437,
+              "lc": 34438,
               "none": 1372,
-              "other": 76923,
+              "other": 76924,
               "pod": 8493,
               "self": 14658
             },
-            "total": 135883,
+            "total": 135885,
             "year": 2002
           },
           {
             "counts": {
               "lc": 30217,
-              "none": 1164,
-              "other": 84896,
+              "none": 1165,
+              "other": 84897,
               "pod": 9060,
               "self": 13011
             },
-            "total": 138348,
+            "total": 138350,
             "year": 2003
           },
           {
             "counts": {
               "lc": 37545,
               "none": 4946,
-              "other": 97943,
+              "other": 97945,
               "pod": 13455,
               "self": 26904
             },
-            "total": 180793,
+            "total": 180795,
             "year": 2004
           },
           {
             "counts": {
               "lc": 42546,
-              "none": 8744,
+              "none": 8745,
               "other": 150537,
               "pod": 16905,
               "self": 39215
             },
-            "total": 257947,
+            "total": 257948,
             "year": 2005
           },
           {
             "counts": {
               "lc": 37669,
-              "none": 4200,
+              "none": 4201,
               "other": 102628,
               "pod": 10231,
               "self": 20006
             },
-            "total": 174734,
+            "total": 174735,
             "year": 2006
           },
           {
             "counts": {
               "lc": 31434,
               "none": 1331,
-              "other": 134148,
+              "other": 134149,
               "pod": 9229,
               "self": 16221
             },
-            "total": 192363,
+            "total": 192364,
             "year": 2007
           },
           {
             "counts": {
               "lc": 33483,
               "none": 741,
-              "other": 132032,
+              "other": 132036,
               "pod": 8561,
               "self": 15324
             },
-            "total": 190141,
+            "total": 190145,
             "year": 2008
           },
           {
             "counts": {
               "lc": 34007,
               "none": 334,
-              "other": 141606,
+              "other": 141607,
               "pod": 8963,
               "self": 19230
             },
-            "total": 204140,
+            "total": 204141,
             "year": 2009
           },
           {
             "counts": {
               "lc": 29568,
               "none": 312,
-              "other": 154180,
+              "other": 154183,
               "pod": 6862,
               "self": 17729
             },
-            "total": 208651,
+            "total": 208654,
             "year": 2010
           },
           {
             "counts": {
               "lc": 28344,
               "none": 867,
-              "other": 154316,
+              "other": 154317,
               "pod": 7659,
               "self": 20688
             },
-            "total": 211874,
+            "total": 211875,
             "year": 2011
           },
           {
             "counts": {
               "lc": 25272,
               "none": 647,
-              "other": 176596,
+              "other": 176604,
               "pod": 6158,
               "self": 19302
             },
-            "total": 227975,
+            "total": 227983,
             "year": 2012
           },
           {
             "counts": {
               "lc": 24743,
               "none": 94,
-              "other": 152266,
+              "other": 152271,
               "pod": 5505,
               "self": 25621
             },
-            "total": 208229,
+            "total": 208234,
             "year": 2013
           },
           {
             "counts": {
               "lc": 23921,
               "none": 82,
-              "other": 152476,
+              "other": 152481,
               "pod": 6448,
               "self": 22869
             },
-            "total": 205796,
+            "total": 205801,
             "year": 2014
           },
           {
             "counts": {
               "lc": 23754,
               "none": 116,
-              "other": 137634,
+              "other": 137635,
               "pod": 5658,
               "self": 18736
             },
-            "total": 185898,
+            "total": 185899,
             "year": 2015
           },
           {
             "counts": {
               "lc": 24994,
               "none": 121,
-              "other": 163003,
+              "other": 163005,
               "pod": 5904,
               "self": 18678
             },
-            "total": 212700,
+            "total": 212702,
             "year": 2016
           },
           {
             "counts": {
               "lc": 25111,
               "none": 137,
-              "other": 196118,
-              "pod": 6559,
+              "other": 196119,
+              "pod": 6560,
               "self": 16186
             },
-            "total": 244111,
+            "total": 244113,
             "year": 2017
           },
           {
@@ -13118,84 +13118,84 @@
             "counts": {
               "lc": 16756,
               "none": 71,
-              "other": 122791,
+              "other": 122793,
               "pod": 5408,
               "self": 10263
             },
-            "total": 155289,
+            "total": 155291,
             "year": 2020
           },
           {
             "counts": {
-              "lc": 17365,
+              "lc": 17366,
               "none": 192,
-              "other": 125142,
+              "other": 125144,
               "pod": 6844,
               "self": 13309
             },
-            "total": 162852,
+            "total": 162855,
             "year": 2021
           },
           {
             "counts": {
               "lc": 17212,
               "none": 137,
-              "other": 119162,
-              "pod": 6741,
+              "other": 119165,
+              "pod": 6742,
               "self": 16547
             },
-            "total": 159799,
+            "total": 159803,
             "year": 2022
           },
           {
             "counts": {
-              "lc": 14272,
+              "lc": 14273,
               "none": 38,
-              "other": 105229,
+              "other": 105230,
               "pod": 6978,
               "self": 13196
             },
-            "total": 139713,
+            "total": 139715,
             "year": 2023
           },
           {
             "counts": {
-              "lc": 9834,
+              "lc": 9840,
               "none": 10,
-              "other": 95139,
+              "other": 95147,
               "pod": 6886,
               "self": 14060
             },
-            "total": 125929,
+            "total": 125943,
             "year": 2024
           },
           {
             "counts": {
-              "lc": 4001,
+              "lc": 4018,
               "none": 96,
-              "other": 88712,
-              "pod": 4456,
+              "other": 88757,
+              "pod": 4461,
               "self": 18262
             },
-            "total": 115527,
+            "total": 115594,
             "year": 2025
           },
           {
             "counts": {
-              "lc": 595,
+              "lc": 605,
               "none": 124,
-              "other": 22224,
-              "pod": 967,
-              "self": 9692
+              "other": 22304,
+              "pod": 990,
+              "self": 9752
             },
-            "total": 33602,
+            "total": 33775,
             "year": 2026
           }
         ]
       },
       {
         "org": "yale",
-        "unplaced": 24238,
+        "unplaced": 24239,
         "values": [
           {
             "counts": {
@@ -13221,13 +13221,13 @@
           },
           {
             "counts": {
-              "lc": 3358,
+              "lc": 3356,
               "none": 169,
               "other": 698,
               "pod": 0,
               "self": 0
             },
-            "total": 4225,
+            "total": 4223,
             "year": 1968
           },
           {
@@ -13254,24 +13254,24 @@
           },
           {
             "counts": {
-              "lc": 31232,
+              "lc": 31231,
               "none": 2041,
               "other": 2324,
               "pod": 16,
               "self": 102
             },
-            "total": 35715,
+            "total": 35714,
             "year": 1971
           },
           {
             "counts": {
               "lc": 43343,
               "none": 8437,
-              "other": 18942,
+              "other": 18943,
               "pod": 772,
               "self": 344
             },
-            "total": 71838,
+            "total": 71839,
             "year": 1972
           },
           {
@@ -13298,24 +13298,24 @@
           },
           {
             "counts": {
-              "lc": 64262,
+              "lc": 64263,
               "none": 15055,
-              "other": 47592,
+              "other": 47593,
               "pod": 3591,
               "self": 1420
             },
-            "total": 131920,
+            "total": 131922,
             "year": 1975
           },
           {
             "counts": {
-              "lc": 59075,
+              "lc": 59076,
               "none": 3142,
               "other": 25063,
               "pod": 2411,
               "self": 3261
             },
-            "total": 92952,
+            "total": 92953,
             "year": 1976
           },
           {
@@ -13353,24 +13353,24 @@
           },
           {
             "counts": {
-              "lc": 114674,
-              "none": 41317,
+              "lc": 114673,
+              "none": 41319,
               "other": 58952,
               "pod": 6202,
               "self": 26890
             },
-            "total": 248035,
+            "total": 248036,
             "year": 1980
           },
           {
             "counts": {
               "lc": 56048,
               "none": 32222,
-              "other": 48760,
+              "other": 48761,
               "pod": 3756,
               "self": 21017
             },
-            "total": 161803,
+            "total": 161804,
             "year": 1981
           },
           {
@@ -13400,21 +13400,21 @@
               "lc": 19226,
               "none": 46273,
               "other": 42590,
-              "pod": 8372,
+              "pod": 8373,
               "self": 15955
             },
-            "total": 132416,
+            "total": 132417,
             "year": 1984
           },
           {
             "counts": {
               "lc": 21063,
-              "none": 44615,
-              "other": 50118,
-              "pod": 8474,
+              "none": 44614,
+              "other": 50119,
+              "pod": 8475,
               "self": 20651
             },
-            "total": 144921,
+            "total": 144922,
             "year": 1985
           },
           {
@@ -13443,11 +13443,11 @@
             "counts": {
               "lc": 16992,
               "none": 51394,
-              "other": 52951,
+              "other": 52950,
               "pod": 9770,
               "self": 16665
             },
-            "total": 147772,
+            "total": 147771,
             "year": 1988
           },
           {
@@ -13465,22 +13465,22 @@
             "counts": {
               "lc": 54340,
               "none": 44555,
-              "other": 62425,
+              "other": 62426,
               "pod": 14854,
               "self": 24749
             },
-            "total": 200923,
+            "total": 200924,
             "year": 1990
           },
           {
             "counts": {
               "lc": 53675,
-              "none": 23715,
+              "none": 23716,
               "other": 67883,
               "pod": 15354,
               "self": 31176
             },
-            "total": 191803,
+            "total": 191804,
             "year": 1991
           },
           {
@@ -13496,31 +13496,31 @@
           },
           {
             "counts": {
-              "lc": 48235,
+              "lc": 48236,
               "none": 81810,
               "other": 57833,
               "pod": 17550,
               "self": 31728
             },
-            "total": 237156,
+            "total": 237157,
             "year": 1993
           },
           {
             "counts": {
               "lc": 51002,
-              "none": 51595,
-              "other": 66579,
+              "none": 51596,
+              "other": 66581,
               "pod": 18663,
-              "self": 28047
+              "self": 28051
             },
-            "total": 215886,
+            "total": 215893,
             "year": 1994
           },
           {
             "counts": {
               "lc": 48204,
-              "none": 10671,
-              "other": 53493,
+              "none": 10670,
+              "other": 53494,
               "pod": 16345,
               "self": 27034
             },
@@ -13529,13 +13529,13 @@
           },
           {
             "counts": {
-              "lc": 49886,
+              "lc": 49887,
               "none": 8452,
               "other": 55714,
               "pod": 17639,
               "self": 22637
             },
-            "total": 154328,
+            "total": 154329,
             "year": 1996
           },
           {
@@ -13551,24 +13551,24 @@
           },
           {
             "counts": {
-              "lc": 54327,
+              "lc": 54328,
               "none": 8190,
               "other": 65137,
               "pod": 18794,
               "self": 67532
             },
-            "total": 213980,
+            "total": 213981,
             "year": 1998
           },
           {
             "counts": {
               "lc": 52507,
               "none": 5716,
-              "other": 67108,
+              "other": 67109,
               "pod": 16966,
               "self": 41214
             },
-            "total": 183511,
+            "total": 183512,
             "year": 1999
           },
           {
@@ -13577,163 +13577,163 @@
               "none": 4380,
               "other": 75283,
               "pod": 14687,
-              "self": 75904
+              "self": 75905
             },
-            "total": 224723,
+            "total": 224724,
             "year": 2000
           },
           {
             "counts": {
-              "lc": 73064,
+              "lc": 73067,
               "none": 5995,
-              "other": 97656,
+              "other": 97657,
               "pod": 18801,
-              "self": 139477
+              "self": 139476
             },
-            "total": 334993,
+            "total": 334996,
             "year": 2001
           },
           {
             "counts": {
-              "lc": 69801,
+              "lc": 69803,
               "none": 4789,
               "other": 88845,
               "pod": 19076,
               "self": 44903
             },
-            "total": 227414,
+            "total": 227416,
             "year": 2002
           },
           {
             "counts": {
-              "lc": 48462,
+              "lc": 48472,
               "none": 1107,
-              "other": 73157,
-              "pod": 12116,
-              "self": 18794
+              "other": 73107,
+              "pod": 12117,
+              "self": 18818
             },
-            "total": 153636,
+            "total": 153621,
             "year": 2003
           },
           {
             "counts": {
-              "lc": 43541,
+              "lc": 43545,
               "none": 881,
-              "other": 68516,
+              "other": 68524,
               "pod": 11004,
               "self": 16463
             },
-            "total": 140405,
+            "total": 140417,
             "year": 2004
           },
           {
             "counts": {
-              "lc": 45249,
+              "lc": 45251,
               "none": 635,
               "other": 73088,
               "pod": 9493,
               "self": 16558
             },
-            "total": 145023,
+            "total": 145025,
             "year": 2005
           },
           {
             "counts": {
-              "lc": 43836,
+              "lc": 43837,
               "none": 894,
               "other": 73590,
               "pod": 10188,
               "self": 16258
             },
-            "total": 144766,
+            "total": 144767,
             "year": 2006
           },
           {
             "counts": {
-              "lc": 38301,
+              "lc": 38303,
               "none": 603,
-              "other": 68371,
+              "other": 68372,
               "pod": 8470,
               "self": 20961
             },
-            "total": 136706,
+            "total": 136709,
             "year": 2007
           },
           {
             "counts": {
-              "lc": 40494,
+              "lc": 40497,
               "none": 582,
-              "other": 69160,
+              "other": 69162,
               "pod": 7642,
               "self": 30386
             },
-            "total": 148264,
+            "total": 148269,
             "year": 2008
           },
           {
             "counts": {
-              "lc": 36998,
+              "lc": 36999,
               "none": 511,
-              "other": 68097,
+              "other": 68100,
               "pod": 6955,
               "self": 38995
             },
-            "total": 151556,
+            "total": 151560,
             "year": 2009
           },
           {
             "counts": {
-              "lc": 30387,
+              "lc": 30388,
               "none": 217,
-              "other": 56119,
+              "other": 56122,
               "pod": 4828,
               "self": 20444
             },
-            "total": 111995,
+            "total": 111999,
             "year": 2010
           },
           {
             "counts": {
               "lc": 27762,
               "none": 91,
-              "other": 50089,
+              "other": 50092,
               "pod": 4419,
-              "self": 30014
+              "self": 30015
             },
-            "total": 112375,
+            "total": 112379,
             "year": 2011
           },
           {
             "counts": {
-              "lc": 24506,
+              "lc": 24507,
               "none": 91,
-              "other": 48951,
-              "pod": 3984,
+              "other": 48952,
+              "pod": 3985,
               "self": 33841
             },
-            "total": 111373,
+            "total": 111376,
             "year": 2012
           },
           {
             "counts": {
               "lc": 18720,
               "none": 66,
-              "other": 45708,
+              "other": 45709,
               "pod": 2668,
               "self": 40883
             },
-            "total": 108045,
+            "total": 108046,
             "year": 2013
           },
           {
             "counts": {
-              "lc": 13112,
+              "lc": 13114,
               "none": 51,
               "other": 33730,
               "pod": 2067,
               "self": 14537
             },
-            "total": 63497,
+            "total": 63499,
             "year": 2014
           },
           {
@@ -13749,24 +13749,24 @@
           },
           {
             "counts": {
-              "lc": 10058,
+              "lc": 10059,
               "none": 44,
-              "other": 25387,
+              "other": 25388,
               "pod": 1945,
               "self": 14953
             },
-            "total": 52387,
+            "total": 52389,
             "year": 2016
           },
           {
             "counts": {
-              "lc": 11014,
+              "lc": 11015,
               "none": 35,
               "other": 31995,
               "pod": 2929,
               "self": 15866
             },
-            "total": 61839,
+            "total": 61840,
             "year": 2017
           },
           {
@@ -13784,44 +13784,44 @@
             "counts": {
               "lc": 6918,
               "none": 34,
-              "other": 38919,
+              "other": 38920,
               "pod": 3766,
               "self": 24956
             },
-            "total": 74593,
+            "total": 74594,
             "year": 2019
           },
           {
             "counts": {
-              "lc": 7014,
+              "lc": 7015,
               "none": 17,
               "other": 24736,
               "pod": 2913,
               "self": 15436
             },
-            "total": 50116,
+            "total": 50117,
             "year": 2020
           },
           {
             "counts": {
               "lc": 7567,
               "none": 27,
-              "other": 32604,
+              "other": 32606,
               "pod": 5518,
-              "self": 10453
+              "self": 10454
             },
-            "total": 56169,
+            "total": 56172,
             "year": 2021
           },
           {
             "counts": {
-              "lc": 4832,
+              "lc": 4835,
               "none": 22,
               "other": 22797,
               "pod": 3160,
               "self": 13564
             },
-            "total": 44375,
+            "total": 44378,
             "year": 2022
           },
           {
@@ -13852,20 +13852,20 @@
               "none": 1011,
               "other": 8050,
               "pod": 885,
-              "self": 10416
+              "self": 10417
             },
-            "total": 21877,
+            "total": 21878,
             "year": 2025
           },
           {
             "counts": {
               "lc": 0,
               "none": 0,
-              "other": 30,
+              "other": 31,
               "pod": 0,
-              "self": 4061
+              "self": 4075
             },
-            "total": 4091,
+            "total": 4106,
             "year": 2026
           }
         ]
