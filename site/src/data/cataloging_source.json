@@ -1550,13 +1550,13 @@
       {
         "code": "NNC-M-",
         "org": "columbia",
-        "parent": "NNC",
+        "parent": "NNC-M",
         "records": null
       },
       {
         "code": "NNC-M-NNC-M",
         "org": "columbia",
-        "parent": "NNC",
+        "parent": "NNC-M",
         "records": null
       },
       {
@@ -1622,7 +1622,7 @@
       {
         "code": "NNC-T-CNNC-T",
         "org": "columbia",
-        "parent": "NNC-T",
+        "parent": "NNC",
         "records": null
       },
       {
@@ -1796,13 +1796,13 @@
       {
         "code": "MH-FA-",
         "org": "harvard",
-        "parent": "MH",
+        "parent": "MH-FA",
         "records": null
       },
       {
         "code": "MH-FA-CMH-FA",
         "org": "harvard",
-        "parent": "MH",
+        "parent": "MH-FA",
         "records": null
       },
       {
@@ -1892,13 +1892,13 @@
       {
         "code": "MH-H-",
         "org": "harvard",
-        "parent": "MH",
+        "parent": "MH-H",
         "records": null
       },
       {
         "code": "MH-H-CMH-H-EGIHC",
         "org": "harvard",
-        "parent": "MH",
+        "parent": "MH-H",
         "records": null
       },
       {
@@ -2006,13 +2006,13 @@
       {
         "code": "MH-L-",
         "org": "harvard",
-        "parent": "MH",
+        "parent": "MH-L",
         "records": null
       },
       {
         "code": "MH-L-CMH-L",
         "org": "harvard",
-        "parent": "MH",
+        "parent": "MH-L",
         "records": null
       },
       {
@@ -2084,13 +2084,13 @@
       {
         "code": "MH-MU-",
         "org": "harvard",
-        "parent": "MH",
+        "parent": "MH-MU",
         "records": null
       },
       {
         "code": "MH-MU-MH-MU",
         "org": "harvard",
-        "parent": "MH",
+        "parent": "MH-MU",
         "records": null
       },
       {
@@ -2690,19 +2690,19 @@
       {
         "code": "CST-LAW-",
         "org": "stanford",
-        "parent": "CST-LAW",
+        "parent": "CST",
         "records": null
       },
       {
         "code": "CST-LAW-CCST-LAW",
         "org": "stanford",
-        "parent": "CST-LAW",
+        "parent": "CST",
         "records": null
       },
       {
         "code": "CST-LAW-CST-LAW",
         "org": "stanford",
-        "parent": "CST-LAW",
+        "parent": "CST",
         "records": null
       },
       {
@@ -2972,13 +2972,13 @@
       {
         "code": "CTY-D-",
         "org": "yale",
-        "parent": "CTY-D",
+        "parent": "CTY",
         "records": null
       },
       {
         "code": "CTY-D-CCTY-D",
         "org": "yale",
-        "parent": "CTY-D",
+        "parent": "CTY",
         "records": null
       },
       {
@@ -3134,25 +3134,25 @@
       {
         "code": "CTY-MUS-",
         "org": "yale",
-        "parent": "CTY-MUS",
+        "parent": "CTY",
         "records": null
       },
       {
         "code": "CTY-MUS-CCTY-MUS",
         "org": "yale",
-        "parent": "CTY-MUS",
+        "parent": "CTY",
         "records": null
       },
       {
         "code": "CTY-MUS-CTY-MUS",
         "org": "yale",
-        "parent": "CTY-MUS",
+        "parent": "CTY",
         "records": 19
       },
       {
         "code": "CTY-MUS-MUS",
         "org": "yale",
-        "parent": "CTY-MUS",
+        "parent": "CTY",
         "records": null
       },
       {
@@ -4852,7 +4852,7 @@
       }
     }
   },
-  "generated_at": "2026-08-22T12:01:07.918619+00:00",
+  "generated_at": "2026-08-22T14:30:11.326283+00:00",
   "per_org": [
     {
       "counts": {
