@@ -78,7 +78,7 @@
           "finding_aid": null,
           "other": 1798,
           "repository": null,
-          "resolver": 46860,
+          "resolver": 46861,
           "vendor": null
         },
         "jhu": {
@@ -124,7 +124,7 @@
         "yale": {
           "aggregator": null,
           "finding_aid": null,
-          "other": 95758,
+          "other": 95761,
           "repository": null,
           "resolver": 5432,
           "vendor": 51
@@ -138,13 +138,13 @@
         "cornell": 51973,
         "dartmouth": 19490,
         "duke": 49478,
-        "harvard": 241779,
+        "harvard": 241782,
         "jhu": 1321,
         "mit": 63353,
         "penn": 156613,
         "princeton": 45544,
         "stanford": 56150,
-        "yale": 95758
+        "yale": 95761
       }
     },
     "material_type": {
@@ -257,7 +257,7 @@
           "i": 136,
           "j": 49,
           "k": 6939,
-          "p": 82622,
+          "p": 82625,
           "t": 134200
         },
         "jhu": {
@@ -321,7 +321,7 @@
           "t": 25418
         },
         "yale": {
-          "a": 7698,
+          "a": 7700,
           "c": 49,
           "d": 1635,
           "e": 45,
@@ -330,7 +330,7 @@
           "j": 36,
           "k": 2894,
           "p": 17736,
-          "t": 64067
+          "t": 64068
         }
       },
       "sql": "WITH arch AS (\n  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n  FROM records\n  WHERE field_tag = 'LDR' AND length(value) >= 8\n    AND (substr(value, 7, 1) IN ('t','d','f','p')\n         OR substr(value, 8, 1) IN ('c','d'))\n)\nSELECT org, rtype AS category, count(*) AS n FROM arch GROUP BY org, rtype",
@@ -341,17 +341,17 @@
         "cornell": 51973,
         "dartmouth": 19490,
         "duke": 49478,
-        "harvard": 241779,
+        "harvard": 241782,
         "jhu": 1321,
         "mit": 63353,
         "penn": 156613,
         "princeton": 45544,
         "stanford": 56150,
-        "yale": 95758
+        "yale": 95761
       }
     }
   },
-  "generated_at": "2026-08-24T14:56:51.536195+00:00",
+  "generated_at": "2026-08-25T18:03:15.727245+00:00",
   "genre": [
     {
       "org": "brown",
@@ -679,7 +679,7 @@
     },
     {
       "org": "harvard",
-      "total": 241779,
+      "total": 241782,
       "values": [
         {
           "count": 21222,
@@ -698,7 +698,7 @@
           "term": "the\u0300ses et e\u0301crits acade\u0301miques"
         },
         {
-          "count": 2874,
+          "count": 2873,
           "term": "photographs"
         },
         {
@@ -726,7 +726,7 @@
           "term": "harvard students' essays"
         },
         {
-          "count": 1613,
+          "count": 1617,
           "term": "history"
         }
       ]
@@ -991,14 +991,14 @@
     },
     {
       "org": "yale",
-      "total": 95758,
+      "total": 95761,
       "values": [
         {
           "count": 20534,
           "term": "academic theses"
         },
         {
-          "count": 13220,
+          "count": 13221,
           "term": "manuscripts"
         },
         {
@@ -1076,9 +1076,9 @@
       "total": 49478
     },
     {
-      "count": 47997,
+      "count": 47998,
       "org": "harvard",
-      "total": 241779
+      "total": 241782
     },
     {
       "count": 33,
@@ -1106,9 +1106,9 @@
       "total": 56150
     },
     {
-      "count": 95758,
+      "count": 95761,
       "org": "yale",
-      "total": 95758
+      "total": 95761
     }
   ],
   "sql": [
@@ -3960,7 +3960,7 @@
           "decade": 1890
         },
         {
-          "count": 13936,
+          "count": 13935,
           "decade": 1900
         },
         {
@@ -3980,7 +3980,7 @@
           "decade": 1940
         },
         {
-          "count": 9304,
+          "count": 9305,
           "decade": 1950
         },
         {
@@ -3988,15 +3988,15 @@
           "decade": 1960
         },
         {
-          "count": 7053,
+          "count": 7056,
           "decade": 1970
         },
         {
-          "count": 6984,
+          "count": 6985,
           "decade": 1980
         },
         {
-          "count": 11471,
+          "count": 11472,
           "decade": 1990
         },
         {
@@ -6034,11 +6034,11 @@
           "decade": 1960
         },
         {
-          "count": 6337,
+          "count": 6338,
           "decade": 1970
         },
         {
-          "count": 5457,
+          "count": 5458,
           "decade": 1980
         },
         {
@@ -6046,7 +6046,7 @@
           "decade": 1990
         },
         {
-          "count": 10634,
+          "count": 10635,
           "decade": 2000
         },
         {
