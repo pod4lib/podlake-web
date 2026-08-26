@@ -58,16 +58,16 @@
           "succ": 19756
         },
         "penn": {
-          "pred": 45782,
-          "succ": 43464
+          "pred": 45791,
+          "succ": 43479
         },
         "princeton": {
-          "pred": 47423,
-          "succ": 42685
+          "pred": 47425,
+          "succ": 42686
         },
         "stanford": {
-          "pred": 75916,
-          "succ": 69894
+          "pred": 75919,
+          "succ": 69896
         },
         "yale": {
           "pred": 59525,
@@ -78,17 +78,17 @@
       "totals": {
         "brown": 60367,
         "chicago": 267419,
-        "columbia": 245732,
+        "columbia": 245739,
         "cornell": 237531,
         "dartmouth": 34753,
         "duke": 491333,
-        "harvard": 480084,
+        "harvard": 480085,
         "jhu": 35179,
-        "mit": 52763,
-        "penn": 176548,
-        "princeton": 161263,
-        "stanford": 342836,
-        "yale": 237359
+        "mit": 52764,
+        "penn": 176598,
+        "princeton": 161273,
+        "stanford": 342848,
+        "yale": 237361
       }
     },
     "succession_type": {
@@ -219,18 +219,18 @@
           "8": 25
         },
         "penn": {
-          "0": 35179,
+          "0": 35192,
           "1": 1014,
-          "2": 928,
+          "2": 929,
           "3": 111,
           "4": 1878,
           "5": 150,
-          "6": 727,
+          "6": 728,
           "7": 3602,
           "8": 67
         },
         "princeton": {
-          "0": 36134,
+          "0": 36135,
           "1": 931,
           "2": 786,
           "3": 77,
@@ -241,7 +241,7 @@
           "8": 72
         },
         "stanford": {
-          "0": 58100,
+          "0": 58102,
           "1": 1483,
           "2": 2758,
           "3": 213,
@@ -267,21 +267,21 @@
       "totals": {
         "brown": 60367,
         "chicago": 267419,
-        "columbia": 245732,
+        "columbia": 245739,
         "cornell": 237531,
         "dartmouth": 34753,
         "duke": 491333,
-        "harvard": 480084,
+        "harvard": 480085,
         "jhu": 35179,
-        "mit": 52763,
-        "penn": 176548,
-        "princeton": 161263,
-        "stanford": 342836,
-        "yale": 237359
+        "mit": 52764,
+        "penn": 176598,
+        "princeton": 161273,
+        "stanford": 342848,
+        "yale": 237361
       }
     }
   },
-  "generated_at": "2026-08-25T18:03:15.727245+00:00",
+  "generated_at": "2026-08-26T13:06:31.324864+00:00",
   "sql": [
     {
       "label": "Serials linked to a predecessor / successor",
