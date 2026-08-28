@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import tempfile
 from pathlib import Path
 
 import duckdb
@@ -122,6 +123,58 @@ def test_connect_read_only_rejects_writes(tmp_path: Path):
     try:
         with pytest.raises(duckdb.Error):
             con.execute("INSERT INTO record_meta VALUES ('x', 'x:1', 'k')")
+    finally:
+        con.close()
+
+
+# --- spill directory ----------------------------------------------------------
+#
+# Regression tests for a failure that only ever showed up under cron: DuckDB's
+# default temp_directory for an in-memory database is the relative path '.tmp', so
+# a query too large for memory spilled fine when run by hand from the repo and died
+# with "failed to pin block" when cron started the process somewhere unwritable.
+# What matters is that the setting never depends on the process's CWD. Mirrors
+# podlake's own test_connect_caps_memory_and_sets_spill_dir.
+
+
+def _temp_dir_of(con: duckdb.DuckDBPyConnection) -> str:
+    row = con.execute("SELECT current_setting('temp_directory')").fetchone()
+    assert row is not None
+    return row[0]
+
+
+def test_connect_temp_directory_does_not_follow_the_cwd(tmp_path: Path, monkeypatch):
+    catalog = tmp_path / "podlake.ducklake"
+    _build_min_lake(catalog, tmp_path / "lake-data")
+
+    # Run from somewhere that is not the repo, as cron does. The bug this guards
+    # against is DuckDB's relative '.tmp' default, so what matters is that the
+    # resolved path is absolute and is not inside the CWD.
+    monkeypatch.chdir(tmp_path)
+    con = source.connect(str(catalog))
+    try:
+        resolved = Path(_temp_dir_of(con))
+        assert resolved.is_absolute()
+        assert not resolved.is_relative_to(tmp_path)
+    finally:
+        con.close()
+
+
+def test_connect_temp_directory_honors_tmpdir(tmp_path: Path, monkeypatch):
+    catalog = tmp_path / "podlake.ducklake"
+    _build_min_lake(catalog, tmp_path / "lake-data")
+    spill = tmp_path / "spill"
+    spill.mkdir()
+
+    monkeypatch.setenv("TMPDIR", str(spill))
+    # gettempdir() caches its answer in tempfile.tempdir on first use, so a test
+    # that only set the variable would assert against whatever earlier code
+    # happened to resolve.
+    monkeypatch.setattr(tempfile, "tempdir", None)
+
+    con = source.connect(str(catalog))
+    try:
+        assert _temp_dir_of(con) == str(spill)
     finally:
         con.close()
 

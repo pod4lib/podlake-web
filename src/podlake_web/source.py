@@ -28,6 +28,7 @@ the one baked into the catalog.
 from __future__ import annotations
 
 import logging
+import tempfile
 from pathlib import Path
 
 import duckdb
@@ -85,6 +86,7 @@ def connect(
         catalog_uri = str(Path(catalog).resolve())
 
     con = duckdb.connect()
+    _configure_temp_dir(con)
     _load_extensions(con, catalog_uri, resolved_data_path)
     _configure_s3(con, catalog_uri, resolved_data_path)
 
@@ -115,6 +117,34 @@ def _attach_sql(catalog_uri: str, data_path: str, read_only: bool) -> str:
         options.append("READ_ONLY")
     target = _sql_literal(f"ducklake:{catalog_uri}")
     return f"ATTACH '{target}' AS {LAKE_ALIAS} ({', '.join(options)})"
+
+
+def _configure_temp_dir(con: duckdb.DuckDBPyConnection) -> None:
+    """
+    Point DuckDB's spill directory at $TMPDIR, matching how ``podlake.lake.connect``
+    does it, so the two halves of this pipeline behave the same way on one host.
+
+    Not left to DuckDB. Its own default for an in-memory database is the *relative*
+    path '.tmp', resolved against the process's working directory: the repo when a
+    person runs a task by hand, and whatever directory cron happened to start in
+    otherwise. Where that is not writable the buffer manager has nothing it can
+    evict, so a query too large for memory dies with "failed to pin block" instead
+    of spilling — and the same extract then succeeds from a shell and fails from
+    cron, which is a miserable thing to debug.
+
+    ``gettempdir()`` rather than ``os.environ["TMPDIR"]`` because it *probes* its
+    candidates and returns one that is actually writable, falling back through
+    TMPDIR, TEMP, TMP, /tmp and /var/tmp. Redirect it by setting TMPDIR, which is
+    worth doing on a host whose /tmp is small or a tmpfs: this extract has been
+    observed spilling past 20 GiB, and DuckDB bounds itself by
+    ``max_temp_directory_size`` — 90% of the *spill volume's* free space — not by
+    the memory limit.
+    """
+    spill = tempfile.gettempdir()
+    con.execute(f"SET temp_directory = '{_sql_literal(spill)}'")
+    # Logged, not silent: when a refresh dies for want of spill space, the first
+    # thing worth knowing is which volume it was spilling onto.
+    logger.info("spilling to %s if a query outgrows memory", spill)
 
 
 def _load_extensions(
