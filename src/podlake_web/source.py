@@ -28,6 +28,8 @@ the one baked into the catalog.
 from __future__ import annotations
 
 import logging
+import os
+import shutil
 import tempfile
 from pathlib import Path
 
@@ -36,6 +38,11 @@ import duckdb
 # The alias the DuckLake catalog is attached as; podlake_web.queries reference
 # `records` / `record_meta` unqualified, so this must be the current database.
 LAKE_ALIAS = "podlake"
+
+# PODLAKE_MEMORY_LIMIT is the same variable podlake's own config reads, so one
+# setting bounds both halves of the pipeline.
+MEMORY_LIMIT_ENV = "PODLAKE_MEMORY_LIMIT"
+THREADS_ENV = "PODLAKE_THREADS"
 
 logger = logging.getLogger(__name__)
 
@@ -86,6 +93,7 @@ def connect(
         catalog_uri = str(Path(catalog).resolve())
 
     con = duckdb.connect()
+    _configure_memory(con)
     _configure_temp_dir(con)
     _load_extensions(con, catalog_uri, resolved_data_path)
     _configure_s3(con, catalog_uri, resolved_data_path)
@@ -142,9 +150,74 @@ def _configure_temp_dir(con: duckdb.DuckDBPyConnection) -> None:
     """
     spill = tempfile.gettempdir()
     con.execute(f"SET temp_directory = '{_sql_literal(spill)}'")
-    # Logged, not silent: when a refresh dies for want of spill space, the first
-    # thing worth knowing is which volume it was spilling onto.
-    logger.info("spilling to %s if a query outgrows memory", spill)
+    _log_limits(con)
+
+
+def _configure_memory(con: duckdb.DuckDBPyConnection) -> None:
+    """
+    Cap DuckDB's buffer pool and thread count when the environment asks.
+
+    Left unset, DuckDB sizes both from the hardware: 80% of physical RAM, one
+    thread per core. Fewer threads is what helps a "failed to pin block" error,
+    since how much of the pool is pinned at once scales with concurrency.
+    """
+    limit = os.environ.get(MEMORY_LIMIT_ENV)
+    if limit:
+        con.execute(f"SET memory_limit = '{_sql_literal(limit)}'")
+    threads = os.environ.get(THREADS_ENV)
+    if threads:
+        # int() so a typo fails here rather than reaching SET as SQL.
+        con.execute(f"SET threads = {int(threads)}")
+
+
+def _log_limits(con: duckdb.DuckDBPyConnection) -> None:
+    """
+    Log the memory and spill settings DuckDB reports, having set them.
+
+    Read back with ``current_setting()`` rather than echoed from what we passed
+    to SET: an echo reads like a fact whether or not it took effect. Free space
+    is included because ``max_temp_directory_size`` defaults to a share of it.
+    """
+    names = ("memory_limit", "threads", "temp_directory", "max_temp_directory_size")
+    settings = {}
+    for name in names:
+        row = con.execute(f"SELECT current_setting('{name}')").fetchone()
+        settings[name] = row[0] if row else "?"
+
+    try:
+        free = shutil.disk_usage(settings["temp_directory"]).free
+        room = f", {free / 2**30:.1f} GiB free"
+    except OSError as err:
+        # A diagnostic must not fail the refresh.
+        room = f", free space unknown ({err.strerror})"
+
+    logger.info(
+        "duckdb: memory_limit=%s, threads=%s; spilling to %s (max %s%s)",
+        settings["memory_limit"],
+        settings["threads"],
+        settings["temp_directory"],
+        settings["max_temp_directory_size"],
+        room,
+    )
+
+
+def log_memory_usage(con: duckdb.DuckDBPyConnection, label: str) -> None:
+    """Log the buffer pool's current occupancy, by tag, plus what has spilled."""
+    rows = con.execute(
+        "SELECT tag, memory_usage_bytes, temporary_storage_bytes "
+        "FROM duckdb_memory() WHERE memory_usage_bytes > 0 "
+        "OR temporary_storage_bytes > 0 ORDER BY memory_usage_bytes DESC"
+    ).fetchall()
+    total = sum(r[1] for r in rows)
+    spilled = sum(r[2] for r in rows)
+    detail = ", ".join(f"{tag}={mem / 2**30:.1f}" for tag, mem, _ in rows[:5])
+    logger.info(
+        "memory after %s: %.1f GiB held, %.1f GiB spilled%s",
+        label,
+        total / 2**30,
+        spilled / 2**30,
+        f" ({detail})" if detail else "",
+    )
 
 
 def _load_extensions(

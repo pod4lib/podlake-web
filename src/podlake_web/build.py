@@ -218,6 +218,7 @@ def extract(
             path = out / filename
             path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
             logger.info("wrote %s", path)
+            source.log_memory_usage(con, filename)
             manifest["artifacts"].append({"file": filename, "description": description})
     finally:
         con.close()

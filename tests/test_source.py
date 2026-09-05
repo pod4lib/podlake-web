@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 import tempfile
 from pathlib import Path
+from typing import Any
 
 import duckdb
 import pytest
@@ -137,10 +138,16 @@ def test_connect_read_only_rejects_writes(tmp_path: Path):
 # podlake's own test_connect_caps_memory_and_sets_spill_dir.
 
 
-def _temp_dir_of(con: duckdb.DuckDBPyConnection) -> str:
-    row = con.execute("SELECT current_setting('temp_directory')").fetchone()
+def _setting(con: duckdb.DuckDBPyConnection, name: str) -> Any:
+    """Untyped because DuckDB types its settings: temp_directory is a string,
+    threads an int."""
+    row = con.execute(f"SELECT current_setting('{name}')").fetchone()
     assert row is not None
     return row[0]
+
+
+def _temp_dir_of(con: duckdb.DuckDBPyConnection) -> str:
+    return str(_setting(con, "temp_directory"))
 
 
 def test_connect_temp_directory_does_not_follow_the_cwd(tmp_path: Path, monkeypatch):
@@ -177,6 +184,50 @@ def test_connect_temp_directory_honors_tmpdir(tmp_path: Path, monkeypatch):
         assert _temp_dir_of(con) == str(spill)
     finally:
         con.close()
+
+
+def test_connect_honors_memory_and_thread_caps(tmp_path: Path, monkeypatch):
+    """Unbounded, DuckDB sizes itself from the hardware."""
+    catalog = tmp_path / "podlake.ducklake"
+    _build_min_lake(catalog, tmp_path / "lake-data")
+
+    monkeypatch.setenv(source.MEMORY_LIMIT_ENV, "512MB")
+    monkeypatch.setenv(source.THREADS_ENV, "3")
+
+    con = source.connect(str(catalog))
+    try:
+        # 512MB in, 488.2 MiB out: decimal suffix in, binary reported.
+        assert _setting(con, "memory_limit") == "488.2 MiB"
+        assert _setting(con, "threads") == 3
+    finally:
+        con.close()
+
+
+def test_connect_logs_what_duckdb_reports_not_what_we_asked_for(
+    tmp_path: Path, monkeypatch, caplog
+):
+    """The diagnostic line must read DuckDB's state, not echo our arguments —
+    in a log the two are indistinguishable."""
+    catalog = tmp_path / "podlake.ducklake"
+    _build_min_lake(catalog, tmp_path / "lake-data")
+    spill = tmp_path / "spill"
+    spill.mkdir()
+
+    monkeypatch.setenv("TMPDIR", str(spill))
+    monkeypatch.setattr(tempfile, "tempdir", None)
+    # "600MB" in, "572.2 MiB" out: only a read-back produces DuckDB's spelling.
+    monkeypatch.setenv(source.MEMORY_LIMIT_ENV, "600MB")
+
+    with caplog.at_level("INFO", logger="podlake_web.source"):
+        con = source.connect(str(catalog))
+        con.close()
+
+    line = next(
+        r.getMessage() for r in caplog.records if r.getMessage().startswith("duckdb:")
+    )
+    assert "memory_limit=572.2 MiB" in line
+    assert f"spilling to {spill}" in line
+    assert "GiB free" in line
 
 
 # --- CLI guard for the Postgres case -----------------------------------------
