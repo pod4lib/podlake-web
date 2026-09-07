@@ -1,29 +1,29 @@
 {
-  "generated_at": "2026-09-05T14:09:40.824218+00:00",
+  "generated_at": "2026-09-07T14:02:54.730507+00:00",
   "per_org": [
     {
-      "last_sync": "2026-09-05T03:57:14",
+      "last_sync": "2026-09-07T03:42:46",
       "org": "brown",
-      "records": 2589183,
-      "titles": 2555921
+      "records": 2589215,
+      "titles": 2555953
     },
     {
-      "last_sync": "2026-09-05T03:51:43",
+      "last_sync": "2026-09-07T03:42:57",
       "org": "chicago",
-      "records": 9655408,
-      "titles": 9288756
+      "records": 9656217,
+      "titles": 9289514
     },
     {
-      "last_sync": "2026-09-05T03:52:26",
+      "last_sync": "2026-09-07T03:43:41",
       "org": "columbia",
-      "records": 8138793,
-      "titles": 7880817
+      "records": 8138942,
+      "titles": 7881098
     },
     {
-      "last_sync": "2026-09-04T03:43:15",
+      "last_sync": "2026-09-07T03:42:47",
       "org": "cornell",
-      "records": 6201887,
-      "titles": 6122417
+      "records": 6202041,
+      "titles": 6122570
     },
     {
       "last_sync": "2025-11-29T01:10:54",
@@ -44,16 +44,16 @@
       "titles": 13877256
     },
     {
-      "last_sync": "2026-09-05T03:51:49",
+      "last_sync": "2026-09-07T03:43:33",
       "org": "jhu",
-      "records": 1715779,
-      "titles": 1710758
+      "records": 1715784,
+      "titles": 1710763
     },
     {
-      "last_sync": "2026-09-05T03:51:47",
+      "last_sync": "2026-09-07T03:43:29",
       "org": "mit",
-      "records": 1447123,
-      "titles": 1443617
+      "records": 1447000,
+      "titles": 1443494
     },
     {
       "last_sync": "2026-09-02T03:43:12",
@@ -62,22 +62,22 @@
       "titles": 7309063
     },
     {
-      "last_sync": "2026-09-05T03:49:55",
+      "last_sync": "2026-09-07T03:42:52",
       "org": "princeton",
-      "records": 6294576,
-      "titles": 6261354
+      "records": 6294893,
+      "titles": 6261672
     },
     {
-      "last_sync": "2026-09-05T03:47:36",
+      "last_sync": "2026-09-07T03:42:45",
       "org": "stanford",
-      "records": 8968264,
-      "titles": 8618191
+      "records": 8968616,
+      "titles": 8618525
     },
     {
-      "last_sync": "2026-09-05T03:54:14",
+      "last_sync": "2026-09-07T03:44:06",
       "org": "yale",
-      "records": 7054313,
-      "titles": 6953630
+      "records": 7054317,
+      "titles": 6953635
     }
   ],
   "sql": [
@@ -92,7 +92,7 @@
   ],
   "totals": {
     "institutions": 13,
-    "records": 84596103,
-    "titles": 44003554
+    "records": 84597802,
+    "titles": 44004593
   }
 }
