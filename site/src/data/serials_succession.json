@@ -26,7 +26,7 @@
           "succ": 16427
         },
         "chicago": {
-          "pred": 66662,
+          "pred": 66661,
           "succ": 59779
         },
         "columbia": {
@@ -82,12 +82,12 @@
         "cornell": 237537,
         "dartmouth": 34753,
         "duke": 491333,
-        "harvard": 480245,
+        "harvard": 480246,
         "jhu": 35171,
         "mit": 52761,
         "penn": 176640,
         "princeton": 161298,
-        "stanford": 343026,
+        "stanford": 343027,
         "yale": 237362
       }
     },
@@ -131,9 +131,9 @@
           "8": 58
         },
         "chicago": {
-          "0": 46944,
+          "0": 46943,
           "1": 1347,
-          "2": 2742,
+          "2": 2743,
           "3": 192,
           "4": 2447,
           "5": 199,
@@ -271,17 +271,17 @@
         "cornell": 237537,
         "dartmouth": 34753,
         "duke": 491333,
-        "harvard": 480245,
+        "harvard": 480246,
         "jhu": 35171,
         "mit": 52761,
         "penn": 176640,
         "princeton": 161298,
-        "stanford": 343026,
+        "stanford": 343027,
         "yale": 237362
       }
     }
   },
-  "generated_at": "2026-09-07T14:02:54.730507+00:00",
+  "generated_at": "2026-09-08T14:12:36.170708+00:00",
   "sql": [
     {
       "label": "Serials linked to a predecessor / successor",
