@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-09-14T14:05:48.777632+00:00",
+  "generated_at": "2026-09-16T14:09:22.979083+00:00",
   "hosts": [
     {
       "org": "brown",
-      "total": 155305,
+      "total": 155311,
       "values": [
         {
-          "count": 86331,
+          "count": 86332,
           "host": "login.revproxy.brown.edu"
         },
         {
@@ -14,7 +14,7 @@
           "host": "repository.library.brown.edu"
         },
         {
-          "count": 11566,
+          "count": 11567,
           "host": "archive.org"
         },
         {
@@ -22,7 +22,7 @@
           "host": "www.archive.org"
         },
         {
-          "count": 2544,
+          "count": 2547,
           "host": "catdir.loc.gov"
         },
         {
@@ -135,14 +135,14 @@
     },
     {
       "org": "columbia",
-      "total": 1093611,
+      "total": 1093629,
       "values": [
         {
           "count": 590075,
           "host": "www.columbia.edu"
         },
         {
-          "count": 228938,
+          "count": 228936,
           "host": "prx.law.columbia.edu"
         },
         {
@@ -166,7 +166,7 @@
           "host": "doi.org"
         },
         {
-          "count": 11626,
+          "count": 11628,
           "host": "ilibri.casalini.it"
         },
         {
@@ -194,14 +194,14 @@
           "host": "bvbr.bib-bvb.de:8991"
         },
         {
-          "count": 4392,
+          "count": 4395,
           "host": "resolver.library.columbia.edu"
         }
       ]
     },
     {
       "org": "cornell",
-      "total": 199254,
+      "total": 199260,
       "values": [
         {
           "count": 90465,
@@ -212,7 +212,7 @@
           "host": "catdir.loc.gov"
         },
         {
-          "count": 9589,
+          "count": 9590,
           "host": "bvbr.bib-bvb.de:8991"
         },
         {
@@ -224,11 +224,11 @@
           "host": "doi.org"
         },
         {
-          "count": 5386,
+          "count": 5387,
           "host": "resolver.library.cornell.edu"
         },
         {
-          "count": 3397,
+          "count": 3399,
           "host": "www.bk1.jp"
         },
         {
@@ -399,22 +399,22 @@
     },
     {
       "org": "harvard",
-      "total": 1054747,
+      "total": 1054555,
       "values": [
         {
-          "count": 515756,
+          "count": 515755,
           "host": "hdl.handle.net"
         },
         {
-          "count": 424259,
+          "count": 424163,
           "host": "nrs.harvard.edu"
         },
         {
-          "count": 77285,
+          "count": 77286,
           "host": "catalog.hathitrust.org"
         },
         {
-          "count": 9092,
+          "count": 8995,
           "host": "books.google.com"
         },
         {
@@ -426,7 +426,7 @@
           "host": "www.biodiversitylibrary.org"
         },
         {
-          "count": 3389,
+          "count": 3390,
           "host": "id.lib.harvard.edu"
         },
         {
@@ -465,14 +465,14 @@
     },
     {
       "org": "jhu",
-      "total": 134439,
+      "total": 134440,
       "values": [
         {
           "count": 50147,
           "host": "www.loc.gov"
         },
         {
-          "count": 39534,
+          "count": 39533,
           "host": "catdir.loc.gov"
         },
         {
@@ -531,7 +531,7 @@
     },
     {
       "org": "mit",
-      "total": 331748,
+      "total": 331752,
       "values": [
         {
           "count": 86863,
@@ -542,7 +542,7 @@
           "host": "hdl.handle.net"
         },
         {
-          "count": 59305,
+          "count": 59306,
           "host": "www.loc.gov"
         },
         {
@@ -562,7 +562,7 @@
           "host": "www.jstor.org"
         },
         {
-          "count": 4090,
+          "count": 4092,
           "host": "catdir.loc.gov"
         },
         {
@@ -597,10 +597,10 @@
     },
     {
       "org": "penn",
-      "total": 1101751,
+      "total": 1101596,
       "values": [
         {
-          "count": 885586,
+          "count": 885359,
           "host": "hdl.library.upenn.edu"
         },
         {
@@ -608,27 +608,27 @@
           "host": "www.loc.gov"
         },
         {
-          "count": 36474,
+          "count": 36476,
           "host": "findingaids.library.upenn.edu"
         },
         {
-          "count": 28047,
+          "count": 28056,
           "host": "catdir.loc.gov"
         },
         {
-          "count": 18163,
+          "count": 18186,
           "host": "digitalcollections.library.upenn.edu"
         },
         {
-          "count": 5468,
+          "count": 5469,
           "host": "bvbr.bib-bvb.de:8991"
         },
         {
-          "count": 2015,
+          "count": 2014,
           "host": "www.netread.com"
         },
         {
-          "count": 2010,
+          "count": 2012,
           "host": "d-nb.info"
         },
         {
@@ -652,7 +652,7 @@
           "host": "hdl.loc.gov"
         },
         {
-          "count": 1048,
+          "count": 1067,
           "host": "core.cambeiro.com.ar"
         },
         {
@@ -663,7 +663,7 @@
     },
     {
       "org": "princeton",
-      "total": 95138,
+      "total": 95154,
       "values": [
         {
           "count": 34289,
@@ -674,7 +674,7 @@
           "host": "ilibri.casalini.it"
         },
         {
-          "count": 11647,
+          "count": 11639,
           "host": "www.loc.gov"
         },
         {
@@ -682,7 +682,7 @@
           "host": "findingaids.princeton.edu"
         },
         {
-          "count": 2670,
+          "count": 2675,
           "host": "catdir.loc.gov"
         },
         {
@@ -690,11 +690,11 @@
           "host": "libimages1.princeton.edu"
         },
         {
-          "count": 1724,
+          "count": 1723,
           "host": "www.ilibri.casalini.it"
         },
         {
-          "count": 1689,
+          "count": 1688,
           "host": "core.cambeiro.com.ar"
         },
         {
@@ -729,14 +729,14 @@
     },
     {
       "org": "stanford",
-      "total": 3036676,
+      "total": 3036715,
       "values": [
         {
           "count": 469341,
           "host": "catalog.hathitrust.org"
         },
         {
-          "count": 358078,
+          "count": 358080,
           "host": "search.ebscohost.com"
         },
         {
@@ -772,7 +772,7 @@
           "host": "www.loc.gov"
         },
         {
-          "count": 70309,
+          "count": 70311,
           "host": "dx.doi.org"
         },
         {
@@ -780,7 +780,7 @@
           "host": "go.oreilly.com"
         },
         {
-          "count": 66055,
+          "count": 66056,
           "host": "doi.org"
         },
         {
@@ -795,14 +795,14 @@
     },
     {
       "org": "yale",
-      "total": 7274676,
+      "total": 7274664,
       "values": [
         {
-          "count": 7054763,
+          "count": 7054736,
           "host": "search.library.yale.edu"
         },
         {
-          "count": 94598,
+          "count": 94609,
           "host": "www.loc.gov"
         },
         {
