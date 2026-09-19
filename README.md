@@ -1,37 +1,30 @@
 # podlake-web
 
-A public, client-side dashboard that showcases the consortial collection
+*podlake-web* is a public, client-side dashboard that showcases the consortial collection
 analytics possible with [podlake](https://github.com/pod4lib/podlake) for the
 [POD](https://pod.stanford.edu/) community.
 
-Live at <https://pod4lib.github.io/podlake-web/>.
+You can see it live at <https://pod4lib.github.io/podlake-web/>.
 
 ## Design
 
-The podlake DuckLake holds hundreds of millions of record-level rows and is only
+The podlake DuckLake holds billions of MARC field level rows and is only
 accessible to POD members. So this project splits in two along that boundary:
 
-1. **`src/podlake_web/`** — a Python step that connects *read-only* to the private
+1. **`src/podlake_web/`**: a Python program that connects *read-only* to the private
    lake and compiles a handful of small, **aggregate-only** JSON artifacts (counts,
-   distributions, percentages — never record identifiers, titles, or raw field
-   values).
-2. **`site/`** — an [Observable Framework](https://observablehq.com/framework/)
-   app that reads *only* those artifacts and renders them. It is fully static and
-   serverless: the built files deploy to GitHub Pages, with no database to reach.
+   distributions, percentages.
+2. **`site/`**: is an [Observable Framework](https://observablehq.com/framework/)
+   app that reads those static, aggregate artifacts and renders them.
 
-The aggregate artifacts in `site/src/data/*.json` are **committed** — they are the
+The aggregate artifacts in `site/src/data/*.json` are committed to git. They are the
 published snapshot the site is built from. That is what lets the public site build
-without any access to the lake, and it is why refreshing the figures is a commit
-rather than a query: see [Keeping the figures current](#keeping-the-figures-current).
-
-Because only a POD-member host can reach the lake, that refresh runs there rather
-than in CI: `podlake-web refresh` rebuilds and publishes, and
-[podlake-deploy](https://github.com/pod4lib/podlake-deploy) provisions the host and schedules it.
+without any access to the lake: see 
+[Keeping the figures current](#keeping-the-figures-current).
 
 ## Quickstart
 
-Everything is a subcommand of `podlake-web`, the same way podlake exposes
-`podlake sync-all`:
+Everything here is a subcommand of `podlake-web`.
 
 ```sh
 uv run podlake-web --help
@@ -80,15 +73,6 @@ uv run podlake-web build        # or: produce the static site in site/dist
 uv run pytest -q
 ```
 
-Formatting and typing are not wrapped in a task: CI runs `ruff format --check .`,
-`ruff check .` and `ty check .` as separate steps, so forgetting them locally costs
-a red build rather than a broken main.
-
-For file catalogs `--data-path` defaults to the catalog's sibling `lake-data/` (how
-`podlake publish` lays a lake out); pass it explicitly to override. S3 access uses
-DuckDB's credential chain (standard `AWS_*` env vars, shared config, or an assumed
-role).
-
 ## Deployment
 
 `.github/workflows/deploy.yml` deploys the site to GitHub Pages on every push to
@@ -101,27 +85,12 @@ The repository's **Settings → Pages → Source** must be set to **"GitHub Acti
 
 ### Keeping the figures current
 
-Because CI can't reach the lake, the refresh runs on a host that can. This repo
-provides the command; **[pod4lib/podlake-deploy](https://github.com/pod4lib/podlake-deploy)**
-provisions the host and schedules it.
-
 ```sh
 # on the host — rebuild the artifacts, commit and push them
 uv run podlake-web refresh --catalog /opt/app/pod/podlake/podlake.ducklake
 ```
 
-Running it *on the host* rather than over SSH is what keeps it simple: a remotely
-driven refresh would have to survive an hour-long job outliving its connection, a
-forwarded SSH agent expiring with it, and a Duo prompt no script can answer. Under
-cron, none of that arises. It pushes only when the numbers actually moved — every
-artifact carries a `generated_at`, so a re-run always produces a diff, and that
-isn't news.
-
-**The schedule is not ours to set.** `refresh` must run *after* podlake has finished
-syncing the lake, or it publishes a comparison in which some institutions are
-updated and others aren't — wrong in a way that looks plausible. That ordering spans
-two repositories, so `podlake-deploy` owns it as a single pipeline. Don't add a cron
-entry for `refresh` on its own.
+`refresh` must run *after* podlake has finished syncing the lake.
 
 ## Layout
 
@@ -143,9 +112,3 @@ docs/      POD analytics use cases and user stories that motivate the views,
 institution-codes.csv   Which agency codes belong to which POD member. Curated
            by hand; every per-institution attribution depends on it.
 ```
-
-## What is published
-
-Every artifact and the disclosure-control parameters are described on the
-dashboard's **About the data** page and in `site/src/data/manifest.json`, so the
-full public surface can be reviewed before anything ships.
