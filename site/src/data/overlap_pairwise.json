@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T14:05:18.553459+00:00",
+  "generated_at": "2026-09-27T14:12:18.429584+00:00",
   "institutions": [
     "brown",
     "chicago",
@@ -24,37 +24,37 @@
     {
       "a": "harvard",
       "b": "yale",
-      "shared": 2950629
+      "shared": 2950643
     },
     {
       "a": "chicago",
       "b": "stanford",
-      "shared": 2916980
+      "shared": 2917184
     },
     {
       "a": "harvard",
       "b": "princeton",
-      "shared": 2758123
+      "shared": 2758057
     },
     {
       "a": "chicago",
       "b": "harvard",
-      "shared": 2707076
+      "shared": 2707110
     },
     {
       "a": "harvard",
       "b": "stanford",
-      "shared": 2629124
+      "shared": 2629192
     },
     {
       "a": "chicago",
       "b": "duke",
-      "shared": 2589366
+      "shared": 2589507
     },
     {
       "a": "chicago",
       "b": "penn",
-      "shared": 2521356
+      "shared": 2521391
     },
     {
       "a": "cornell",
@@ -64,22 +64,22 @@
     {
       "a": "columbia",
       "b": "stanford",
-      "shared": 2475856
+      "shared": 2475902
     },
     {
       "a": "chicago",
       "b": "columbia",
-      "shared": 2462098
+      "shared": 2462123
     },
     {
       "a": "columbia",
       "b": "yale",
-      "shared": 2245310
+      "shared": 2245324
     },
     {
       "a": "penn",
       "b": "stanford",
-      "shared": 2199207
+      "shared": 2199269
     },
     {
       "a": "duke",
@@ -89,12 +89,12 @@
     {
       "a": "columbia",
       "b": "princeton",
-      "shared": 2076978
+      "shared": 2076904
     },
     {
       "a": "duke",
       "b": "stanford",
-      "shared": 2042930
+      "shared": 2042952
     },
     {
       "a": "columbia",
@@ -104,7 +104,7 @@
     {
       "a": "princeton",
       "b": "yale",
-      "shared": 2031014
+      "shared": 2030964
     },
     {
       "a": "columbia",
@@ -119,12 +119,12 @@
     {
       "a": "chicago",
       "b": "princeton",
-      "shared": 2011084
+      "shared": 2011042
     },
     {
       "a": "stanford",
       "b": "yale",
-      "shared": 1988986
+      "shared": 1989030
     },
     {
       "a": "columbia",
@@ -134,32 +134,32 @@
     {
       "a": "princeton",
       "b": "stanford",
-      "shared": 1932840
+      "shared": 1932863
     },
     {
       "a": "chicago",
       "b": "yale",
-      "shared": 1929867
+      "shared": 1929888
     },
     {
       "a": "cornell",
       "b": "yale",
-      "shared": 1922326
+      "shared": 1922343
     },
     {
       "a": "chicago",
       "b": "cornell",
-      "shared": 1917143
+      "shared": 1917150
     },
     {
       "a": "cornell",
       "b": "princeton",
-      "shared": 1811481
+      "shared": 1811411
     },
     {
       "a": "cornell",
       "b": "stanford",
-      "shared": 1761276
+      "shared": 1761304
     },
     {
       "a": "duke",
@@ -169,7 +169,7 @@
     {
       "a": "penn",
       "b": "princeton",
-      "shared": 1656246
+      "shared": 1656180
     },
     {
       "a": "cornell",
@@ -184,52 +184,52 @@
     {
       "a": "duke",
       "b": "yale",
-      "shared": 1510500
+      "shared": 1510509
     },
     {
       "a": "penn",
       "b": "yale",
-      "shared": 1507042
+      "shared": 1507054
     },
     {
       "a": "duke",
       "b": "princeton",
-      "shared": 1482340
+      "shared": 1482274
     },
     {
       "a": "brown",
       "b": "harvard",
-      "shared": 1179409
+      "shared": 1179411
     },
     {
       "a": "brown",
       "b": "chicago",
-      "shared": 1074770
+      "shared": 1074773
     },
     {
       "a": "brown",
       "b": "princeton",
-      "shared": 1038378
+      "shared": 1038326
     },
     {
       "a": "brown",
       "b": "columbia",
-      "shared": 1028763
+      "shared": 1028764
     },
     {
       "a": "brown",
       "b": "yale",
-      "shared": 995164
+      "shared": 995174
     },
     {
       "a": "brown",
       "b": "cornell",
-      "shared": 980054
+      "shared": 980057
     },
     {
       "a": "brown",
       "b": "penn",
-      "shared": 979907
+      "shared": 979909
     },
     {
       "a": "brown",
@@ -244,17 +244,22 @@
     {
       "a": "brown",
       "b": "stanford",
-      "shared": 949837
+      "shared": 949855
     },
     {
       "a": "harvard",
       "b": "jhu",
-      "shared": 923654
+      "shared": 927714
     },
     {
       "a": "dartmouth",
       "b": "princeton",
-      "shared": 845750
+      "shared": 845693
+    },
+    {
+      "a": "columbia",
+      "b": "jhu",
+      "shared": 841185
     },
     {
       "a": "columbia",
@@ -262,19 +267,14 @@
       "shared": 839166
     },
     {
-      "a": "columbia",
-      "b": "jhu",
-      "shared": 836911
-    },
-    {
       "a": "jhu",
       "b": "princeton",
-      "shared": 831227
+      "shared": 826506
     },
     {
       "a": "chicago",
       "b": "jhu",
-      "shared": 825950
+      "shared": 822008
     },
     {
       "a": "chicago",
@@ -284,7 +284,12 @@
     {
       "a": "dartmouth",
       "b": "yale",
-      "shared": 804202
+      "shared": 804207
+    },
+    {
+      "a": "cornell",
+      "b": "jhu",
+      "shared": 788232
     },
     {
       "a": "cornell",
@@ -292,34 +297,29 @@
       "shared": 787936
     },
     {
-      "a": "cornell",
-      "b": "jhu",
-      "shared": 784725
+      "a": "jhu",
+      "b": "stanford",
+      "shared": 780328
     },
     {
       "a": "dartmouth",
       "b": "stanford",
-      "shared": 779767
-    },
-    {
-      "a": "jhu",
-      "b": "stanford",
-      "shared": 776798
+      "shared": 779783
     },
     {
       "a": "jhu",
       "b": "yale",
-      "shared": 773246
-    },
-    {
-      "a": "jhu",
-      "b": "penn",
-      "shared": 749962
+      "shared": 777818
     },
     {
       "a": "dartmouth",
       "b": "penn",
       "shared": 746357
+    },
+    {
+      "a": "jhu",
+      "b": "penn",
+      "shared": 746335
     },
     {
       "a": "dartmouth",
@@ -329,82 +329,82 @@
     {
       "a": "duke",
       "b": "jhu",
-      "shared": 727332
+      "shared": 730187
     },
     {
       "a": "harvard",
       "b": "mit",
-      "shared": 646309
+      "shared": 646311
     },
     {
       "a": "columbia",
       "b": "mit",
-      "shared": 616154
+      "shared": 616155
     },
     {
       "a": "cornell",
       "b": "mit",
-      "shared": 611018
+      "shared": 611020
     },
     {
       "a": "chicago",
       "b": "mit",
-      "shared": 608297
+      "shared": 608300
     },
     {
       "a": "brown",
       "b": "dartmouth",
-      "shared": 599450
+      "shared": 599451
     },
     {
       "a": "mit",
       "b": "stanford",
-      "shared": 597265
+      "shared": 597282
     },
     {
       "a": "mit",
       "b": "princeton",
-      "shared": 587615
+      "shared": 587563
     },
     {
       "a": "brown",
       "b": "jhu",
-      "shared": 559061
+      "shared": 557676
     },
     {
       "a": "duke",
       "b": "mit",
-      "shared": 557512
+      "shared": 557513
     },
     {
       "a": "mit",
       "b": "yale",
-      "shared": 538219
+      "shared": 538227
     },
     {
       "a": "mit",
       "b": "penn",
-      "shared": 528968
+      "shared": 528970
     },
     {
       "a": "dartmouth",
       "b": "jhu",
-      "shared": 471398
+      "shared": 472918
     },
     {
       "a": "brown",
       "b": "mit",
-      "shared": 415396
+      "shared": 415399
     },
     {
       "a": "jhu",
       "b": "mit",
-      "shared": 376746
+      "shared": 377028
     },
     {
       "a": "dartmouth",
       "b": "mit",
-      "shared": 361978
+      "shared": 361980
     }
   ],
   "sql": [
@@ -418,18 +418,18 @@
     }
   ],
   "titles": {
-    "brown": 2556519,
-    "chicago": 9324300,
+    "brown": 2556535,
+    "chicago": 9324636,
     "columbia": 7886182,
     "cornell": 6123748,
     "dartmouth": 1695582,
     "duke": 8481256,
     "harvard": 13888780,
-    "jhu": 1711669,
-    "mit": 1443264,
+    "jhu": 1711713,
+    "mit": 1443266,
     "penn": 7206358,
-    "princeton": 6265638,
-    "stanford": 8623606,
-    "yale": 6956224
+    "princeton": 6265580,
+    "stanford": 8623986,
+    "yale": 6956248
   }
 }
