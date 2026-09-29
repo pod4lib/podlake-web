@@ -31,7 +31,7 @@
         },
         "columbia": {
           "pred": 58817,
-          "succ": 53123
+          "succ": 53124
         },
         "cornell": {
           "pred": 62344,
@@ -46,7 +46,7 @@
           "succ": 52406
         },
         "harvard": {
-          "pred": 100767,
+          "pred": 100769,
           "succ": 96155
         },
         "jhu": {
@@ -70,7 +70,7 @@
           "succ": 69985
         },
         "yale": {
-          "pred": 59530,
+          "pred": 59529,
           "succ": 54529
         }
       },
@@ -78,17 +78,17 @@
       "totals": {
         "brown": 60391,
         "chicago": 267553,
-        "columbia": 245571,
+        "columbia": 245578,
         "cornell": 237542,
         "dartmouth": 34753,
         "duke": 491333,
-        "harvard": 480519,
+        "harvard": 480521,
         "jhu": 35170,
         "mit": 52759,
         "penn": 176308,
         "princeton": 161320,
-        "stanford": 343212,
-        "yale": 237387
+        "stanford": 343213,
+        "yale": 237393
       }
     },
     "succession_type": {
@@ -146,7 +146,7 @@
           "1": 1241,
           "2": 2052,
           "3": 211,
-          "4": 2061,
+          "4": 2062,
           "5": 167,
           "6": 1033,
           "7": 4003,
@@ -252,14 +252,14 @@
           "8": 68
         },
         "yale": {
-          "0": 44108,
+          "0": 44109,
           "1": 1285,
           "2": 1956,
           "3": 205,
           "4": 1919,
           "5": 134,
           "6": 1163,
-          "7": 3939,
+          "7": 3938,
           "8": 110
         }
       },
@@ -267,21 +267,21 @@
       "totals": {
         "brown": 60391,
         "chicago": 267553,
-        "columbia": 245571,
+        "columbia": 245578,
         "cornell": 237542,
         "dartmouth": 34753,
         "duke": 491333,
-        "harvard": 480519,
+        "harvard": 480521,
         "jhu": 35170,
         "mit": 52759,
         "penn": 176308,
         "princeton": 161320,
-        "stanford": 343212,
-        "yale": 237387
+        "stanford": 343213,
+        "yale": 237393
       }
     }
   },
-  "generated_at": "2026-09-27T14:12:18.429584+00:00",
+  "generated_at": "2026-09-29T14:15:41.371057+00:00",
   "sql": [
     {
       "label": "Serials linked to a predecessor / successor",

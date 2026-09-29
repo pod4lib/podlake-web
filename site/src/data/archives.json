@@ -124,7 +124,7 @@
         "yale": {
           "aggregator": null,
           "finding_aid": null,
-          "other": 95804,
+          "other": 95805,
           "repository": null,
           "resolver": 5432,
           "vendor": 51
@@ -134,17 +134,17 @@
       "totals": {
         "brown": 17408,
         "chicago": 133586,
-        "columbia": 103155,
+        "columbia": 103156,
         "cornell": 52012,
         "dartmouth": 19490,
         "duke": 49478,
-        "harvard": 242033,
+        "harvard": 242036,
         "jhu": 1301,
         "mit": 63353,
         "penn": 156643,
         "princeton": 45707,
         "stanford": 56299,
-        "yale": 95804
+        "yale": 95805
       }
     },
     "material_type": {
@@ -210,7 +210,7 @@
           "j": null,
           "k": 1785,
           "p": 13568,
-          "t": 79497
+          "t": 79498
         },
         "cornell": {
           "a": 5789,
@@ -257,8 +257,8 @@
           "i": 141,
           "j": 49,
           "k": 6942,
-          "p": 82834,
-          "t": 134232
+          "p": 82836,
+          "t": 134233
         },
         "jhu": {
           "a": 18,
@@ -330,28 +330,28 @@
           "j": 36,
           "k": 2895,
           "p": 17715,
-          "t": 64118
+          "t": 64119
         }
       },
       "sql": "WITH arch AS (\n  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n  FROM records\n  WHERE field_tag = 'LDR' AND length(value) >= 8\n    AND (substr(value, 7, 1) IN ('t','d','f','p')\n         OR substr(value, 8, 1) IN ('c','d'))\n)\nSELECT org, rtype AS category, count(*) AS n FROM arch GROUP BY org, rtype",
       "totals": {
         "brown": 17408,
         "chicago": 133586,
-        "columbia": 103155,
+        "columbia": 103156,
         "cornell": 52012,
         "dartmouth": 19490,
         "duke": 49478,
-        "harvard": 242033,
+        "harvard": 242036,
         "jhu": 1301,
         "mit": 63353,
         "penn": 156643,
         "princeton": 45707,
         "stanford": 56299,
-        "yale": 95804
+        "yale": 95805
       }
     }
   },
-  "generated_at": "2026-09-27T14:12:18.429584+00:00",
+  "generated_at": "2026-09-29T14:15:41.371057+00:00",
   "genre": [
     {
       "org": "brown",
@@ -463,7 +463,7 @@
     },
     {
       "org": "columbia",
-      "total": 103155,
+      "total": 103156,
       "values": [
         {
           "count": 16381,
@@ -486,11 +486,11 @@
           "term": "architectural drawings"
         },
         {
-          "count": 1462,
+          "count": 1461,
           "term": "manuscripts, hebrew"
         },
         {
-          "count": 1436,
+          "count": 1439,
           "term": "manuscripts"
         },
         {
@@ -679,7 +679,7 @@
     },
     {
       "org": "harvard",
-      "total": 242033,
+      "total": 242036,
       "values": [
         {
           "count": 21222,
@@ -991,7 +991,7 @@
     },
     {
       "org": "yale",
-      "total": 95804,
+      "total": 95805,
       "values": [
         {
           "count": 20534,
@@ -1058,7 +1058,7 @@
     {
       "count": 13905,
       "org": "columbia",
-      "total": 103155
+      "total": 103156
     },
     {
       "count": 11427,
@@ -1078,7 +1078,7 @@
     {
       "count": 47975,
       "org": "harvard",
-      "total": 242033
+      "total": 242036
     },
     {
       "count": 33,
@@ -1106,9 +1106,9 @@
       "total": 56299
     },
     {
-      "count": 95804,
+      "count": 95805,
       "org": "yale",
-      "total": 95804
+      "total": 95805
     }
   ],
   "sql": [
@@ -2056,7 +2056,7 @@
           "decade": 1690
         },
         {
-          "count": 326,
+          "count": 327,
           "decade": 1700
         },
         {
@@ -3908,7 +3908,7 @@
           "decade": 1760
         },
         {
-          "count": 1251,
+          "count": 1252,
           "decade": 1770
         },
         {
@@ -3916,7 +3916,7 @@
           "decade": 1780
         },
         {
-          "count": 1496,
+          "count": 1495,
           "decade": 1790
         },
         {
@@ -3936,11 +3936,11 @@
           "decade": 1830
         },
         {
-          "count": 2840,
+          "count": 2841,
           "decade": 1840
         },
         {
-          "count": 3798,
+          "count": 3799,
           "decade": 1850
         },
         {
@@ -3956,7 +3956,7 @@
           "decade": 1880
         },
         {
-          "count": 10673,
+          "count": 10674,
           "decade": 1890
         },
         {
@@ -6002,7 +6002,7 @@
           "decade": 1880
         },
         {
-          "count": 1610,
+          "count": 1611,
           "decade": 1890
         },
         {
