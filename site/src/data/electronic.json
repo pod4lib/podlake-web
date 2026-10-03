@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-02T14:06:12.392817+00:00",
+  "generated_at": "2026-10-03T14:07:25.371380+00:00",
   "hosts": [
     {
       "org": "brown",
-      "total": 155405,
+      "total": 155404,
       "values": [
         {
           "count": 86333,
@@ -69,7 +69,7 @@
     },
     {
       "org": "chicago",
-      "total": 3714083,
+      "total": 3714089,
       "values": [
         {
           "count": 460811,
@@ -135,14 +135,14 @@
     },
     {
       "org": "columbia",
-      "total": 1094494,
+      "total": 1094781,
       "values": [
         {
-          "count": 590073,
+          "count": 590072,
           "host": "www.columbia.edu"
         },
         {
-          "count": 229072,
+          "count": 229347,
           "host": "prx.law.columbia.edu"
         },
         {
@@ -399,22 +399,22 @@
     },
     {
       "org": "harvard",
-      "total": 1054385,
+      "total": 1054472,
       "values": [
         {
-          "count": 515730,
+          "count": 515728,
           "host": "hdl.handle.net"
         },
         {
-          "count": 424065,
+          "count": 424074,
           "host": "nrs.harvard.edu"
         },
         {
-          "count": 77286,
+          "count": 77287,
           "host": "catalog.hathitrust.org"
         },
         {
-          "count": 8901,
+          "count": 8980,
           "host": "books.google.com"
         },
         {
@@ -465,7 +465,7 @@
     },
     {
       "org": "jhu",
-      "total": 134375,
+      "total": 134379,
       "values": [
         {
           "count": 50144,
@@ -504,7 +504,7 @@
           "host": "assets.cambridge.org"
         },
         {
-          "count": 942,
+          "count": 945,
           "host": "d-nb.info"
         },
         {
@@ -663,22 +663,22 @@
     },
     {
       "org": "princeton",
-      "total": 95338,
+      "total": 95332,
       "values": [
         {
-          "count": 34314,
+          "count": 34318,
           "host": "arks.princeton.edu"
         },
         {
-          "count": 24293,
+          "count": 24286,
           "host": "ilibri.casalini.it"
         },
         {
-          "count": 11604,
+          "count": 11601,
           "host": "www.loc.gov"
         },
         {
-          "count": 6501,
+          "count": 6504,
           "host": "findingaids.princeton.edu"
         },
         {
@@ -710,7 +710,7 @@
           "host": "www.jstor.org"
         },
         {
-          "count": 536,
+          "count": 534,
           "host": "bvbr.bib-bvb.de:8991"
         },
         {
@@ -718,7 +718,7 @@
           "host": "ropercenter.cornell.edu"
         },
         {
-          "count": 374,
+          "count": 373,
           "host": "deposit.d-nb.de"
         },
         {
@@ -729,18 +729,18 @@
     },
     {
       "org": "stanford",
-      "total": 3050573,
+      "total": 3051121,
       "values": [
         {
-          "count": 469350,
+          "count": 469351,
           "host": "catalog.hathitrust.org"
         },
         {
-          "count": 361301,
+          "count": 361316,
           "host": "search.ebscohost.com"
         },
         {
-          "count": 349458,
+          "count": 349459,
           "host": "purl.fdlp.gov"
         },
         {
@@ -752,7 +752,7 @@
           "host": "link.springer.com"
         },
         {
-          "count": 109943,
+          "count": 109944,
           "host": "purl.stanford.edu"
         },
         {
@@ -780,7 +780,7 @@
           "host": "go.oreilly.com"
         },
         {
-          "count": 66851,
+          "count": 67447,
           "host": "doi.org"
         },
         {
@@ -795,10 +795,10 @@
     },
     {
       "org": "yale",
-      "total": 7276828,
+      "total": 7277017,
       "values": [
         {
-          "count": 7056766,
+          "count": 7056923,
           "host": "search.library.yale.edu"
         },
         {
@@ -806,15 +806,15 @@
           "host": "www.loc.gov"
         },
         {
-          "count": 25657,
+          "count": 25685,
           "host": "collections.library.yale.edu"
         },
         {
-          "count": 20729,
+          "count": 20730,
           "host": "beinecke.library.yale.edu"
         },
         {
-          "count": 17382,
+          "count": 17381,
           "host": "hdl.handle.net"
         },
         {
@@ -822,7 +822,7 @@
           "host": "purl.access.gpo.gov"
         },
         {
-          "count": 10176,
+          "count": 10178,
           "host": "catdir.loc.gov"
         },
         {
@@ -854,7 +854,7 @@
           "host": "collections.britishart.yale.edu"
         },
         {
-          "count": 631,
+          "count": 630,
           "host": "hdl.loc.gov"
         }
       ]

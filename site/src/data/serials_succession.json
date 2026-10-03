@@ -26,12 +26,12 @@
           "succ": 16429
         },
         "chicago": {
-          "pred": 66674,
+          "pred": 66673,
           "succ": 59782
         },
         "columbia": {
-          "pred": 58716,
-          "succ": 53085
+          "pred": 58717,
+          "succ": 53086
         },
         "cornell": {
           "pred": 62344,
@@ -46,7 +46,7 @@
           "succ": 52406
         },
         "harvard": {
-          "pred": 100773,
+          "pred": 100775,
           "succ": 96157
         },
         "jhu": {
@@ -62,33 +62,33 @@
           "succ": 43454
         },
         "princeton": {
-          "pred": 47414,
-          "succ": 42674
+          "pred": 47413,
+          "succ": 42670
         },
         "stanford": {
-          "pred": 76047,
-          "succ": 69990
+          "pred": 76050,
+          "succ": 69991
         },
         "yale": {
-          "pred": 59535,
-          "succ": 54536
+          "pred": 59536,
+          "succ": 54538
         }
       },
       "sql": "WITH serial AS (\n  SELECT DISTINCT org, pod_record_id FROM records\n  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'\n)\nSELECT org, 'pred' AS category, count(*) AS n FROM serial\nWHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '780')\nGROUP BY org\nUNION ALL\nSELECT org, 'succ' AS category, count(*) AS n FROM serial\nWHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '785')\nGROUP BY org",
       "totals": {
-        "brown": 60392,
-        "chicago": 267553,
-        "columbia": 245360,
+        "brown": 60391,
+        "chicago": 267552,
+        "columbia": 245367,
         "cornell": 237542,
         "dartmouth": 34753,
         "duke": 491333,
-        "harvard": 480533,
-        "jhu": 35170,
+        "harvard": 480539,
+        "jhu": 35171,
         "mit": 52758,
         "penn": 176344,
-        "princeton": 161428,
-        "stanford": 343285,
-        "yale": 237405
+        "princeton": 161452,
+        "stanford": 343292,
+        "yale": 237409
       }
     },
     "succession_type": {
@@ -135,14 +135,14 @@
           "1": 1346,
           "2": 2744,
           "3": 192,
-          "4": 2447,
+          "4": 2446,
           "5": 199,
           "6": 1275,
-          "7": 4919,
+          "7": 4920,
           "8": 50
         },
         "columbia": {
-          "0": 42462,
+          "0": 42463,
           "1": 1238,
           "2": 2052,
           "3": 211,
@@ -230,7 +230,7 @@
           "8": 67
         },
         "princeton": {
-          "0": 36125,
+          "0": 36121,
           "1": 929,
           "2": 786,
           "3": 77,
@@ -241,7 +241,7 @@
           "8": 72
         },
         "stanford": {
-          "0": 58183,
+          "0": 58184,
           "1": 1486,
           "2": 2758,
           "3": 213,
@@ -252,7 +252,7 @@
           "8": 68
         },
         "yale": {
-          "0": 44115,
+          "0": 44117,
           "1": 1285,
           "2": 1956,
           "3": 205,
@@ -265,23 +265,23 @@
       },
       "sql": "WITH serial AS (\n  SELECT DISTINCT org, pod_record_id FROM records\n  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'\n)\nSELECT r.org, r.ind2 AS category, count(DISTINCT r.pod_record_id) AS n\nFROM records r\nJOIN serial USING (org, pod_record_id)\nWHERE r.field_tag = '785' AND r.ind2 IN ('0','1','2','3','4','5','6','7','8')\nGROUP BY r.org, r.ind2",
       "totals": {
-        "brown": 60392,
-        "chicago": 267553,
-        "columbia": 245360,
+        "brown": 60391,
+        "chicago": 267552,
+        "columbia": 245367,
         "cornell": 237542,
         "dartmouth": 34753,
         "duke": 491333,
-        "harvard": 480533,
-        "jhu": 35170,
+        "harvard": 480539,
+        "jhu": 35171,
         "mit": 52758,
         "penn": 176344,
-        "princeton": 161428,
-        "stanford": 343285,
-        "yale": 237405
+        "princeton": 161452,
+        "stanford": 343292,
+        "yale": 237409
       }
     }
   },
-  "generated_at": "2026-10-02T14:06:12.392817+00:00",
+  "generated_at": "2026-10-03T14:07:25.371380+00:00",
   "sql": [
     {
       "label": "Serials linked to a predecessor / successor",

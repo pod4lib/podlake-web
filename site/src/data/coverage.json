@@ -7,7 +7,7 @@
     "phys_desc",
     "lc_classification"
   ],
-  "generated_at": "2026-10-02T14:06:12.392817+00:00",
+  "generated_at": "2026-10-03T14:07:25.371380+00:00",
   "per_org": [
     {
       "coverage": {
@@ -19,7 +19,7 @@
         "subjects": 0.8568
       },
       "org": "brown",
-      "records": 2589946
+      "records": 2589988
     },
     {
       "coverage": {
@@ -31,19 +31,19 @@
         "subjects": 0.8986
       },
       "org": "chicago",
-      "records": 9693126
+      "records": 9693360
     },
     {
       "coverage": {
         "author": 0.7915,
         "isbn": 0.4464,
         "lc_classification": 0.7624,
-        "online": 0.1211,
+        "online": 0.1212,
         "phys_desc": 0.9538,
         "subjects": 0.8647
       },
       "org": "columbia",
-      "records": 8113075
+      "records": 8113400
     },
     {
       "coverage": {
@@ -91,7 +91,7 @@
         "subjects": 0.8739
       },
       "org": "harvard",
-      "records": 14046470
+      "records": 14047077
     },
     {
       "coverage": {
@@ -103,7 +103,7 @@
         "subjects": 0.9299
       },
       "org": "jhu",
-      "records": 1716876
+      "records": 1716891
     },
     {
       "coverage": {
@@ -115,7 +115,7 @@
         "subjects": 0.9242
       },
       "org": "mit",
-      "records": 1446778
+      "records": 1446787
     },
     {
       "coverage": {
@@ -139,19 +139,19 @@
         "subjects": 0.9126
       },
       "org": "princeton",
-      "records": 6300616
+      "records": 6301025
     },
     {
       "coverage": {
         "author": 0.7612,
-        "isbn": 0.479,
-        "lc_classification": 0.831,
-        "online": 0.3147,
+        "isbn": 0.4791,
+        "lc_classification": 0.8311,
+        "online": 0.3148,
         "phys_desc": 0.979,
         "subjects": 0.9066
       },
       "org": "stanford",
-      "records": 8988071
+      "records": 8989065
     },
     {
       "coverage": {
@@ -163,7 +163,7 @@
         "subjects": 0.863
       },
       "org": "yale",
-      "records": 7056766
+      "records": 7056923
     }
   ],
   "sql": [
