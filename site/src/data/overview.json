@@ -1,20 +1,20 @@
 {
-  "generated_at": "2026-10-03T14:07:25.371380+00:00",
+  "generated_at": "2026-10-04T14:05:24.836774+00:00",
   "per_org": [
     {
-      "last_sync": "2026-10-03T03:40:04",
+      "last_sync": "2026-10-04T03:40:02",
       "org": "brown",
-      "records": 2589988,
-      "titles": 2556723
+      "records": 2590009,
+      "titles": 2556742
     },
     {
-      "last_sync": "2026-10-03T03:40:19",
+      "last_sync": "2026-10-04T03:40:24",
       "org": "chicago",
-      "records": 9693360,
-      "titles": 9325613
+      "records": 9693639,
+      "titles": 9325886
     },
     {
-      "last_sync": "2026-10-03T03:46:54",
+      "last_sync": "2026-10-04T03:45:52",
       "org": "columbia",
       "records": 8113400,
       "titles": 7858668
@@ -44,16 +44,16 @@
       "titles": 13891124
     },
     {
-      "last_sync": "2026-10-03T03:40:32",
+      "last_sync": "2026-10-04T03:40:27",
       "org": "jhu",
-      "records": 1716891,
-      "titles": 1711877
+      "records": 1716910,
+      "titles": 1711895
     },
     {
-      "last_sync": "2026-10-03T03:40:29",
+      "last_sync": "2026-10-04T03:40:25",
       "org": "mit",
-      "records": 1446787,
-      "titles": 1443286
+      "records": 1446804,
+      "titles": 1443303
     },
     {
       "last_sync": "2026-09-30T03:42:16",
@@ -62,22 +62,22 @@
       "titles": 7207381
     },
     {
-      "last_sync": "2026-10-03T03:40:45",
+      "last_sync": "2026-10-04T03:40:24",
       "org": "princeton",
-      "records": 6301025,
-      "titles": 6267725
+      "records": 6301293,
+      "titles": 6267992
     },
     {
-      "last_sync": "2026-10-03T03:40:27",
+      "last_sync": "2026-10-04T03:40:08",
       "org": "stanford",
-      "records": 8989065,
-      "titles": 8637728
+      "records": 8990895,
+      "titles": 8639376
     },
     {
-      "last_sync": "2026-10-03T03:41:08",
+      "last_sync": "2026-10-04T03:40:39",
       "org": "yale",
-      "records": 7056923,
-      "titles": 6957147
+      "records": 7056935,
+      "titles": 6957159
     }
   ],
   "sql": [
@@ -92,7 +92,7 @@
   ],
   "totals": {
     "institutions": 13,
-    "records": 84515334,
-    "titles": 44064853
+    "records": 84517780,
+    "titles": 44065908
   }
 }

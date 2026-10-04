@@ -26,8 +26,8 @@
           "succ": 16429
         },
         "chicago": {
-          "pred": 66673,
-          "succ": 59782
+          "pred": 66672,
+          "succ": 59781
         },
         "columbia": {
           "pred": 58717,
@@ -62,7 +62,7 @@
           "succ": 43454
         },
         "princeton": {
-          "pred": 47413,
+          "pred": 47414,
           "succ": 42670
         },
         "stanford": {
@@ -76,8 +76,8 @@
       },
       "sql": "WITH serial AS (\n  SELECT DISTINCT org, pod_record_id FROM records\n  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'\n)\nSELECT org, 'pred' AS category, count(*) AS n FROM serial\nWHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '780')\nGROUP BY org\nUNION ALL\nSELECT org, 'succ' AS category, count(*) AS n FROM serial\nWHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '785')\nGROUP BY org",
       "totals": {
-        "brown": 60391,
-        "chicago": 267552,
+        "brown": 60392,
+        "chicago": 267549,
         "columbia": 245367,
         "cornell": 237542,
         "dartmouth": 34753,
@@ -86,8 +86,8 @@
         "jhu": 35171,
         "mit": 52758,
         "penn": 176344,
-        "princeton": 161452,
-        "stanford": 343292,
+        "princeton": 161454,
+        "stanford": 343294,
         "yale": 237409
       }
     },
@@ -138,7 +138,7 @@
           "4": 2446,
           "5": 199,
           "6": 1275,
-          "7": 4920,
+          "7": 4919,
           "8": 50
         },
         "columbia": {
@@ -265,8 +265,8 @@
       },
       "sql": "WITH serial AS (\n  SELECT DISTINCT org, pod_record_id FROM records\n  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'\n)\nSELECT r.org, r.ind2 AS category, count(DISTINCT r.pod_record_id) AS n\nFROM records r\nJOIN serial USING (org, pod_record_id)\nWHERE r.field_tag = '785' AND r.ind2 IN ('0','1','2','3','4','5','6','7','8')\nGROUP BY r.org, r.ind2",
       "totals": {
-        "brown": 60391,
-        "chicago": 267552,
+        "brown": 60392,
+        "chicago": 267549,
         "columbia": 245367,
         "cornell": 237542,
         "dartmouth": 34753,
@@ -275,13 +275,13 @@
         "jhu": 35171,
         "mit": 52758,
         "penn": 176344,
-        "princeton": 161452,
-        "stanford": 343292,
+        "princeton": 161454,
+        "stanford": 343294,
         "yale": 237409
       }
     }
   },
-  "generated_at": "2026-10-03T14:07:25.371380+00:00",
+  "generated_at": "2026-10-04T14:05:24.836774+00:00",
   "sql": [
     {
       "label": "Serials linked to a predecessor / successor",

@@ -132,7 +132,7 @@
       },
       "sql": "WITH arch AS (\n  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n  FROM records\n  WHERE field_tag = 'LDR' AND length(value) >= 8\n    AND (substr(value, 7, 1) IN ('t','d','f','p')\n         OR substr(value, 8, 1) IN ('c','d'))\n)\n, links AS (\n  SELECT a.org, r.pod_record_id,\n         regexp_extract(lower(r.value), 'https?://([^/]+)', 1) AS host\n  FROM arch a JOIN records r USING (org, pod_record_id)\n  WHERE r.field_tag = '856' AND r.subfield_code = 'u' AND r.value LIKE 'http%'\n)\nSELECT org,\n  CASE\n    WHEN regexp_matches(host, 'findingaid|archives') THEN 'finding_aid'\n    WHEN host IN ('oac.cdlib.org','www.oac.cdlib.org')\n         OR regexp_matches(host, 'archivegrid|snaccooperative') THEN 'aggregator'\n    WHEN regexp_matches(host, '^(nrs|arks|purl|hdl|handle)\\.')\n         OR regexp_matches(host, 'doi\\.org$') THEN 'resolver'\n    WHEN regexp_matches(host, 'proquest|amdigital|gale|jstor|e-enlightenment')\n         THEN 'vendor'\n    WHEN regexp_matches(host, 'colenda|digital|repository|dspace|fedora|idn\\.duke')\n         THEN 'repository'\n    ELSE 'other'\n  END AS category,\n  count(DISTINCT pod_record_id) AS n\nFROM links GROUP BY org, category",
       "totals": {
-        "brown": 17408,
+        "brown": 17407,
         "chicago": 133588,
         "columbia": 103082,
         "cornell": 52012,
@@ -142,8 +142,8 @@
         "jhu": 1274,
         "mit": 63353,
         "penn": 156645,
-        "princeton": 45711,
-        "stanford": 56325,
+        "princeton": 45712,
+        "stanford": 56328,
         "yale": 95813
       }
     },
@@ -186,7 +186,7 @@
           "j": null,
           "k": 169,
           "p": 984,
-          "t": 15645
+          "t": 15644
         },
         "chicago": {
           "a": 14972,
@@ -299,14 +299,14 @@
         "princeton": {
           "a": 8443,
           "c": 76,
-          "d": 1329,
+          "d": 1330,
           "e": 981,
           "f": 34,
           "i": null,
           "j": 21,
-          "k": 433,
+          "k": 434,
           "p": 3824,
-          "t": 30441
+          "t": 30440
         },
         "stanford": {
           "a": 13597,
@@ -317,8 +317,8 @@
           "i": 11,
           "j": 76,
           "k": 275,
-          "p": 15836,
-          "t": 25450
+          "p": 15838,
+          "t": 25451
         },
         "yale": {
           "a": 7713,
@@ -335,7 +335,7 @@
       },
       "sql": "WITH arch AS (\n  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n  FROM records\n  WHERE field_tag = 'LDR' AND length(value) >= 8\n    AND (substr(value, 7, 1) IN ('t','d','f','p')\n         OR substr(value, 8, 1) IN ('c','d'))\n)\nSELECT org, rtype AS category, count(*) AS n FROM arch GROUP BY org, rtype",
       "totals": {
-        "brown": 17408,
+        "brown": 17407,
         "chicago": 133588,
         "columbia": 103082,
         "cornell": 52012,
@@ -345,17 +345,17 @@
         "jhu": 1274,
         "mit": 63353,
         "penn": 156645,
-        "princeton": 45711,
-        "stanford": 56325,
+        "princeton": 45712,
+        "stanford": 56328,
         "yale": 95813
       }
     }
   },
-  "generated_at": "2026-10-03T14:07:25.371380+00:00",
+  "generated_at": "2026-10-04T14:05:24.836774+00:00",
   "genre": [
     {
       "org": "brown",
-      "total": 17408,
+      "total": 17407,
       "values": [
         {
           "count": 2078,
@@ -883,10 +883,10 @@
     },
     {
       "org": "princeton",
-      "total": 45711,
+      "total": 45712,
       "values": [
         {
-          "count": 16104,
+          "count": 16108,
           "term": "manuscripts (documents)"
         },
         {
@@ -937,7 +937,7 @@
     },
     {
       "org": "stanford",
-      "total": 56325,
+      "total": 56328,
       "values": [
         {
           "count": 1943,
@@ -964,7 +964,7 @@
           "term": "photoprints"
         },
         {
-          "count": 330,
+          "count": 331,
           "term": "correspondence"
         },
         {
@@ -976,7 +976,7 @@
           "term": "diaries"
         },
         {
-          "count": 198,
+          "count": 199,
           "term": "personal correspondence"
         },
         {
@@ -1048,7 +1048,7 @@
     {
       "count": 3308,
       "org": "brown",
-      "total": 17408
+      "total": 17407
     },
     {
       "count": 96972,
@@ -1098,12 +1098,12 @@
     {
       "count": 14623,
       "org": "princeton",
-      "total": 45711
+      "total": 45712
     },
     {
       "count": 31610,
       "org": "stanford",
-      "total": 56325
+      "total": 56328
     },
     {
       "count": 95813,
@@ -1246,7 +1246,7 @@
           "decade": 1640
         },
         {
-          "count": 12,
+          "count": 11,
           "decade": 1650
         },
         {
@@ -5092,7 +5092,7 @@
           "decade": 1780
         },
         {
-          "count": 421,
+          "count": 422,
           "decade": 1790
         },
         {
@@ -5509,7 +5509,7 @@
           "decade": 1830
         },
         {
-          "count": 223,
+          "count": 224,
           "decade": 1840
         },
         {
@@ -5517,11 +5517,11 @@
           "decade": 1850
         },
         {
-          "count": 330,
+          "count": 331,
           "decade": 1860
         },
         {
-          "count": 336,
+          "count": 337,
           "decade": 1870
         },
         {
