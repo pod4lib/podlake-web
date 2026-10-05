@@ -26,8 +26,8 @@
           "succ": 16429
         },
         "chicago": {
-          "pred": 66672,
-          "succ": 59781
+          "pred": 66676,
+          "succ": 59785
         },
         "columbia": {
           "pred": 58717,
@@ -78,7 +78,7 @@
       "totals": {
         "brown": 60392,
         "chicago": 267549,
-        "columbia": 245367,
+        "columbia": 245368,
         "cornell": 237542,
         "dartmouth": 34753,
         "duke": 491333,
@@ -88,7 +88,7 @@
         "penn": 176344,
         "princeton": 161454,
         "stanford": 343294,
-        "yale": 237409
+        "yale": 237410
       }
     },
     "succession_type": {
@@ -131,7 +131,7 @@
           "8": 58
         },
         "chicago": {
-          "0": 46945,
+          "0": 46949,
           "1": 1346,
           "2": 2744,
           "3": 192,
@@ -267,7 +267,7 @@
       "totals": {
         "brown": 60392,
         "chicago": 267549,
-        "columbia": 245367,
+        "columbia": 245368,
         "cornell": 237542,
         "dartmouth": 34753,
         "duke": 491333,
@@ -277,11 +277,11 @@
         "penn": 176344,
         "princeton": 161454,
         "stanford": 343294,
-        "yale": 237409
+        "yale": 237410
       }
     }
   },
-  "generated_at": "2026-10-04T14:05:24.836774+00:00",
+  "generated_at": "2026-10-05T14:04:59.279118+00:00",
   "sql": [
     {
       "label": "Serials linked to a predecessor / successor",

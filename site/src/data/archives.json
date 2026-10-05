@@ -43,8 +43,8 @@
         },
         "columbia": {
           "aggregator": 0,
-          "finding_aid": 4193,
-          "other": 2216,
+          "finding_aid": 4195,
+          "other": 2215,
           "repository": 28,
           "resolver": 7490,
           "vendor": null
@@ -133,7 +133,7 @@
       "sql": "WITH arch AS (\n  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n  FROM records\n  WHERE field_tag = 'LDR' AND length(value) >= 8\n    AND (substr(value, 7, 1) IN ('t','d','f','p')\n         OR substr(value, 8, 1) IN ('c','d'))\n)\n, links AS (\n  SELECT a.org, r.pod_record_id,\n         regexp_extract(lower(r.value), 'https?://([^/]+)', 1) AS host\n  FROM arch a JOIN records r USING (org, pod_record_id)\n  WHERE r.field_tag = '856' AND r.subfield_code = 'u' AND r.value LIKE 'http%'\n)\nSELECT org,\n  CASE\n    WHEN regexp_matches(host, 'findingaid|archives') THEN 'finding_aid'\n    WHEN host IN ('oac.cdlib.org','www.oac.cdlib.org')\n         OR regexp_matches(host, 'archivegrid|snaccooperative') THEN 'aggregator'\n    WHEN regexp_matches(host, '^(nrs|arks|purl|hdl|handle)\\.')\n         OR regexp_matches(host, 'doi\\.org$') THEN 'resolver'\n    WHEN regexp_matches(host, 'proquest|amdigital|gale|jstor|e-enlightenment')\n         THEN 'vendor'\n    WHEN regexp_matches(host, 'colenda|digital|repository|dspace|fedora|idn\\.duke')\n         THEN 'repository'\n    ELSE 'other'\n  END AS category,\n  count(DISTINCT pod_record_id) AS n\nFROM links GROUP BY org, category",
       "totals": {
         "brown": 17407,
-        "chicago": 133588,
+        "chicago": 133585,
         "columbia": 103082,
         "cornell": 52012,
         "dartmouth": 19490,
@@ -143,7 +143,7 @@
         "mit": 63353,
         "penn": 156645,
         "princeton": 45712,
-        "stanford": 56328,
+        "stanford": 56340,
         "yale": 95813
       }
     },
@@ -198,7 +198,7 @@
           "j": 13,
           "k": 207,
           "p": 19914,
-          "t": 97072
+          "t": 97069
         },
         "columbia": {
           "a": 2695,
@@ -317,7 +317,7 @@
           "i": 11,
           "j": 76,
           "k": 275,
-          "p": 15838,
+          "p": 15850,
           "t": 25451
         },
         "yale": {
@@ -336,7 +336,7 @@
       "sql": "WITH arch AS (\n  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n  FROM records\n  WHERE field_tag = 'LDR' AND length(value) >= 8\n    AND (substr(value, 7, 1) IN ('t','d','f','p')\n         OR substr(value, 8, 1) IN ('c','d'))\n)\nSELECT org, rtype AS category, count(*) AS n FROM arch GROUP BY org, rtype",
       "totals": {
         "brown": 17407,
-        "chicago": 133588,
+        "chicago": 133585,
         "columbia": 103082,
         "cornell": 52012,
         "dartmouth": 19490,
@@ -346,12 +346,12 @@
         "mit": 63353,
         "penn": 156645,
         "princeton": 45712,
-        "stanford": 56328,
+        "stanford": 56340,
         "yale": 95813
       }
     }
   },
-  "generated_at": "2026-10-04T14:05:24.836774+00:00",
+  "generated_at": "2026-10-05T14:04:59.279118+00:00",
   "genre": [
     {
       "org": "brown",
@@ -409,7 +409,7 @@
     },
     {
       "org": "chicago",
-      "total": 133588,
+      "total": 133585,
       "values": [
         {
           "count": 3815,
@@ -937,7 +937,7 @@
     },
     {
       "org": "stanford",
-      "total": 56328,
+      "total": 56340,
       "values": [
         {
           "count": 1943,
@@ -960,7 +960,7 @@
           "term": "history"
         },
         {
-          "count": 337,
+          "count": 338,
           "term": "photoprints"
         },
         {
@@ -1053,10 +1053,10 @@
     {
       "count": 96972,
       "org": "chicago",
-      "total": 133588
+      "total": 133585
     },
     {
-      "count": 13906,
+      "count": 13907,
       "org": "columbia",
       "total": 103082
     },
@@ -1103,7 +1103,7 @@
     {
       "count": 31610,
       "org": "stanford",
-      "total": 56328
+      "total": 56340
     },
     {
       "count": 95813,
@@ -1555,7 +1555,7 @@
           "decade": 1490
         },
         {
-          "count": 29,
+          "count": 28,
           "decade": 1500
         },
         {
@@ -1727,11 +1727,11 @@
           "decade": 1920
         },
         {
-          "count": 4669,
+          "count": 4668,
           "decade": 1930
         },
         {
-          "count": 4216,
+          "count": 4214,
           "decade": 1940
         },
         {
@@ -5533,7 +5533,7 @@
           "decade": 1890
         },
         {
-          "count": 1112,
+          "count": 1113,
           "decade": 1900
         },
         {
@@ -5549,7 +5549,7 @@
           "decade": 1930
         },
         {
-          "count": 2138,
+          "count": 2139,
           "decade": 1940
         },
         {
@@ -5561,15 +5561,15 @@
           "decade": 1960
         },
         {
-          "count": 3509,
+          "count": 3510,
           "decade": 1970
         },
         {
-          "count": 2929,
+          "count": 2936,
           "decade": 1980
         },
         {
-          "count": 6565,
+          "count": 6567,
           "decade": 1990
         },
         {
