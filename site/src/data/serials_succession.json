@@ -47,7 +47,7 @@
         },
         "harvard": {
           "pred": 100775,
-          "succ": 96157
+          "succ": 96158
         },
         "jhu": {
           "pred": 7634,
@@ -66,12 +66,12 @@
           "succ": 42670
         },
         "stanford": {
-          "pred": 76050,
+          "pred": 76051,
           "succ": 69991
         },
         "yale": {
           "pred": 59536,
-          "succ": 54538
+          "succ": 54539
         }
       },
       "sql": "WITH serial AS (\n  SELECT DISTINCT org, pod_record_id FROM records\n  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'\n)\nSELECT org, 'pred' AS category, count(*) AS n FROM serial\nWHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '780')\nGROUP BY org\nUNION ALL\nSELECT org, 'succ' AS category, count(*) AS n FROM serial\nWHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '785')\nGROUP BY org",
@@ -82,13 +82,13 @@
         "cornell": 237542,
         "dartmouth": 34753,
         "duke": 491333,
-        "harvard": 480539,
+        "harvard": 480541,
         "jhu": 35171,
         "mit": 52758,
         "penn": 176344,
         "princeton": 161454,
-        "stanford": 343294,
-        "yale": 237410
+        "stanford": 343295,
+        "yale": 237411
       }
     },
     "succession_type": {
@@ -186,7 +186,7 @@
           "8": 40
         },
         "harvard": {
-          "0": 78601,
+          "0": 78602,
           "1": 1942,
           "2": 3502,
           "3": 294,
@@ -252,7 +252,7 @@
           "8": 68
         },
         "yale": {
-          "0": 44117,
+          "0": 44118,
           "1": 1285,
           "2": 1956,
           "3": 205,
@@ -271,17 +271,17 @@
         "cornell": 237542,
         "dartmouth": 34753,
         "duke": 491333,
-        "harvard": 480539,
+        "harvard": 480541,
         "jhu": 35171,
         "mit": 52758,
         "penn": 176344,
         "princeton": 161454,
-        "stanford": 343294,
-        "yale": 237410
+        "stanford": 343295,
+        "yale": 237411
       }
     }
   },
-  "generated_at": "2026-10-05T14:04:59.279118+00:00",
+  "generated_at": "2026-10-06T14:06:37.656475+00:00",
   "sql": [
     {
       "label": "Serials linked to a predecessor / successor",
