@@ -34,8 +34,12 @@ jobs:
           repository: pod4lib/podlake
           path: podlake
 
+      # Pinned because requires-python is open-ended: without this uv grabs the
+      # newest CPython, and on a fresh release (3.15.0) lxml and pyarrow have
+      # no wheels yet, so uv tries to build them from source and fails.
       - uses: astral-sh/setup-uv@v5
         with:
+          python-version: "3.13"
           enable-cache: true
           cache-dependency-glob: podlake-web/uv.lock
 
