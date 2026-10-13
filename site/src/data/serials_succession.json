@@ -66,12 +66,12 @@
           "succ": 42668
         },
         "stanford": {
-          "pred": 76076,
+          "pred": 76077,
           "succ": 70004
         },
         "yale": {
-          "pred": 59538,
-          "succ": 54536
+          "pred": 59540,
+          "succ": 54538
         }
       },
       "sql": "WITH serial AS (\n  SELECT DISTINCT org, pod_record_id FROM records\n  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'\n)\nSELECT org, 'pred' AS category, count(*) AS n FROM serial\nWHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '780')\nGROUP BY org\nUNION ALL\nSELECT org, 'succ' AS category, count(*) AS n FROM serial\nWHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '785')\nGROUP BY org",
@@ -82,13 +82,13 @@
         "cornell": 237542,
         "dartmouth": 34753,
         "duke": 491333,
-        "harvard": 480559,
+        "harvard": 480564,
         "jhu": 35171,
         "mit": 52753,
         "penn": 198417,
         "princeton": 161412,
-        "stanford": 343362,
-        "yale": 237457
+        "stanford": 343363,
+        "yale": 237460
       }
     },
     "succession_type": {
@@ -252,7 +252,7 @@
           "8": 68
         },
         "yale": {
-          "0": 44117,
+          "0": 44119,
           "1": 1285,
           "2": 1954,
           "3": 205,
@@ -271,17 +271,17 @@
         "cornell": 237542,
         "dartmouth": 34753,
         "duke": 491333,
-        "harvard": 480559,
+        "harvard": 480564,
         "jhu": 35171,
         "mit": 52753,
         "penn": 198417,
         "princeton": 161412,
-        "stanford": 343362,
-        "yale": 237457
+        "stanford": 343363,
+        "yale": 237460
       }
     }
   },
-  "generated_at": "2026-10-12T14:03:54.387174+00:00",
+  "generated_at": "2026-10-13T14:05:24.517817+00:00",
   "sql": [
     {
       "label": "Serials linked to a predecessor / successor",

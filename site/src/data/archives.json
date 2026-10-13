@@ -76,9 +76,9 @@
         "harvard": {
           "aggregator": 0,
           "finding_aid": null,
-          "other": 1788,
+          "other": 1787,
           "repository": null,
-          "resolver": 46833,
+          "resolver": 46830,
           "vendor": null
         },
         "jhu": {
@@ -108,9 +108,9 @@
         "princeton": {
           "aggregator": 0,
           "finding_aid": 6470,
-          "other": 307,
+          "other": 311,
           "repository": 0,
-          "resolver": 7853,
+          "resolver": 7857,
           "vendor": null
         },
         "stanford": {
@@ -138,7 +138,7 @@
         "cornell": 52012,
         "dartmouth": 19490,
         "duke": 49478,
-        "harvard": 242089,
+        "harvard": 242088,
         "jhu": 1275,
         "mit": 63352,
         "penn": 156647,
@@ -249,7 +249,7 @@
           "t": 29199
         },
         "harvard": {
-          "a": 7805,
+          "a": 7806,
           "c": 726,
           "d": 8221,
           "e": 40,
@@ -257,8 +257,8 @@
           "i": 141,
           "j": 49,
           "k": 6942,
-          "p": 82878,
-          "t": 134243
+          "p": 82877,
+          "t": 134242
         },
         "jhu": {
           "a": 18,
@@ -321,7 +321,7 @@
           "t": 25454
         },
         "yale": {
-          "a": 7769,
+          "a": 7768,
           "c": 49,
           "d": 1635,
           "e": 45,
@@ -329,7 +329,7 @@
           "i": null,
           "j": 36,
           "k": 2904,
-          "p": 17739,
+          "p": 17740,
           "t": 64138
         }
       },
@@ -341,7 +341,7 @@
         "cornell": 52012,
         "dartmouth": 19490,
         "duke": 49478,
-        "harvard": 242089,
+        "harvard": 242088,
         "jhu": 1275,
         "mit": 63352,
         "penn": 156647,
@@ -351,7 +351,7 @@
       }
     }
   },
-  "generated_at": "2026-10-12T14:03:54.387174+00:00",
+  "generated_at": "2026-10-13T14:05:24.517817+00:00",
   "genre": [
     {
       "org": "brown",
@@ -679,7 +679,7 @@
     },
     {
       "org": "harvard",
-      "total": 242089,
+      "total": 242088,
       "values": [
         {
           "count": 21222,
@@ -698,7 +698,7 @@
           "term": "the\u0300ses et e\u0301crits acade\u0301miques"
         },
         {
-          "count": 2878,
+          "count": 2877,
           "term": "photographs"
         },
         {
@@ -890,11 +890,11 @@
           "term": "manuscripts (documents)"
         },
         {
-          "count": 5638,
+          "count": 5636,
           "term": "manuscripts, arabic"
         },
         {
-          "count": 1453,
+          "count": 1455,
           "term": "correspondence"
         },
         {
@@ -902,23 +902,23 @@
           "term": "watermarks"
         },
         {
+          "count": 1132,
+          "term": "manuscripts"
+        },
+        {
           "count": 1058,
           "term": "maps"
         },
         {
-          "count": 1057,
+          "count": 1056,
           "term": "manuscripts, persian"
-        },
-        {
-          "count": 1044,
-          "term": "manuscripts"
         },
         {
           "count": 963,
           "term": "fire insurance maps"
         },
         {
-          "count": 922,
+          "count": 927,
           "term": "poetry"
         },
         {
@@ -926,7 +926,7 @@
           "term": "early works"
         },
         {
-          "count": 742,
+          "count": 744,
           "term": "autographs"
         },
         {
@@ -998,7 +998,7 @@
           "term": "academic theses"
         },
         {
-          "count": 13264,
+          "count": 13265,
           "term": "manuscripts"
         },
         {
@@ -1076,9 +1076,9 @@
       "total": 49478
     },
     {
-      "count": 47961,
+      "count": 47957,
       "org": "harvard",
-      "total": 242089
+      "total": 242088
     },
     {
       "count": 33,
@@ -3912,7 +3912,7 @@
           "decade": 1770
         },
         {
-          "count": 1405,
+          "count": 1406,
           "decade": 1780
         },
         {
@@ -3992,7 +3992,7 @@
           "decade": 1970
         },
         {
-          "count": 6996,
+          "count": 6995,
           "decade": 1980
         },
         {
