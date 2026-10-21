@@ -5,7 +5,7 @@ description = "Build public Tier-1 analytics extracts from a podlake DuckLake"
 requires-python = ">=3.13"
 dependencies = [
   "typer>=0.16.0",
-  "duckdb>=1.5.2",
+  "duckdb>=2.0.0",
   "podlake",
   # podlake.storage imports mypy_boto3_s3 at runtime (not under TYPE_CHECKING),
   # so importing podlake requires the boto3 stubs to be installed.
