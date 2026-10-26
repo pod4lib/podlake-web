@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-25T14:03:25.587319+00:00",
+  "generated_at": "2026-10-26T14:04:40.880697+00:00",
   "hosts": [
     {
       "org": "brown",
@@ -69,10 +69,10 @@
     },
     {
       "org": "chicago",
-      "total": 3794883,
+      "total": 3908640,
       "values": [
         {
-          "count": 462588,
+          "count": 462593,
           "host": "search.ebscohost.com"
         },
         {
@@ -98,6 +98,10 @@
         {
           "count": 169439,
           "host": "www.proquest.com"
+        },
+        {
+          "count": 160636,
+          "host": "access.heinonline.com"
         },
         {
           "count": 157220,
@@ -126,23 +130,19 @@
         {
           "count": 70801,
           "host": "find.galegroup.com"
-        },
-        {
-          "count": 55416,
-          "host": "www.massobservationproject.amdigital.co.uk"
         }
       ]
     },
     {
       "org": "columbia",
-      "total": 1095203,
+      "total": 1095221,
       "values": [
         {
           "count": 590069,
           "host": "www.columbia.edu"
         },
         {
-          "count": 229291,
+          "count": 229290,
           "host": "prx.law.columbia.edu"
         },
         {
@@ -194,25 +194,25 @@
           "host": "bvbr.bib-bvb.de:8991"
         },
         {
-          "count": 4485,
+          "count": 4487,
           "host": "resolver.library.columbia.edu"
         }
       ]
     },
     {
       "org": "cornell",
-      "total": 199815,
+      "total": 199882,
       "values": [
         {
           "count": 90471,
           "host": "www.loc.gov"
         },
         {
-          "count": 26730,
+          "count": 26740,
           "host": "catdir.loc.gov"
         },
         {
-          "count": 9641,
+          "count": 9651,
           "host": "bvbr.bib-bvb.de:8991"
         },
         {
@@ -232,7 +232,7 @@
           "host": "www.bk1.jp"
         },
         {
-          "count": 2574,
+          "count": 2576,
           "host": "d-nb.info"
         },
         {
@@ -256,11 +256,11 @@
           "host": "tocview.library.cornell.edu"
         },
         {
-          "count": 1288,
+          "count": 1294,
           "host": "www.gbv.de"
         },
         {
-          "count": 1254,
+          "count": 1255,
           "host": "swbplus.bsz-bw.de"
         }
       ]
@@ -663,7 +663,7 @@
     },
     {
       "org": "princeton",
-      "total": 95596,
+      "total": 95593,
       "values": [
         {
           "count": 34336,
@@ -674,7 +674,7 @@
           "host": "ilibri.casalini.it"
         },
         {
-          "count": 11547,
+          "count": 11544,
           "host": "www.loc.gov"
         },
         {
@@ -729,7 +729,7 @@
     },
     {
       "org": "stanford",
-      "total": 4112148,
+      "total": 4112073,
       "values": [
         {
           "count": 468500,
@@ -740,11 +740,11 @@
           "host": "www.osti.gov"
         },
         {
-          "count": 361530,
+          "count": 361529,
           "host": "search.ebscohost.com"
         },
         {
-          "count": 356529,
+          "count": 356493,
           "host": "purl.fdlp.gov"
         },
         {
@@ -764,7 +764,7 @@
           "host": "link.gale.com"
         },
         {
-          "count": 120978,
+          "count": 120979,
           "host": "purl.stanford.edu"
         },
         {
@@ -795,10 +795,10 @@
     },
     {
       "org": "yale",
-      "total": 7280165,
+      "total": 7280162,
       "values": [
         {
-          "count": 7059822,
+          "count": 7059819,
           "host": "search.library.yale.edu"
         },
         {

@@ -36,7 +36,7 @@
         "chicago": {
           "aggregator": 0,
           "finding_aid": 5013,
-          "other": 10761,
+          "other": 10781,
           "repository": null,
           "resolver": 6296,
           "vendor": 76858
@@ -114,7 +114,7 @@
           "vendor": null
         },
         "stanford": {
-          "aggregator": 10704,
+          "aggregator": 10705,
           "finding_aid": 5042,
           "other": 1690,
           "repository": 352,
@@ -133,7 +133,7 @@
       "sql": "WITH arch AS (\n  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n  FROM records\n  WHERE field_tag = 'LDR' AND length(value) >= 8\n    AND (substr(value, 7, 1) IN ('t','d','f','p')\n         OR substr(value, 8, 1) IN ('c','d'))\n)\n, links AS (\n  SELECT a.org, r.pod_record_id,\n         regexp_extract(lower(r.value), 'https?://([^/]+)', 1) AS host\n  FROM arch a JOIN records r USING (org, pod_record_id)\n  WHERE r.field_tag = '856' AND r.subfield_code = 'u' AND r.value LIKE 'http%'\n)\nSELECT org,\n  CASE\n    WHEN regexp_matches(host, 'findingaid|archives') THEN 'finding_aid'\n    WHEN host IN ('oac.cdlib.org','www.oac.cdlib.org')\n         OR regexp_matches(host, 'archivegrid|snaccooperative') THEN 'aggregator'\n    WHEN regexp_matches(host, '^(nrs|arks|purl|hdl|handle)\\.')\n         OR regexp_matches(host, 'doi\\.org$') THEN 'resolver'\n    WHEN regexp_matches(host, 'proquest|amdigital|gale|jstor|e-enlightenment')\n         THEN 'vendor'\n    WHEN regexp_matches(host, 'colenda|digital|repository|dspace|fedora|idn\\.duke')\n         THEN 'repository'\n    ELSE 'other'\n  END AS category,\n  count(DISTINCT pod_record_id) AS n\nFROM links GROUP BY org, category",
       "totals": {
         "brown": 17421,
-        "chicago": 133623,
+        "chicago": 133643,
         "columbia": 103102,
         "cornell": 52030,
         "dartmouth": 19490,
@@ -189,7 +189,7 @@
           "t": 15655
         },
         "chicago": {
-          "a": 15010,
+          "a": 15020,
           "c": 28,
           "d": 1053,
           "e": 10,
@@ -198,7 +198,7 @@
           "j": 13,
           "k": 207,
           "p": 19912,
-          "t": 97071
+          "t": 97081
         },
         "columbia": {
           "a": 2696,
@@ -336,7 +336,7 @@
       "sql": "WITH arch AS (\n  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n  FROM records\n  WHERE field_tag = 'LDR' AND length(value) >= 8\n    AND (substr(value, 7, 1) IN ('t','d','f','p')\n         OR substr(value, 8, 1) IN ('c','d'))\n)\nSELECT org, rtype AS category, count(*) AS n FROM arch GROUP BY org, rtype",
       "totals": {
         "brown": 17421,
-        "chicago": 133623,
+        "chicago": 133643,
         "columbia": 103102,
         "cornell": 52030,
         "dartmouth": 19490,
@@ -351,7 +351,7 @@
       }
     }
   },
-  "generated_at": "2026-10-25T14:03:25.587319+00:00",
+  "generated_at": "2026-10-26T14:04:40.880697+00:00",
   "genre": [
     {
       "org": "brown",
@@ -409,10 +409,10 @@
     },
     {
       "org": "chicago",
-      "total": 133623,
+      "total": 133643,
       "values": [
         {
-          "count": 3817,
+          "count": 3821,
           "term": "history"
         },
         {
@@ -420,7 +420,7 @@
           "term": "letters (correspondence)"
         },
         {
-          "count": 1500,
+          "count": 1502,
           "term": "academic theses"
         },
         {
@@ -436,7 +436,7 @@
           "term": "early works"
         },
         {
-          "count": 679,
+          "count": 681,
           "term": "the\u0300ses et e\u0301crits acade\u0301miques"
         },
         {
@@ -448,7 +448,7 @@
           "term": "academic dissertation"
         },
         {
-          "count": 608,
+          "count": 609,
           "term": "letters"
         },
         {
@@ -1051,9 +1051,9 @@
       "total": 17421
     },
     {
-      "count": 97011,
+      "count": 97031,
       "org": "chicago",
-      "total": 133623
+      "total": 133643
     },
     {
       "count": 13909,
@@ -1101,7 +1101,7 @@
       "total": 45754
     },
     {
-      "count": 39799,
+      "count": 39800,
       "org": "stanford",
       "total": 65917
     },
@@ -1695,15 +1695,15 @@
           "decade": 1840
         },
         {
-          "count": 3077,
+          "count": 3080,
           "decade": 1850
         },
         {
-          "count": 3416,
+          "count": 3417,
           "decade": 1860
         },
         {
-          "count": 2838,
+          "count": 2839,
           "decade": 1870
         },
         {
@@ -1715,31 +1715,31 @@
           "decade": 1890
         },
         {
-          "count": 1600,
+          "count": 1601,
           "decade": 1900
         },
         {
-          "count": 2111,
+          "count": 2113,
           "decade": 1910
         },
         {
-          "count": 4057,
+          "count": 4060,
           "decade": 1920
         },
         {
-          "count": 4669,
+          "count": 4670,
           "decade": 1930
         },
         {
-          "count": 4215,
+          "count": 4217,
           "decade": 1940
         },
         {
-          "count": 3130,
+          "count": 3133,
           "decade": 1950
         },
         {
-          "count": 4182,
+          "count": 4183,
           "decade": 1960
         },
         {
@@ -1755,11 +1755,11 @@
           "decade": 1990
         },
         {
-          "count": 11655,
+          "count": 11656,
           "decade": 2000
         },
         {
-          "count": 10806,
+          "count": 10807,
           "decade": 2010
         },
         {
@@ -5525,7 +5525,7 @@
           "decade": 1860
         },
         {
-          "count": 427,
+          "count": 428,
           "decade": 1870
         },
         {
@@ -5537,7 +5537,7 @@
           "decade": 1890
         },
         {
-          "count": 1518,
+          "count": 1517,
           "decade": 1900
         },
         {
