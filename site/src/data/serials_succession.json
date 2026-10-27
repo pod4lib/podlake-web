@@ -71,7 +71,7 @@
         },
         "yale": {
           "pred": 59548,
-          "succ": 54549
+          "succ": 54550
         }
       },
       "sql": "WITH serial AS (\n  SELECT DISTINCT org, pod_record_id FROM records\n  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'\n)\nSELECT org, 'pred' AS category, count(*) AS n FROM serial\nWHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '780')\nGROUP BY org\nUNION ALL\nSELECT org, 'succ' AS category, count(*) AS n FROM serial\nWHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '785')\nGROUP BY org",
@@ -87,8 +87,8 @@
         "mit": 52751,
         "penn": 198450,
         "princeton": 161477,
-        "stanford": 369853,
-        "yale": 237510
+        "stanford": 369851,
+        "yale": 237508
       }
     },
     "succession_type": {
@@ -259,7 +259,7 @@
           "4": 1920,
           "5": 134,
           "6": 1163,
-          "7": 3938,
+          "7": 3939,
           "8": 110
         }
       },
@@ -276,12 +276,12 @@
         "mit": 52751,
         "penn": 198450,
         "princeton": 161477,
-        "stanford": 369853,
-        "yale": 237510
+        "stanford": 369851,
+        "yale": 237508
       }
     }
   },
-  "generated_at": "2026-10-26T14:04:40.880697+00:00",
+  "generated_at": "2026-10-27T14:03:51.875014+00:00",
   "sql": [
     {
       "label": "Serials linked to a predecessor / successor",
