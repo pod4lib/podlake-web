@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T15:02:01.112991+00:00",
+  "generated_at": "2026-11-03T15:07:42.598324+00:00",
   "hosts": [
     {
       "org": "brown",
@@ -135,14 +135,14 @@
     },
     {
       "org": "columbia",
-      "total": 1095338,
+      "total": 1095361,
       "values": [
         {
           "count": 590069,
           "host": "www.columbia.edu"
         },
         {
-          "count": 229283,
+          "count": 229299,
           "host": "prx.law.columbia.edu"
         },
         {
@@ -194,7 +194,7 @@
           "host": "bvbr.bib-bvb.de:8991"
         },
         {
-          "count": 4499,
+          "count": 4503,
           "host": "resolver.library.columbia.edu"
         }
       ]
@@ -399,14 +399,14 @@
     },
     {
       "org": "harvard",
-      "total": 1053930,
+      "total": 1053429,
       "values": [
         {
-          "count": 515700,
+          "count": 515675,
           "host": "hdl.handle.net"
         },
         {
-          "count": 423782,
+          "count": 423572,
           "host": "nrs.harvard.edu"
         },
         {
@@ -414,7 +414,7 @@
           "host": "catalog.hathitrust.org"
         },
         {
-          "count": 8757,
+          "count": 8495,
           "host": "books.google.com"
         },
         {
@@ -663,18 +663,14 @@
     },
     {
       "org": "princeton",
-      "total": 95853,
+      "total": 75769,
       "values": [
         {
           "count": 34343,
           "host": "arks.princeton.edu"
         },
         {
-          "count": 24672,
-          "host": "ilibri.casalini.it"
-        },
-        {
-          "count": 11526,
+          "count": 11524,
           "host": "www.loc.gov"
         },
         {
@@ -682,7 +678,11 @@
           "host": "findingaids.princeton.edu"
         },
         {
-          "count": 2661,
+          "count": 4609,
+          "host": "ilibri.casalini.it"
+        },
+        {
+          "count": 2655,
           "host": "catdir.loc.gov"
         },
         {
@@ -694,7 +694,7 @@
           "host": "core.cambeiro.com.ar"
         },
         {
-          "count": 1718,
+          "count": 1713,
           "host": "www.ilibri.casalini.it"
         },
         {
@@ -710,7 +710,7 @@
           "host": "www.jstor.org"
         },
         {
-          "count": 531,
+          "count": 529,
           "host": "bvbr.bib-bvb.de:8991"
         },
         {
@@ -795,14 +795,14 @@
     },
     {
       "org": "yale",
-      "total": 7280909,
+      "total": 7281026,
       "values": [
         {
-          "count": 7060513,
+          "count": 7060625,
           "host": "search.library.yale.edu"
         },
         {
-          "count": 94666,
+          "count": 94668,
           "host": "www.loc.gov"
         },
         {
@@ -814,7 +814,7 @@
           "host": "beinecke.library.yale.edu"
         },
         {
-          "count": 17416,
+          "count": 17417,
           "host": "hdl.handle.net"
         },
         {
