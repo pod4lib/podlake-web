@@ -7,7 +7,7 @@
     "phys_desc",
     "lc_classification"
   ],
-  "generated_at": "2026-11-03T15:07:42.598324+00:00",
+  "generated_at": "2026-11-04T15:07:42.935230+00:00",
   "per_org": [
     {
       "coverage": {
@@ -19,19 +19,19 @@
         "subjects": 0.8569
       },
       "org": "brown",
-      "records": 2591262
+      "records": 2591292
     },
     {
       "coverage": {
-        "author": 0.7253,
-        "isbn": 0.412,
+        "author": 0.7247,
+        "isbn": 0.4117,
         "lc_classification": 0.6477,
-        "online": 0.3721,
-        "phys_desc": 0.9864,
-        "subjects": 0.8959
+        "online": 0.3727,
+        "phys_desc": 0.986,
+        "subjects": 0.8958
       },
       "org": "chicago",
-      "records": 9872179
+      "records": 9881704
     },
     {
       "coverage": {
@@ -50,12 +50,12 @@
         "author": 0.7936,
         "isbn": 0.4499,
         "lc_classification": 0.9102,
-        "online": 0.0237,
+        "online": 0.0238,
         "phys_desc": 0.9972,
         "subjects": 0.9216
       },
       "org": "cornell",
-      "records": 6205749
+      "records": 6206090
     },
     {
       "coverage": {
@@ -85,13 +85,13 @@
       "coverage": {
         "author": 0.7801,
         "isbn": 0.4376,
-        "lc_classification": 0.7275,
+        "lc_classification": 0.7274,
         "online": 0.0715,
         "phys_desc": 0.9594,
         "subjects": 0.8741
       },
       "org": "harvard",
-      "records": 14058129
+      "records": 14058989
     },
     {
       "coverage": {
@@ -103,7 +103,7 @@
         "subjects": 0.9301
       },
       "org": "jhu",
-      "records": 1718585
+      "records": 1718604
     },
     {
       "coverage": {
@@ -115,19 +115,19 @@
         "subjects": 0.9242
       },
       "org": "mit",
-      "records": 1446997
+      "records": 1447037
     },
     {
       "coverage": {
-        "author": 0.7692,
-        "isbn": 0.3609,
-        "lc_classification": 0.6689,
-        "online": 0.1344,
-        "phys_desc": 0.981,
-        "subjects": 0.8958
+        "author": 0.7693,
+        "isbn": 0.3608,
+        "lc_classification": 0.6685,
+        "online": 0.1343,
+        "phys_desc": 0.9811,
+        "subjects": 0.8959
       },
       "org": "penn",
-      "records": 7728655
+      "records": 7734473
     },
     {
       "coverage": {
@@ -139,19 +139,19 @@
         "subjects": 0.9126
       },
       "org": "princeton",
-      "records": 6309362
+      "records": 6309649
     },
     {
       "coverage": {
         "author": 0.7324,
         "isbn": 0.4376,
-        "lc_classification": 0.7798,
-        "online": 0.3771,
+        "lc_classification": 0.7797,
+        "online": 0.3772,
         "phys_desc": 0.977,
         "subjects": 0.9093
       },
       "org": "stanford",
-      "records": 10261855
+      "records": 10262768
     },
     {
       "coverage": {
@@ -163,7 +163,7 @@
         "subjects": 0.863
       },
       "org": "yale",
-      "records": 7060625
+      "records": 7060740
     }
   ],
   "sql": [
