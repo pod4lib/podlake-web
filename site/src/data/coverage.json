@@ -7,7 +7,7 @@
     "phys_desc",
     "lc_classification"
   ],
-  "generated_at": "2026-11-05T15:04:48.568760+00:00",
+  "generated_at": "2026-11-06T15:04:09.474947+00:00",
   "per_org": [
     {
       "coverage": {
@@ -19,7 +19,7 @@
         "subjects": 0.8569
       },
       "org": "brown",
-      "records": 2591376
+      "records": 2591398
     },
     {
       "coverage": {
@@ -31,7 +31,7 @@
         "subjects": 0.896
       },
       "org": "chicago",
-      "records": 9896920
+      "records": 9897122
     },
     {
       "coverage": {
@@ -43,7 +43,7 @@
         "subjects": 0.8646
       },
       "org": "columbia",
-      "records": 8122378
+      "records": 8122380
     },
     {
       "coverage": {
@@ -91,7 +91,7 @@
         "subjects": 0.8741
       },
       "org": "harvard",
-      "records": 14059873
+      "records": 14060233
     },
     {
       "coverage": {
@@ -103,7 +103,7 @@
         "subjects": 0.9301
       },
       "org": "jhu",
-      "records": 1718762
+      "records": 1718785
     },
     {
       "coverage": {
@@ -115,7 +115,7 @@
         "subjects": 0.9242
       },
       "org": "mit",
-      "records": 1447039
+      "records": 1447042
     },
     {
       "coverage": {
@@ -132,26 +132,26 @@
     {
       "coverage": {
         "author": 0.7738,
-        "isbn": 0.5725,
+        "isbn": 0.5726,
         "lc_classification": 0.9234,
         "online": 0.0107,
         "phys_desc": 0.9806,
         "subjects": 0.9126
       },
       "org": "princeton",
-      "records": 6310242
+      "records": 6310670
     },
     {
       "coverage": {
         "author": 0.7324,
         "isbn": 0.4376,
         "lc_classification": 0.7797,
-        "online": 0.3771,
+        "online": 0.3772,
         "phys_desc": 0.977,
         "subjects": 0.9093
       },
       "org": "stanford",
-      "records": 10263357
+      "records": 10264889
     },
     {
       "coverage": {
@@ -163,7 +163,7 @@
         "subjects": 0.863
       },
       "org": "yale",
-      "records": 7060966
+      "records": 7061263
     }
   ],
   "sql": [
