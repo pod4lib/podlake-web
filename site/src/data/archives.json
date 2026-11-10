@@ -76,9 +76,9 @@
         "harvard": {
           "aggregator": 0,
           "finding_aid": null,
-          "other": 1789,
+          "other": 1790,
           "repository": null,
-          "resolver": 46812,
+          "resolver": 46815,
           "vendor": null
         },
         "jhu": {
@@ -124,7 +124,7 @@
         "yale": {
           "aggregator": null,
           "finding_aid": null,
-          "other": 95965,
+          "other": 95967,
           "repository": null,
           "resolver": 5432,
           "vendor": 51
@@ -134,7 +134,7 @@
       "totals": {
         "brown": 17431,
         "chicago": 133648,
-        "columbia": 103105,
+        "columbia": 103106,
         "cornell": 52053,
         "dartmouth": 19490,
         "duke": 49478,
@@ -144,7 +144,7 @@
         "penn": 156479,
         "princeton": 45782,
         "stanford": 65940,
-        "yale": 95965
+        "yale": 95967
       }
     },
     "material_type": {
@@ -209,7 +209,7 @@
           "i": 4383,
           "j": null,
           "k": 1785,
-          "p": 13574,
+          "p": 13575,
           "t": 79441
         },
         "cornell": {
@@ -257,8 +257,8 @@
           "i": 141,
           "j": 49,
           "k": 6943,
-          "p": 82900,
-          "t": 134262
+          "p": 82901,
+          "t": 134261
         },
         "jhu": {
           "a": 19,
@@ -321,7 +321,7 @@
           "t": 27667
         },
         "yale": {
-          "a": 7783,
+          "a": 7785,
           "c": 51,
           "d": 1635,
           "e": 45,
@@ -337,7 +337,7 @@
       "totals": {
         "brown": 17431,
         "chicago": 133648,
-        "columbia": 103105,
+        "columbia": 103106,
         "cornell": 52053,
         "dartmouth": 19490,
         "duke": 49478,
@@ -347,11 +347,11 @@
         "penn": 156479,
         "princeton": 45782,
         "stanford": 65940,
-        "yale": 95965
+        "yale": 95967
       }
     }
   },
-  "generated_at": "2026-11-09T15:03:45.308923+00:00",
+  "generated_at": "2026-11-10T15:03:32.311523+00:00",
   "genre": [
     {
       "org": "brown",
@@ -463,7 +463,7 @@
     },
     {
       "org": "columbia",
-      "total": 103105,
+      "total": 103106,
       "values": [
         {
           "count": 16382,
@@ -991,7 +991,7 @@
     },
     {
       "org": "yale",
-      "total": 95965,
+      "total": 95967,
       "values": [
         {
           "count": 20534,
@@ -1058,7 +1058,7 @@
     {
       "count": 13911,
       "org": "columbia",
-      "total": 103105
+      "total": 103106
     },
     {
       "count": 11428,
@@ -1076,7 +1076,7 @@
       "total": 49478
     },
     {
-      "count": 47942,
+      "count": 47946,
       "org": "harvard",
       "total": 242147
     },
@@ -1106,9 +1106,9 @@
       "total": 65940
     },
     {
-      "count": 95965,
+      "count": 95967,
       "org": "yale",
-      "total": 95965
+      "total": 95967
     }
   ],
   "sql": [
@@ -3928,7 +3928,7 @@
           "decade": 1810
         },
         {
-          "count": 3537,
+          "count": 3538,
           "decade": 1820
         },
         {
@@ -4008,7 +4008,7 @@
           "decade": 2010
         },
         {
-          "count": 2745,
+          "count": 2744,
           "decade": 2020
         }
       ]
@@ -5958,7 +5958,7 @@
           "decade": 1780
         },
         {
-          "count": 678,
+          "count": 679,
           "decade": 1790
         },
         {
@@ -6030,7 +6030,7 @@
           "decade": 1960
         },
         {
-          "count": 6349,
+          "count": 6350,
           "decade": 1970
         },
         {
