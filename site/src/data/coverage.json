@@ -7,7 +7,7 @@
     "phys_desc",
     "lc_classification"
   ],
-  "generated_at": "2026-11-12T15:04:15.640052+00:00",
+  "generated_at": "2026-11-13T15:03:29.950945+00:00",
   "per_org": [
     {
       "coverage": {
@@ -19,7 +19,7 @@
         "subjects": 0.8569
       },
       "org": "brown",
-      "records": 2591509
+      "records": 2591667
     },
     {
       "coverage": {
@@ -31,7 +31,7 @@
         "subjects": 0.896
       },
       "org": "chicago",
-      "records": 9896369
+      "records": 9896680
     },
     {
       "coverage": {
@@ -43,7 +43,7 @@
         "subjects": 0.8646
       },
       "org": "columbia",
-      "records": 8124261
+      "records": 8124563
     },
     {
       "coverage": {
@@ -55,7 +55,7 @@
         "subjects": 0.9216
       },
       "org": "cornell",
-      "records": 6206695
+      "records": 6206696
     },
     {
       "coverage": {
@@ -91,19 +91,19 @@
         "subjects": 0.8741
       },
       "org": "harvard",
-      "records": 14062631
+      "records": 14062835
     },
     {
       "coverage": {
         "author": 0.8034,
         "isbn": 0.5986,
-        "lc_classification": 0.8096,
+        "lc_classification": 0.8095,
         "online": 0.0486,
-        "phys_desc": 0.9909,
-        "subjects": 0.9302
+        "phys_desc": 0.9908,
+        "subjects": 0.9301
       },
       "org": "jhu",
-      "records": 1719045
+      "records": 1719205
     },
     {
       "coverage": {
@@ -132,14 +132,14 @@
     {
       "coverage": {
         "author": 0.7738,
-        "isbn": 0.5726,
+        "isbn": 0.5727,
         "lc_classification": 0.9233,
         "online": 0.0107,
         "phys_desc": 0.9806,
         "subjects": 0.9126
       },
       "org": "princeton",
-      "records": 6311397
+      "records": 6312099
     },
     {
       "coverage": {
@@ -151,7 +151,7 @@
         "subjects": 0.9093
       },
       "org": "stanford",
-      "records": 10266605
+      "records": 10267619
     },
     {
       "coverage": {
@@ -163,7 +163,7 @@
         "subjects": 0.863
       },
       "org": "yale",
-      "records": 7061996
+      "records": 7062140
     }
   ],
   "sql": [
