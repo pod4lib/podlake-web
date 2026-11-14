@@ -7,7 +7,7 @@
     "phys_desc",
     "lc_classification"
   ],
-  "generated_at": "2026-11-13T15:03:29.950945+00:00",
+  "generated_at": "2026-11-14T15:05:12.267769+00:00",
   "per_org": [
     {
       "coverage": {
@@ -19,7 +19,7 @@
         "subjects": 0.8569
       },
       "org": "brown",
-      "records": 2591667
+      "records": 2591704
     },
     {
       "coverage": {
@@ -43,7 +43,7 @@
         "subjects": 0.8646
       },
       "org": "columbia",
-      "records": 8124563
+      "records": 8124669
     },
     {
       "coverage": {
@@ -55,7 +55,7 @@
         "subjects": 0.9216
       },
       "org": "cornell",
-      "records": 6206696
+      "records": 6206724
     },
     {
       "coverage": {
@@ -91,19 +91,19 @@
         "subjects": 0.8741
       },
       "org": "harvard",
-      "records": 14062835
+      "records": 14063072
     },
     {
       "coverage": {
         "author": 0.8034,
         "isbn": 0.5986,
-        "lc_classification": 0.8095,
+        "lc_classification": 0.8097,
         "online": 0.0486,
-        "phys_desc": 0.9908,
-        "subjects": 0.9301
+        "phys_desc": 0.991,
+        "subjects": 0.9303
       },
       "org": "jhu",
-      "records": 1719205
+      "records": 1719230
     },
     {
       "coverage": {
@@ -112,10 +112,10 @@
         "lc_classification": 0.9915,
         "online": 0.1947,
         "phys_desc": 0.9936,
-        "subjects": 0.9242
+        "subjects": 0.9243
       },
       "org": "mit",
-      "records": 1447081
+      "records": 1447089
     },
     {
       "coverage": {
@@ -139,7 +139,7 @@
         "subjects": 0.9126
       },
       "org": "princeton",
-      "records": 6312099
+      "records": 6312181
     },
     {
       "coverage": {
@@ -151,7 +151,7 @@
         "subjects": 0.9093
       },
       "org": "stanford",
-      "records": 10267619
+      "records": 10268281
     },
     {
       "coverage": {
@@ -163,7 +163,7 @@
         "subjects": 0.863
       },
       "org": "yale",
-      "records": 7062140
+      "records": 7062312
     }
   ],
   "sql": [
