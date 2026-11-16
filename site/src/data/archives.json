@@ -114,11 +114,11 @@
           "vendor": 17
         },
         "stanford": {
-          "aggregator": 10722,
-          "finding_aid": 5053,
+          "aggregator": 10713,
+          "finding_aid": 5048,
           "other": 1690,
           "repository": 352,
-          "resolver": 6164,
+          "resolver": 6161,
           "vendor": 21754
         },
         "yale": {
@@ -142,7 +142,7 @@
         "jhu": 1229,
         "mit": 63351,
         "penn": 156486,
-        "princeton": 45797,
+        "princeton": 45795,
         "stanford": 65954,
         "yale": 95974
       }
@@ -306,7 +306,7 @@
           "j": 21,
           "k": 439,
           "p": 3823,
-          "t": 30501
+          "t": 30499
         },
         "stanford": {
           "a": 13966,
@@ -316,9 +316,9 @@
           "f": 338,
           "i": 12,
           "j": 77,
-          "k": 299,
+          "k": 300,
           "p": 22794,
-          "t": 27673
+          "t": 27672
         },
         "yale": {
           "a": 7787,
@@ -345,13 +345,13 @@
         "jhu": 1229,
         "mit": 63351,
         "penn": 156486,
-        "princeton": 45797,
+        "princeton": 45795,
         "stanford": 65954,
         "yale": 95974
       }
     }
   },
-  "generated_at": "2026-11-15T15:05:54.835583+00:00",
+  "generated_at": "2026-11-16T15:02:49.866786+00:00",
   "genre": [
     {
       "org": "brown",
@@ -883,7 +883,7 @@
     },
     {
       "org": "princeton",
-      "total": 45797,
+      "total": 45795,
       "values": [
         {
           "count": 16129,
@@ -960,7 +960,7 @@
           "term": "audiotapes"
         },
         {
-          "count": 391,
+          "count": 390,
           "term": "history"
         },
         {
@@ -980,7 +980,7 @@
           "term": "diaries"
         },
         {
-          "count": 228,
+          "count": 226,
           "term": "ephemera"
         },
         {
@@ -1098,10 +1098,10 @@
     {
       "count": 14666,
       "org": "princeton",
-      "total": 45797
+      "total": 45795
     },
     {
-      "count": 39819,
+      "count": 39808,
       "org": "stanford",
       "total": 65954
     },
@@ -5497,7 +5497,7 @@
           "decade": 1810
         },
         {
-          "count": 204,
+          "count": 203,
           "decade": 1820
         },
         {
@@ -5545,7 +5545,7 @@
           "decade": 1930
         },
         {
-          "count": 3300,
+          "count": 3299,
           "decade": 1940
         },
         {
@@ -5557,11 +5557,11 @@
           "decade": 1960
         },
         {
-          "count": 4209,
+          "count": 4210,
           "decade": 1970
         },
         {
-          "count": 3568,
+          "count": 3569,
           "decade": 1980
         },
         {
@@ -5573,7 +5573,7 @@
           "decade": 2000
         },
         {
-          "count": 3622,
+          "count": 3621,
           "decade": 2010
         },
         {
