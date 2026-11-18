@@ -52,7 +52,7 @@
         "cornell": {
           "aggregator": 0,
           "finding_aid": null,
-          "other": 5992,
+          "other": 5993,
           "repository": null,
           "resolver": 5364,
           "vendor": 73
@@ -78,7 +78,7 @@
           "finding_aid": null,
           "other": 1790,
           "repository": null,
-          "resolver": 46817,
+          "resolver": 46819,
           "vendor": null
         },
         "jhu": {
@@ -110,7 +110,7 @@
           "finding_aid": 6475,
           "other": 313,
           "repository": 0,
-          "resolver": 7871,
+          "resolver": 7872,
           "vendor": 17
         },
         "stanford": {
@@ -124,7 +124,7 @@
         "yale": {
           "aggregator": null,
           "finding_aid": null,
-          "other": 95976,
+          "other": 95974,
           "repository": null,
           "resolver": 5432,
           "vendor": 51
@@ -135,16 +135,16 @@
         "brown": 17432,
         "chicago": 133649,
         "columbia": 103127,
-        "cornell": 52073,
+        "cornell": 52075,
         "dartmouth": 19490,
         "duke": 49478,
-        "harvard": 242126,
+        "harvard": 242132,
         "jhu": 1229,
         "mit": 63351,
         "penn": 156486,
         "princeton": 45795,
-        "stanford": 65954,
-        "yale": 95976
+        "stanford": 65956,
+        "yale": 95974
       }
     },
     "material_type": {
@@ -221,7 +221,7 @@
           "i": null,
           "j": null,
           "k": 28,
-          "p": 14480,
+          "p": 14482,
           "t": 30826
         },
         "dartmouth": {
@@ -257,7 +257,7 @@
           "i": 140,
           "j": 49,
           "k": 6943,
-          "p": 82884,
+          "p": 82890,
           "t": 134258
         },
         "jhu": {
@@ -285,7 +285,7 @@
           "t": 62819
         },
         "penn": {
-          "a": 7684,
+          "a": 7681,
           "c": 129,
           "d": 3391,
           "e": 13,
@@ -293,7 +293,7 @@
           "i": null,
           "j": 1904,
           "k": 8026,
-          "p": 22787,
+          "p": 22790,
           "t": 112153
         },
         "princeton": {
@@ -317,7 +317,7 @@
           "i": 12,
           "j": 77,
           "k": 300,
-          "p": 22794,
+          "p": 22796,
           "t": 27672
         },
         "yale": {
@@ -330,7 +330,7 @@
           "j": 36,
           "k": 2905,
           "p": 17750,
-          "t": 64168
+          "t": 64166
         }
       },
       "sql": "WITH arch AS (\n  SELECT org, pod_record_id, substr(value, 7, 1) AS rtype\n  FROM records\n  WHERE field_tag = 'LDR' AND length(value) >= 8\n    AND (substr(value, 7, 1) IN ('t','d','f','p')\n         OR substr(value, 8, 1) IN ('c','d'))\n)\nSELECT org, rtype AS category, count(*) AS n FROM arch GROUP BY org, rtype",
@@ -338,20 +338,20 @@
         "brown": 17432,
         "chicago": 133649,
         "columbia": 103127,
-        "cornell": 52073,
+        "cornell": 52075,
         "dartmouth": 19490,
         "duke": 49478,
-        "harvard": 242126,
+        "harvard": 242132,
         "jhu": 1229,
         "mit": 63351,
         "penn": 156486,
         "princeton": 45795,
-        "stanford": 65954,
-        "yale": 95976
+        "stanford": 65956,
+        "yale": 95974
       }
     }
   },
-  "generated_at": "2026-11-17T15:04:57.791569+00:00",
+  "generated_at": "2026-11-18T15:09:02.450782+00:00",
   "genre": [
     {
       "org": "brown",
@@ -517,7 +517,7 @@
     },
     {
       "org": "cornell",
-      "total": 52073,
+      "total": 52075,
       "values": [
         {
           "count": 11150,
@@ -679,7 +679,7 @@
     },
     {
       "org": "harvard",
-      "total": 242126,
+      "total": 242132,
       "values": [
         {
           "count": 21222,
@@ -848,7 +848,7 @@
           "term": "codices (bound manuscripts)"
         },
         {
-          "count": 2488,
+          "count": 2489,
           "term": "manuscripts, american"
         },
         {
@@ -872,7 +872,7 @@
           "term": "manuscripts, european"
         },
         {
-          "count": 1431,
+          "count": 1432,
           "term": "academic theses"
         },
         {
@@ -890,7 +890,7 @@
           "term": "manuscripts (documents)"
         },
         {
-          "count": 5622,
+          "count": 5620,
           "term": "manuscripts, arabic"
         },
         {
@@ -926,18 +926,18 @@
           "term": "early works"
         },
         {
-          "count": 755,
+          "count": 756,
           "term": "autographs"
         },
         {
-          "count": 741,
+          "count": 744,
           "term": "blind tooled bindings"
         }
       ]
     },
     {
       "org": "stanford",
-      "total": 65954,
+      "total": 65956,
       "values": [
         {
           "count": 1943,
@@ -984,14 +984,14 @@
           "term": "ephemera"
         },
         {
-          "count": 212,
+          "count": 213,
           "term": "personal correspondence"
         }
       ]
     },
     {
       "org": "yale",
-      "total": 95976,
+      "total": 95974,
       "values": [
         {
           "count": 20534,
@@ -1061,9 +1061,9 @@
       "total": 103127
     },
     {
-      "count": 11428,
+      "count": 11429,
       "org": "cornell",
-      "total": 52073
+      "total": 52075
     },
     {
       "count": 129,
@@ -1076,9 +1076,9 @@
       "total": 49478
     },
     {
-      "count": 47948,
+      "count": 47950,
       "org": "harvard",
-      "total": 242126
+      "total": 242132
     },
     {
       "count": 33,
@@ -1096,19 +1096,19 @@
       "total": 156486
     },
     {
-      "count": 14666,
+      "count": 14667,
       "org": "princeton",
       "total": 45795
     },
     {
       "count": 39808,
       "org": "stanford",
-      "total": 65954
+      "total": 65956
     },
     {
-      "count": 95976,
+      "count": 95974,
       "org": "yale",
-      "total": 95976
+      "total": 95974
     }
   ],
   "sql": [
@@ -2465,11 +2465,11 @@
           "decade": 1790
         },
         {
-          "count": 337,
+          "count": 336,
           "decade": 1800
         },
         {
-          "count": 302,
+          "count": 304,
           "decade": 1810
         },
         {
@@ -2517,7 +2517,7 @@
           "decade": 1920
         },
         {
-          "count": 2411,
+          "count": 2412,
           "decade": 1930
         },
         {
@@ -4008,7 +4008,7 @@
           "decade": 2010
         },
         {
-          "count": 2744,
+          "count": 2747,
           "decade": 2020
         }
       ]
@@ -4487,7 +4487,7 @@
           "decade": 1580
         },
         {
-          "count": 69,
+          "count": 68,
           "decade": 1590
         },
         {
@@ -4591,7 +4591,7 @@
           "decade": 1840
         },
         {
-          "count": 1898,
+          "count": 1899,
           "decade": 1850
         },
         {
@@ -4619,11 +4619,11 @@
           "decade": 1910
         },
         {
-          "count": 6291,
+          "count": 6292,
           "decade": 1920
         },
         {
-          "count": 9088,
+          "count": 9089,
           "decade": 1930
         },
         {
@@ -4643,7 +4643,7 @@
           "decade": 1970
         },
         {
-          "count": 8985,
+          "count": 8986,
           "decade": 1980
         },
         {
@@ -4651,11 +4651,11 @@
           "decade": 1990
         },
         {
-          "count": 17098,
+          "count": 17097,
           "decade": 2000
         },
         {
-          "count": 9023,
+          "count": 9020,
           "decade": 2010
         },
         {
@@ -5537,7 +5537,7 @@
           "decade": 1910
         },
         {
-          "count": 2877,
+          "count": 2878,
           "decade": 1920
         },
         {
@@ -5545,7 +5545,7 @@
           "decade": 1930
         },
         {
-          "count": 3299,
+          "count": 3300,
           "decade": 1940
         },
         {
@@ -6046,7 +6046,7 @@
           "decade": 2000
         },
         {
-          "count": 7598,
+          "count": 7596,
           "decade": 2010
         },
         {
