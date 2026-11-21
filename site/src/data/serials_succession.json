@@ -22,8 +22,8 @@
       ],
       "matrix": {
         "brown": {
-          "pred": 17737,
-          "succ": 16431
+          "pred": 17738,
+          "succ": 16432
         },
         "chicago": {
           "pred": 68246,
@@ -34,8 +34,8 @@
           "succ": 53105
         },
         "cornell": {
-          "pred": 62305,
-          "succ": 56236
+          "pred": 62308,
+          "succ": 56239
         },
         "dartmouth": {
           "pred": 8339,
@@ -46,8 +46,8 @@
           "succ": 52406
         },
         "harvard": {
-          "pred": 100783,
-          "succ": 96173
+          "pred": 100785,
+          "succ": 96174
         },
         "jhu": {
           "pred": 7635,
@@ -62,33 +62,33 @@
           "succ": 43515
         },
         "princeton": {
-          "pred": 47405,
-          "succ": 42662
+          "pred": 47413,
+          "succ": 42663
         },
         "stanford": {
-          "pred": 81454,
-          "succ": 75651
+          "pred": 81461,
+          "succ": 75659
         },
         "yale": {
-          "pred": 59550,
+          "pred": 59551,
           "succ": 54553
         }
       },
       "sql": "WITH serial AS (\n  SELECT DISTINCT org, pod_record_id FROM records\n  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'\n)\nSELECT org, 'pred' AS category, count(*) AS n FROM serial\nWHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '780')\nGROUP BY org\nUNION ALL\nSELECT org, 'succ' AS category, count(*) AS n FROM serial\nWHERE (org, pod_record_id) IN (SELECT org, pod_record_id FROM records WHERE field_tag = '785')\nGROUP BY org",
       "totals": {
-        "brown": 60401,
+        "brown": 60402,
         "chicago": 276679,
-        "columbia": 245683,
-        "cornell": 237469,
+        "columbia": 245685,
+        "cornell": 237472,
         "dartmouth": 34753,
         "duke": 491333,
-        "harvard": 480724,
+        "harvard": 480711,
         "jhu": 35167,
         "mit": 52753,
         "penn": 198536,
-        "princeton": 161483,
-        "stanford": 369943,
-        "yale": 237530
+        "princeton": 161492,
+        "stanford": 370186,
+        "yale": 237532
       }
     },
     "succession_type": {
@@ -124,7 +124,7 @@
           "1": 477,
           "2": 664,
           "3": 96,
-          "4": 719,
+          "4": 720,
           "5": 50,
           "6": 322,
           "7": 1244,
@@ -153,7 +153,7 @@
           "8": 115
         },
         "cornell": {
-          "0": 43931,
+          "0": 43934,
           "1": 1178,
           "2": 3747,
           "3": 487,
@@ -186,7 +186,7 @@
           "8": 40
         },
         "harvard": {
-          "0": 78616,
+          "0": 78617,
           "1": 1942,
           "2": 3502,
           "3": 294,
@@ -230,7 +230,7 @@
           "8": 67
         },
         "princeton": {
-          "0": 36117,
+          "0": 36118,
           "1": 929,
           "2": 785,
           "3": 77,
@@ -241,7 +241,7 @@
           "8": 72
         },
         "stanford": {
-          "0": 62716,
+          "0": 62724,
           "1": 1588,
           "2": 2999,
           "3": 231,
@@ -265,23 +265,23 @@
       },
       "sql": "WITH serial AS (\n  SELECT DISTINCT org, pod_record_id FROM records\n  WHERE field_tag = 'LDR' AND substr(value, 8, 1) = 's'\n)\nSELECT r.org, r.ind2 AS category, count(DISTINCT r.pod_record_id) AS n\nFROM records r\nJOIN serial USING (org, pod_record_id)\nWHERE r.field_tag = '785' AND r.ind2 IN ('0','1','2','3','4','5','6','7','8')\nGROUP BY r.org, r.ind2",
       "totals": {
-        "brown": 60401,
+        "brown": 60402,
         "chicago": 276679,
-        "columbia": 245683,
-        "cornell": 237469,
+        "columbia": 245685,
+        "cornell": 237472,
         "dartmouth": 34753,
         "duke": 491333,
-        "harvard": 480724,
+        "harvard": 480711,
         "jhu": 35167,
         "mit": 52753,
         "penn": 198536,
-        "princeton": 161483,
-        "stanford": 369943,
-        "yale": 237530
+        "princeton": 161492,
+        "stanford": 370186,
+        "yale": 237532
       }
     }
   },
-  "generated_at": "2026-11-20T15:08:03.568605+00:00",
+  "generated_at": "2026-11-21T15:05:44.241732+00:00",
   "sql": [
     {
       "label": "Serials linked to a predecessor / successor",
