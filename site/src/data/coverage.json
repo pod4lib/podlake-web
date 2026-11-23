@@ -7,7 +7,7 @@
     "phys_desc",
     "lc_classification"
   ],
-  "generated_at": "2026-11-22T15:03:19.064836+00:00",
+  "generated_at": "2026-11-23T15:02:36.561101+00:00",
   "per_org": [
     {
       "coverage": {
@@ -19,7 +19,7 @@
         "subjects": 0.8569
       },
       "org": "brown",
-      "records": 2592324
+      "records": 2592325
     },
     {
       "coverage": {
@@ -100,10 +100,10 @@
         "lc_classification": 0.8097,
         "online": 0.0486,
         "phys_desc": 0.991,
-        "subjects": 0.9303
+        "subjects": 0.9302
       },
       "org": "jhu",
-      "records": 1719700
+      "records": 1719717
     },
     {
       "coverage": {
@@ -163,7 +163,7 @@
         "subjects": 0.863
       },
       "org": "yale",
-      "records": 7063499
+      "records": 7063503
     }
   ],
   "sql": [

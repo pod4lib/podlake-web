@@ -651,17 +651,17 @@
           "DRB": 0,
           "EG-CALB": 0,
           "EXLCZ": 0,
-          "FR-PAAMA": 715,
+          "FR-PAAMA": 719,
           "FRPJT": 0,
           "GIS": 0,
           "GOBI": 0,
           "GPO": 21290,
-          "GYWOH": 353,
+          "GYWOH": 355,
           "HSP": 0,
           "ICU": 0,
           "IDCOTSEN": 0,
           "ISJEAIW": 0,
-          "ITFIC": 1693,
+          "ITFIC": 1694,
           "JKM": 0,
           "LB-BRSB": 0,
           "MCM": 0,
@@ -891,7 +891,7 @@
           "ISJEAIW": 598,
           "ITFIC": 162799,
           "JKM": 0,
-          "LB-BRSB": 44984,
+          "LB-BRSB": 44983,
           "MCM": 0,
           "MDBJ": 0,
           "MIAAPQ": 2563,
@@ -985,9 +985,9 @@
           "NNCORM": 0,
           "OCLCCM-CC": 0,
           "OCLCCM-OWNED": 0,
-          "OCOLC": 1275534,
-          "OCOLC-I": 5847372,
-          "OCOLC-M": 8440603,
+          "OCOLC": 1275236,
+          "OCOLC-I": 5847370,
+          "OCOLC-M": 8441006,
           "POOF1": 0,
           "POOF2": null,
           "PQKB": null,
@@ -999,7 +999,7 @@
           "PUVOYAGERBIBID": null,
           "RPB": 990,
           "SFX": null,
-          "SIRSI": 9185927,
+          "SIRSI": 9185929,
           "SSID": null,
           "TEMPOCO": 0,
           "TOE": 422532,
@@ -1023,7 +1023,7 @@
           "CST": 4728,
           "CST-H": 593,
           "CSTRLIN": 1563396,
-          "CTY": 6926404,
+          "CTY": 6926408,
           "CTY-L": 122995,
           "CULASPACE": 0,
           "DGPO": null,
@@ -1061,7 +1061,7 @@
           "NNCORM": 0,
           "OCLCCM-CC": 0,
           "OCLCCM-OWNED": 0,
-          "OCOLC": 6598559,
+          "OCOLC": 6598562,
           "OCOLC-I": 0,
           "OCOLC-M": 0,
           "POOF1": 0,
@@ -1101,23 +1101,23 @@
         }
       ],
       "totals": {
-        "brown": 2592324,
+        "brown": 2592325,
         "chicago": 9896680,
         "columbia": 8126726,
         "cornell": 6206701,
         "dartmouth": 1701373,
         "duke": 8957886,
         "harvard": 14066486,
-        "jhu": 1719700,
+        "jhu": 1719717,
         "mit": 1447198,
         "penn": 7734878,
         "princeton": 6313711,
         "stanford": 10270968,
-        "yale": 7063499
+        "yale": 7063503
       }
     }
   },
-  "generated_at": "2026-11-22T15:03:19.064836+00:00",
+  "generated_at": "2026-11-23T15:02:36.561101+00:00",
   "per_org": [
     {
       "counts": {
@@ -1137,7 +1137,7 @@
         "rlin": 0.0
       },
       "org": "brown",
-      "records": 2592324
+      "records": 2592325
     },
     {
       "counts": {
@@ -1262,7 +1262,7 @@
     {
       "counts": {
         "alma_cz": 0,
-        "any_system": 1718633,
+        "any_system": 1718640,
         "local_system": 1651091,
         "oclc": 1508226,
         "pod_system": 40,
@@ -1277,7 +1277,7 @@
         "rlin": 0.193
       },
       "org": "jhu",
-      "records": 1719700
+      "records": 1719717
     },
     {
       "counts": {
@@ -1342,9 +1342,9 @@
     {
       "counts": {
         "alma_cz": null,
-        "any_system": 10185189,
-        "local_system": 9185948,
-        "oclc": 9352972,
+        "any_system": 10185205,
+        "local_system": 9185950,
+        "oclc": 9352988,
         "pod_system": 124392,
         "rlin": 1588792
       },
@@ -1362,9 +1362,9 @@
     {
       "counts": {
         "alma_cz": 0,
-        "any_system": 7059452,
-        "local_system": 7049328,
-        "oclc": 6598559,
+        "any_system": 7059456,
+        "local_system": 7049332,
+        "oclc": 6598562,
         "pod_system": 24531,
         "rlin": 1563396
       },
@@ -1377,7 +1377,7 @@
         "rlin": 0.2213
       },
       "org": "yale",
-      "records": 7063499
+      "records": 7063503
     }
   ],
   "sql": [
