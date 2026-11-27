@@ -30,8 +30,8 @@
           "succ": 60046
         },
         "columbia": {
-          "pred": 58735,
-          "succ": 53105
+          "pred": 58738,
+          "succ": 53106
         },
         "cornell": {
           "pred": 62309,
@@ -67,7 +67,7 @@
         },
         "stanford": {
           "pred": 81465,
-          "succ": 75666
+          "succ": 75667
         },
         "yale": {
           "pred": 59552,
@@ -78,7 +78,7 @@
       "totals": {
         "brown": 60422,
         "chicago": 276679,
-        "columbia": 245693,
+        "columbia": 245737,
         "cornell": 237472,
         "dartmouth": 34753,
         "duke": 491333,
@@ -86,7 +86,7 @@
         "jhu": 35165,
         "mit": 52753,
         "penn": 175606,
-        "princeton": 161501,
+        "princeton": 161499,
         "stanford": 370192,
         "yale": 237536
       }
@@ -142,7 +142,7 @@
           "8": 52
         },
         "columbia": {
-          "0": 42482,
+          "0": 42483,
           "1": 1238,
           "2": 2052,
           "3": 211,
@@ -241,7 +241,7 @@
           "8": 72
         },
         "stanford": {
-          "0": 62730,
+          "0": 62731,
           "1": 1588,
           "2": 2999,
           "3": 231,
@@ -267,7 +267,7 @@
       "totals": {
         "brown": 60422,
         "chicago": 276679,
-        "columbia": 245693,
+        "columbia": 245737,
         "cornell": 237472,
         "dartmouth": 34753,
         "duke": 491333,
@@ -275,13 +275,13 @@
         "jhu": 35165,
         "mit": 52753,
         "penn": 175606,
-        "princeton": 161501,
+        "princeton": 161499,
         "stanford": 370192,
         "yale": 237536
       }
     }
   },
-  "generated_at": "2026-11-26T15:08:35.453157+00:00",
+  "generated_at": "2026-11-27T15:06:21.353292+00:00",
   "sql": [
     {
       "label": "Serials linked to a predecessor / successor",

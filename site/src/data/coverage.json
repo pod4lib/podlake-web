@@ -7,7 +7,7 @@
     "phys_desc",
     "lc_classification"
   ],
-  "generated_at": "2026-11-26T15:08:35.453157+00:00",
+  "generated_at": "2026-11-27T15:06:21.353292+00:00",
   "per_org": [
     {
       "coverage": {
@@ -19,7 +19,7 @@
         "subjects": 0.8569
       },
       "org": "brown",
-      "records": 2592566
+      "records": 2592589
     },
     {
       "coverage": {
@@ -37,13 +37,13 @@
       "coverage": {
         "author": 0.7914,
         "isbn": 0.447,
-        "lc_classification": 0.7624,
+        "lc_classification": 0.7623,
         "online": 0.1211,
         "phys_desc": 0.9537,
         "subjects": 0.8646
       },
       "org": "columbia",
-      "records": 8127076
+      "records": 8127522
     },
     {
       "coverage": {
@@ -84,26 +84,26 @@
     {
       "coverage": {
         "author": 0.7801,
-        "isbn": 0.4378,
+        "isbn": 0.4379,
         "lc_classification": 0.7278,
-        "online": 0.0714,
+        "online": 0.0711,
         "phys_desc": 0.9595,
         "subjects": 0.8743
       },
       "org": "harvard",
-      "records": 14068167
+      "records": 14068472
     },
     {
       "coverage": {
         "author": 0.8035,
         "isbn": 0.5987,
-        "lc_classification": 0.8097,
+        "lc_classification": 0.8098,
         "online": 0.0486,
-        "phys_desc": 0.9909,
-        "subjects": 0.9302
+        "phys_desc": 0.991,
+        "subjects": 0.9303
       },
       "org": "jhu",
-      "records": 1719821
+      "records": 1719908
     },
     {
       "coverage": {
@@ -115,7 +115,7 @@
         "subjects": 0.9243
       },
       "org": "mit",
-      "records": 1447254
+      "records": 1447255
     },
     {
       "coverage": {
@@ -139,7 +139,7 @@
         "subjects": 0.9126
       },
       "org": "princeton",
-      "records": 6314625
+      "records": 6315144
     },
     {
       "coverage": {
@@ -151,7 +151,7 @@
         "subjects": 0.9094
       },
       "org": "stanford",
-      "records": 10271522
+      "records": 10271888
     },
     {
       "coverage": {

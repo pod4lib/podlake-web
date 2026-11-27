@@ -44,7 +44,7 @@
         "columbia": {
           "aggregator": 0,
           "finding_aid": 4206,
-          "other": 2215,
+          "other": 2216,
           "repository": 28,
           "resolver": 7490,
           "vendor": null
@@ -76,9 +76,9 @@
         "harvard": {
           "aggregator": 0,
           "finding_aid": null,
-          "other": 1788,
+          "other": 1767,
           "repository": null,
-          "resolver": 46825,
+          "resolver": 46749,
           "vendor": null
         },
         "jhu": {
@@ -118,7 +118,7 @@
           "finding_aid": 5050,
           "other": 1691,
           "repository": 352,
-          "resolver": 6163,
+          "resolver": 6164,
           "vendor": 21754
         },
         "yale": {
@@ -138,12 +138,12 @@
         "cornell": 52080,
         "dartmouth": 19490,
         "duke": 49478,
-        "harvard": 242160,
+        "harvard": 242163,
         "jhu": 1229,
         "mit": 63353,
         "penn": 156802,
         "princeton": 45809,
-        "stanford": 65976,
+        "stanford": 65979,
         "yale": 95988
       }
     },
@@ -257,7 +257,7 @@
           "i": 140,
           "j": 49,
           "k": 6944,
-          "p": 82910,
+          "p": 82913,
           "t": 134265
         },
         "jhu": {
@@ -316,9 +316,9 @@
           "f": 339,
           "i": 12,
           "j": 77,
-          "k": 307,
+          "k": 308,
           "p": 22802,
-          "t": 27678
+          "t": 27680
         },
         "yale": {
           "a": 7788,
@@ -341,17 +341,17 @@
         "cornell": 52080,
         "dartmouth": 19490,
         "duke": 49478,
-        "harvard": 242160,
+        "harvard": 242163,
         "jhu": 1229,
         "mit": 63353,
         "penn": 156802,
         "princeton": 45809,
-        "stanford": 65976,
+        "stanford": 65979,
         "yale": 95988
       }
     }
   },
-  "generated_at": "2026-11-26T15:08:35.453157+00:00",
+  "generated_at": "2026-11-27T15:06:21.353292+00:00",
   "genre": [
     {
       "org": "brown",
@@ -470,7 +470,7 @@
           "term": "interviews"
         },
         {
-          "count": 11922,
+          "count": 11924,
           "term": "oral histories (literary works)"
         },
         {
@@ -679,7 +679,7 @@
     },
     {
       "org": "harvard",
-      "total": 242160,
+      "total": 242163,
       "values": [
         {
           "count": 21223,
@@ -690,11 +690,11 @@
           "term": "broadsides"
         },
         {
-          "count": 6911,
+          "count": 6914,
           "term": "academic theses"
         },
         {
-          "count": 3994,
+          "count": 3997,
           "term": "the\u0300ses et e\u0301crits acade\u0301miques"
         },
         {
@@ -702,11 +702,11 @@
           "term": "photographs"
         },
         {
-          "count": 2267,
+          "count": 2269,
           "term": "dissertations"
         },
         {
-          "count": 2244,
+          "count": 2245,
           "term": "academic dissertation"
         },
         {
@@ -937,7 +937,7 @@
     },
     {
       "org": "stanford",
-      "total": 65976,
+      "total": 65979,
       "values": [
         {
           "count": 1943,
@@ -1056,7 +1056,7 @@
       "total": 133649
     },
     {
-      "count": 13919,
+      "count": 13920,
       "org": "columbia",
       "total": 103132
     },
@@ -1076,9 +1076,9 @@
       "total": 49478
     },
     {
-      "count": 47954,
+      "count": 47857,
       "org": "harvard",
-      "total": 242160
+      "total": 242163
     },
     {
       "count": 33,
@@ -1103,7 +1103,7 @@
     {
       "count": 39819,
       "org": "stanford",
-      "total": 65976
+      "total": 65979
     },
     {
       "count": 95988,
@@ -3960,7 +3960,7 @@
           "decade": 1890
         },
         {
-          "count": 13938,
+          "count": 13939,
           "decade": 1900
         },
         {
@@ -3972,7 +3972,7 @@
           "decade": 1920
         },
         {
-          "count": 14163,
+          "count": 14164,
           "decade": 1930
         },
         {
@@ -3992,7 +3992,7 @@
           "decade": 1970
         },
         {
-          "count": 6994,
+          "count": 6995,
           "decade": 1980
         },
         {
@@ -5477,7 +5477,7 @@
           "decade": 1760
         },
         {
-          "count": 94,
+          "count": 95,
           "decade": 1770
         },
         {
@@ -5541,7 +5541,7 @@
           "decade": 1920
         },
         {
-          "count": 3280,
+          "count": 3281,
           "decade": 1930
         },
         {
@@ -5553,7 +5553,7 @@
           "decade": 1950
         },
         {
-          "count": 3861,
+          "count": 3862,
           "decade": 1960
         },
         {
